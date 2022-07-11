@@ -1,0 +1,41 @@
+달력 입력란에는 "yyyy-MM-dd"의 형식으로 반드시 입력이 되어야 합니다
+왜냐하면 DB에 '출판일(publeYear)' 컬럼의 데이터 타입이 DATE이기 때문입니다 
+
+문제는 사용자가 개발자가 의도한대로 입력하지 않을 수 있다는 점입니다
+이러한 문제점을 보완하기 위해 경고글을 통해 입력 형식을 소개한다던지, Javascript코드를 통해 입력 형식 유효성 체크를 하는 방법 등 다양한 방법이 있습니다
+
+사용자가 달력 인터페이스를 통해 날짜를 선택하여 'yyyy-MM-dd' 형식으로 <input>태그에 값이 입력되도록 강제하는 방식으로 구현하고자 합니다
+이를 위해서는 달력 인터페이스를 직접 구현 혹은 이미 만들어진 라이브러리를 활용할 수 있습니다
+
+
+Jquery에서 제공하는 datepicker를 활용
+Datepicker 위젯을 사용하기 하기 위해선 2가지 방법이 있습니다
+
+첫 번째 방법은 직접 라이브러리를 다운로드를 받는 방법
+jqueryui.com/download/
+
+두번째는 CDN 방식
+<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="//code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+
+
+datepicker 적용
+CKEditor과 비슷
+대상이 될 <input> 태그를 작성한 뒤 해당 <input> 태그에 datepicker 위젯이 적용되도록 Javascript 코드를 추가
+
+적용대상이 될 <input> 태그는 'autocomplete', 'readonly' 속성을 추가해줍니다
+'autocomplte'경우 <input> 태그를 클릭했을때 이전 데이터가 뜨는 것을 막기 위해서
+'readony'를 추가해준 이유는 datepicker을 통해 삽입된 날짜 데이터를 사용자가 잘못된 형식으로 수정하지 못하도록 하기 위함
+
+
+datapicker을 동작시키는 기본적인 Javascript 코드
+
+$(function() {
+  $( "선택자" ).datepicker();
+});
+
+
+좀 더 다양한 옵션들을 수정하고 싶으시다면 아래의 링크를 참고해주세요. 여러 예시가 있고 소스코드도 볼 수 있습니다
+
+jqueryui.com/datepicker/

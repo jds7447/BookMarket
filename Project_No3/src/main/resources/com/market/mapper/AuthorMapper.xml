@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 영속 계층 => AuthorMapper.xml, AuthorMapper.java - 작가 등록 연산 수행 -->
+<mapper namespace="com.market.mapper.AuthorMapper">
+
+	<!-- 작가 등록 -->
+	<insert id="authorEnroll">
+          insert into book_author(authorId, authorName, nationId, authorIntro) 
+          values(seq_bookauthor_num.nextval, #{authorName}, #{nationId}, #{authorIntro} )
+	</insert>
+	
+	<!-- 작가 목록(관리) (페이징) -->
+	<select id="authorGetList" resultType="com.market.model.AuthorVO">
+	<!-- "<![CDATA[ ]]>"는 xml 파일 내의 쿼리 중 부등호가 사용될 때 해당 부등호(＜, ＞, ≤, ≥, ≠)를 태그로 인식하지 않도록 하기 위해서 사용 -->
+		<![CDATA[
+			select * from ( 
+				select /*+INDEX_DESC(book_author 인덱스명) */ rownum as rn, authorid, authorname, nationid, regdate, updatedate 
+            	from book_author  
+            	where 
+		]]>
+			<!-- 만약 authorGetList(Criteria2 cri) 메서드의 cri 매개변수에 keyword 멤버 데이터가 있으면 서브쿼리에 AND 조건절 추가 -->
+	    	<!-- 조건절 해석 : authorname 컬럼의 데이터 중에 keyword 값이 포함된 행(튜플)만 조회 -->
+	    	<!-- 조건절 변경 : 기존 and title like '%'||#{keyword}||'%' 에서 주제별 검색을 위해 아래와 같이 변경 -->
+	    	<!-- <if> 태그를 그대로 사용한 이유는 검색조건 없이 화면 이동 시 값이 없는 typeArr 변수가 BoardMapper 로 전달이 되며 발생하는 에러 방지 -->
+			<if test="keyword != null">
+				authorname like '%' || #{keyword} || '%' and 
+			</if>
+		<!-- 서브쿼리의 소괄호 범위를 검색 조건 if문을 포함하도록 하고, 메인쿼리의 조건절을 이어간다 -->
+		<![CDATA[        
+				rownum <= #{pageNum} * #{amount} 
+				) 
+			where rn > (#{pageNum} - 1) * #{amount}
+		]]>
+      </select>
+      
+      <!-- 작가 수 -->
+      <select id="authorGetTotal" resultType="int">
+			select count(*) from book_author
+			<!-- 검색 기능 추가 : 만약 authorGetTotal(Criteria2 cri) 메서드의 cri 매개변수에 keyword 멤버 데이터가 있으면 조건절 추가 -->
+			<!-- 조건절 해석 : title 컬럼의 데이터 중에 keyword 값이 포함된 행(튜플)의 개수만 조회 -->
+			<if test="keyword != null">
+				where authorname like '%' || #{keyword} || '%'
+			</if>
+      </select>
+      
+	<!-- 작가 상세 -->
+	<select id="authorGetDetail" resultType="com.market.model.AuthorVO">
+		select * from book_author where authorid = #{authorId}
+	</select>
+	
+	<!-- 작가 정보 수정 -->
+  	<update id="authorModify">  	
+  		update book_author 
+  		set authorName=#{authorName}, nationId=#{nationId}, authorIntro=#{authorIntro}, updatedate=sysdate 
+  		where authorId = #{authorId}
+  	</update>
+
+</mapper>

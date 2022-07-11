@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.market.mapper.AdminMapper">
+
+	<!-- 상품 등록 -->
+  	<insert id="bookEnroll">
+  		insert into book_goods(bookId, bookName, authorId, publeYear, publisher, cateCode, bookPrice, bookStock, bookDiscount, bookIntro, bookContents)
+		values(seq_bookgoods_num.nextval, #{bookName}, #{authorId}, #{publeYear}, #{publisher}, #{cateCode}, #{bookPrice}, #{bookStock}, #{bookDiscount}, #{bookIntro}, #{bookContents})
+  	</insert>
+
+</mapper>

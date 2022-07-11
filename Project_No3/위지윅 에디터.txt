@@ -1,0 +1,35 @@
+위지윅(WYSYWYG) 에디터란 쉽게 말해 일반적인 사용자가 코드를 몰라도 눈에 보이는 대로 작성할 수 있도록, 문서 작성 방법을 GUI로 구현한 도구(Tool)입니다
+우리는 흔히 위지윅을 많이 사용하고 있습니다
+예를 들어 '한글'프로그램에 문서를 작성한다던지, 웹카페나 블로그에 글을 쓸 때 사용되는 것이 모두 '위지윅 에디터'를 사용하는 것
+무료로 사용할 수 있는 자바스크립트 기반 위지윅 에디터는 "CK Editor", "TinyMCE", "Toast Editor", "Summernote" 등 이 있습니다
+
+CKEditor 홈페이지 https://ckeditor.com/
+CKEditor5 다운로드 페이지 https://ckeditor.com/ckeditor-5/download/?undefined-addons=
+ 
+<textarea>에 CKEditor5를 적용시키기 위한 기본적 JS코드
+
+<script>
+	ClassicEditor
+			.create(document.querySelector('적용대상 선택자'))
+			.catch(error=>{
+				console.error(error);
+			});
+</script>
+
+위의 적용 대상 선택자에 <textarea> 요소가 아닌 <input> 요소를 사용하면 DB 저장이 안된다
+
+CKEditor는 원하는 기능들만 사용할 수 있도록 커스터마이징 할 수 있습니다
+아래의 CKEditor 홈페이지를 참고하시거나 검색을 통해 참고하셔서 수정해주시면 됩니다
+
+ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html
+
+
+
+<!-- 넓이 높이 조절 -->
+	<style>
+	.ck.ck-editor {
+    	max-width: 500px;
+	}
+	.ck-editor__editable {
+	    min-height: 300px;
+	}

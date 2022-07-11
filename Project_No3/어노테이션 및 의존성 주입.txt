@@ -1,0 +1,97 @@
+=================================== 예제 객체 생성 ===================================
+
+---------- 객체 1 ----------
+package com.vam.sample;
+import org.springframework.stereotype.Component;
+import lombok.Data;
+ 
+@Component
+@Data
+public class Chef {
+	
+}
+// @Component를 통해서 해당 객체는 스프링에서 관리해야하는 객체로 인식 되어집니다.
+// @Data를 통해서 해당 객체의 Getter/Setter/toString이 자동 형성됩니다.(lombok라이브러리 사용자 해당)
+
+---------- 객체 1 을 멤버로 주입 받는 객체 2 ----------
+package com.vam.sample;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import lombok.Data;
+import lombok.Setter;
+ 
+@Component
+@Data
+public class Restaurant { 
+	@Setter(onMethod_ = @Autowired)
+	private Chef chef;
+}
+// @Component를 통해서 해당 객체는 스프링에서 관리해야하는 객체로 인식 되어집니다.
+// @Data를 통해서 해당객체의 Getter/Setter/toString이 자동 형성됩니다.
+// Restaurant클래스에 @setter(onMethod_ = @Autowired)로인해 Chef클래스가 자동 주입됩니다.
+
+---------- 어노테이션 설명 ----------
+@Component : 스프링에게 해당 클래스가 스프링에서 관리해야 하는 대상임을 표시하는 어노테이션입니다.
+@Data : 클래스안의 모든 private 필드에 대해 @Getter(Getter 메서드 생성)와 @Setter(Setter 메서드 생성)를 적용하여 세터/게터를 만들어주고
+		클래스내에 @ToString(toString 메서드 생성) 과 @EqualsAndHashCode(equals 메서드, hashcode메서드 생성)를 적용시켜 메소드를 오버라이드 해주며
+		@RequiredArgsConstructor(생성자 자동 생성, null chek 실행)를 지정해 줍니다.(Lombok라이브러리에서 제공)
+@Autowired : 스프링 내부에서 자신이 특정한 객체에 의존적이므로 자신에게 해당 타입의 빈을 주입해주라는 표시입니다.
+@Setter(onMethod_ = @Autowired) : setter 메서드의 생성 시 메서드에 추가할 어노테이션을 지정합니다. 해당 어노테이션에서는 @Autowired가 추가됩니다.
+
+
+
+
+=================================== xml 설정을 통한 '의존성 주입' 설정 및 테스트 ===================================
+
+---------- root-context.xml 설정 ----------
+1) 'root-context.xml'들어가서 하단 'NameSpaces'클릭한 후 'context' 항목을 체크 합니다. 체크를 하였다면 다시 'source' 탭을 클릭합니다. 
+	- 'root-context.xml'은 src => main => webapp => WEB-INF => spring  경로에 있습니다.
+2) <context:component-scan base-package="패키지 경로"> 코드를 추가 후 저장합니다.
+	- com.vam.sample는 스프링에서 인식해야할 객체가 담긴 패키지입니다.(자신이 인식시켜야할 객체를 가지고 있는 패키지를 기입하면됩니다.
+3) 'root-context.xml'의 아래의 탭들 중 'Beans Graph'를 클릭하면 [2.예제 객체생성]에서 생성하였던 Chef.java 클래스와 Restaurant.java 클래스가 스프링에서 관리해야할 객체(Bean)로 인식 하고 있는 것을 볼 수 있습니다.
+
+---------- xml 통해 설정한 객체 테스트 ----------
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
+@Log4j
+public class SampleTests {
+	@Autowired
+	private Restaurant restaurant;
+	 
+	@Test
+	public void textExist() {
+		assertNotNull(restaurant);
+		log.info(restaurant);
+		log.info("--------------------------------------");
+		log.info(restaurant.getChef());
+	}
+}
+
+---------- 어노테이션 설명 ----------
+@Runwit : 해당 클래스에 있는 코드(테스트코드)가 스프링을 실행하는 역할이라는 것을 표시합니다.
+@ContextConfiguration : 지정된 클래스나 문자열을 이용해서 필요한 객체들을 스프링 내에 객체(빈, Bean)로 등록합니다.
+@Log4j : Lombok을 이용해서 로그를 기록하는 Logger를 변수로 생성합니다.
+@Test : JUnit에서 테스트 대상을 표시합니다.
+
+- SampleTests.java 창에 마우스를 두고 오른쪽 마우스를 클릭합니다. [Run As] => [Junit Test]를 클릭합니다.
+- 테스트 성공 결과가 나옵니다
+- 다음은 console창 결과 중 일부입니다.
+		INFO : com.dustmq.sample.SampleTests - Restaurant(chef=Chef())
+		INFO : com.dustmq.sample.SampleTests - --------------------------------------
+		INFO : com.dustmq.sample.SampleTests - Chef()
+- 주목할점은 [INFO:com.dustmq.sample.SampleTest-Chef()]가 출력되었다는 점입니다.
+- Restaurant클래스 내에서 Chef클래스를 호출하는 메서드(Chef())를 추가 하지 않았음에도 Chef 인스턴스변수(private Chef chef)에 붙여진 @Autowired를 통해서
+	해당 객체가 주입 되었다는 것을 알수 있습니다.
+
+
+
+
+=================================== 스프링에서 "의존성 주입"동작 과정 ===================================
+1. 스프링 프레임워크가 시작되면 먼저 스프링이 사용하는 메모리 영역을 만들게 되는데 이를 컨텍스트(Context)라고 합니다.
+	스프링에서는 ApplicationContext라는 이름의 객체가 만들어집니다.
+2. 스프링은 자신이 객체를 생성하고 관리해야 하는 객체들에 대한 설정이 필요합니다.
+	이에대한 설정이 root-context.xml(Java설정 경우 RootConfig.java)파일입니다.
+3. root-context.xml에 설정되어 있는 <Context:component-scan> 태그의 내용을 통해서"com.vam.sample"패키지를 스캔(scan)하기 시작합니다.
+	(Java설정 경우 RootConfig.java에서 @ComponentScan이 해당 역할 수행)
+4. 해당 패키지에 있는 클래스들 중에서 스프링이 사용하는 @Component라는 어노테이션이 존재하는 클래스의 인스턴스를 생성합니다.
+5. Restaurant 객체는 Chef객체가 필요하다는 어노테이션(@Autowired) 설정이 있으므로, 스프링 Chef객체의 레퍼런스를 Restaurant 객체에 주입합니다.

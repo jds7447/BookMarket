@@ -1,0 +1,75 @@
+=================================== MyBaits란? ===================================
+
+---------- 개념 및 정의 ----------
+자바 어플리케이션과 데이터베이스를 연동한 프로그래밍을 하기 위해서 JDBC를 사용합니다.
+JDBC를 사용할 경우 코드가 복잡, 1개의 클래스에 반복되는 코드 존재, 하나의 파일에 자바 언어와 sql언어가 같이 있어서 재사용성이 안좋은 점 등 단점들이 존재합니다.
+MyBatis는 이러한 JDBC의 단점들을 보완하여 데이터베이스를 연동하는 프로그래밍을 좀더 쉽게 할 수 있도록 도와주는 개발 프레임워크 입니다.
+MyBatis는 자바와 데이터베이스를 연동한 프로그래밍을 위해 반드시 필요하진 않습니다.
+하지만 해당 라이브러리를 사용한다면 기존 JDBC 프로그래밍을 하는 것보다 좀 더 빠로고, 쉽고, 편안하게 프로그래밍을 할 수 있기 때문에 많이 사용됩니다.
+
+---------- 특징 ----------
+JDBC에서 SQL한문장을 실행 시키기 위해서 개발자는 많은 코드를 작성을 해야합니다.
+하지만 MyBatis를 사용 할 경우 한 두줄의 코드로 SQL문을 실행 시킬 수 있습니다.
+	- 자동으로 Connection close() 기능
+	- 리턴 타입을 지정하는 경우 자동으로 객체 생성 및 ResultSet 처리
+SQL 명령어를 자바 코드에서 분리하여 XML 파일에 따로 관리합니다.
+기존의 SQL을 그대로 활용할 수 있는 장점이 잇습니다.
+진입장벽이 낮아서 JDBC의 대안으로 많이 사용합니다.
+
+
+
+
+=================================== 필요 라이브러리 ===================================
+
+MyBatis를 사용하기 위해선 mybatis / mybatis-spring / spring-jdbc / spring-tx 총 4개의 라이브러리가 필요합니다.
+MyBatis-Spring은 스프링과 MyBatis 를 연동 시켜주는 라이브러리입니다.
+
+스프링에서 MyBatis를 사용하는 구조는 다음과 같습니다.
+	ApplicationContext 객체
+		MyBatis-Spring			==>			MyBatis			==>			데이터베이스
+
+spring-jdbc와 spring-tx는 스프링에서 데이터베이스 처리와 트랜잭션 처리를 하는 라이브러리입니다.
+MyBatis와 무관해 보이지만 추가하지 않은 경우에는 에러가 발생하기 때문에 추가해줍니다.
+
+아래의 Mavaen 코드를 pom.xml에 추가해줍니다.
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.5.3</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>2.0.3</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-tx</artifactId>
+    <version>${org.springframework-version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>${org.springframework-version}</version>
+</dependency>
+
+
+
+
+=================================== SQLSessionFactory 설정 ===================================
+
+MyBatis에서 가장 핵심적인 객체는 SQLSession 입니다.
+SQLSession객체는 개방에서 Connection을 생성하거나 원하는 SQL을 전달하고, 결과를 리턴 바도록 해줍니다.
+이러한 SQLSession을 만들어 내는 객체가 SQLSessionFactory입니다.
+이 객체(SQLSessionFactory)는 MyBatis-spring 라이브러리의 클래스입니다.
+스프링에서 SQLSEssionFactory 객체를 인식 시키기 위해서 SqlSessionFactoryBean을 사용합니다.
+
+아래의 코드를 root-context.xml에 추가해줍니다.
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="dataSource" ref="datasource"></property>
+</bean>
+미리 설정한 datasource 커넥션 풀 설정(HikariCP)을 이용

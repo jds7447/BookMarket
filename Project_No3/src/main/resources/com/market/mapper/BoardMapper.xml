@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 속성 값을 앞에서 생성하고 작성한 Mapper 인터페이스의 경로를 포함하는 인터페이스의 이름을 작성하여
+	MyBatis가 Mapper 인터페이스와 XML을 인터페이스 이름과 namespace 속성 값을 가지고 판단
+	인터페이스 이름과 namespace 속성 값이 동일한 이름이면 이를 병합해서 처리하는데,
+	이러한 경우에는 메서드 선언은 인터페이스에 존재하고 SQL에 대한 처리는 XML을 이용 -->
+<mapper namespace="com.market.mapper.BoardMapper">
+
+	<!-- 게시글 등록 -->
+    <insert id="enroll">
+        insert into book_board(bno, title, content, writer) values (seq_bookboard_num.nextval, #{title}, #{content}, #{writer})
+    </insert>
+    
+    <!-- 게시글 목록 -->
+    <select id="getList" resultType="com.market.model.BoardVO">   <!-- resultType : SQL의 결과값 형식 객체 -->
+        select * from book_board
+    </select>
+    
+    <!-- 검색 조건문 -->
+    <sql id="criteria">   <!-- trim문 안에 작성된느 쿼리들은 "AND (" 로 시작해서 ")" 로 끝난다 -->
+        <trim prefix="AND (" suffix=")" prefixOverrides="OR">   <!-- trim문 시작부에 OR 문자가 있으면 삭제한다 (아래의 <trim prefix="OR">) -->
+            <foreach collection="typeArr" item="type">   <!-- 자바의 확장 for문 => for(String type : typeArr) -->
+            	<!-- 위의 prefixOverrides="OR" 과 아래 trim 태그를 빼고 foreach 태그에 separator="OR" 를 추가해도 될 것 같음 -->
+                <trim prefix="OR">   <!-- 반복되는 검색 조건 문자 쿼리 가장 앞에 "OR" 를 붙인다 (하지만 제일 처음에 붙는 "OR" 는 삭제된다) -->
+                					<!-- 즉, 검색 조건문의 형태는 => AND ( [OR삭제] title like '%'||#{keyword}||'%' [OR ...]) -->
+                    <choose>   <!-- choose~when 은 자바의 switch~case 의 형식이라 볼 수 있다 -->
+                        <when test="type == 'T'.toString()">   <!-- 현재 반복 type 값이 T 문자를 문자열로 변경한 것과 같다면 아래 쿼리 적용 -->
+                            title like '%'||#{keyword}||'%' 
+                        </when>
+                        <when test="type == 'C'.toString()">
+                            content like '%'||#{keyword}||'%' 
+                        </when>
+                        <when test="type == 'W'.toString()">
+                            writer like '%'||#{keyword}||'%' 
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    </sql>
+    
+    <!-- 게시글 목록 (페이징) -->
+    <select id="getListPaging" resultType="com.market.model.BoardVO">
+    <!-- "<![CDATA[ ]]>"는 xml 파일 내의 쿼리 중 부등호가 사용될 때 해당 부등호(＜, ＞, ≤, ≥, ≠)를 태그로 인식하지 않도록 하기 위해서 사용 -->
+	    <![CDATA[
+	        select bno, title, content, writer, regdate, updatedate from(
+				select /*+INDEX_DESC(book_board pk_board) */ rownum as rn, bno, title, content, writer, regdate, updatedate
+				from book_board 
+				where rownum <= #{pageNum} * #{amount}
+	    ]]>
+	    	<!-- 만약 getListPaging(Criteria cri) 메서드의 cri 매개변수에 keyword 멤버 데이터가 있으면 서브쿼리에 AND 조건절 추가 -->
+	    	<!-- 조건절 해석 : title 컬럼의 데이터 중에 keyword 값이 포함된 행(튜플)만 조회 -->
+	    	<!-- 조건절 변경 : 기존 and title like '%'||#{keyword}||'%' 에서 주제별 검색을 위해 아래와 같이 변경 -->
+	    	<!-- <if> 태그를 그대로 사용한 이유는 검색조건 없이 화면 이동 시 값이 없는 typeArr 변수가 BoardMapper 로 전달이 되며 발생하는 에러 방지 -->
+			<if test="keyword != null">
+				<include refid="criteria"></include>   <!-- refid 값에 해당하는 id를 가진 요소를 가져다 삽입한다 (위에 정의한 sql 검색 조건문) -->
+			</if>
+		<!-- 서브쿼리의 소괄호 범위를 검색 조건 if문을 포함하도록 하고, 메인쿼리의 조건절을 이어간다 -->
+		<![CDATA[
+                )
+	        where rn > (#{pageNum} -1) * #{amount}
+	    ]]>
+    </select>
+    
+    <!-- 게시글 총 개수 -->
+    <select id="getTotal" resultType="int">
+        select count(*) from book_board
+        <!-- 검색 기능 추가 : 만약 getTotal(Criteria cri) 메서드의 cri 매개변수에 keyword 멤버 데이터가 있으면 AND 조건절 추가 -->
+        <!-- 조건절 해석 : title 컬럼의 데이터 중에 keyword 값이 포함된 행(튜플)의 개수만 조회 -->
+        <!-- 조건절 변경 : 기존 where title like '%'||#{keyword}||'%' 에서 주제별 검색을 위해 아래와 같이 변경 -->
+        <!-- <if> 태그를 그대로 사용한 이유는 검색조건 없이 화면 이동 시 값이 없는 typeArr 변수가 BoardMapper 로 전달이 되며 발생하는 에러 방지 -->
+        <if test="keyword != null">
+            where bno > 0 <include refid="criteria"></include>
+        </if>
+        <!-- bno>0은 아무 의미 없는 조건이지만 작성한 이유는 <include> 태그에 의해 삽입될 쿼리문이 and() 형식이기 때문에 구문 오류를 방지하기 위해서 작성 -->
+    </select>
+    
+    <!-- 게시글 조회 -->
+    <select id="getPage" resultType="com.market.model.BoardVO">
+        select * from book_board where bno = #{bno}
+    </select>
+    
+    <!-- 게시글 수정 -->
+    <update id="modify">   <!-- 게시글 번호로 게시글을 특정하여 해당 게시글의 제목, 내용, 수정날짜 를 수정 (수정 날짜는 수정 시 시스템의 현재 날짜) -->
+        update book_board set title = #{title}, content = #{content}, updatedate = sysdate where bno = #{bno}
+    </update>
+    
+    <!-- 게시글 삭제 -->
+    <delete id="delete">   <!-- 게시글 번호로 게시글을 특정하여 삭제 -->
+        delete from book_board where bno = #{bno}
+    </delete>
+    
+</mapper>
