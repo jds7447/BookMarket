@@ -13,7 +13,7 @@ public class AdminInterceptor implements HandlerInterceptor {
 	
 	/* "member"session정보를 MemberVO타입의 변수에 담은 후, 해당 변수를 통해 admiCk의 값을 호출하여 비교하는 로직 필요 */
 	@Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //Controller에 진입하기 전에 작업을 원하기 때문에 preHandle() 메서드를 오버 라이딩
 		System.out.println("AdminInterceptor preHandle 작동");   //확인용
 		

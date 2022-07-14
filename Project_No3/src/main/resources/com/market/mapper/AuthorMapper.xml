@@ -17,7 +17,7 @@
 	<!-- "<![CDATA[ ]]>"는 xml 파일 내의 쿼리 중 부등호가 사용될 때 해당 부등호(＜, ＞, ≤, ≥, ≠)를 태그로 인식하지 않도록 하기 위해서 사용 -->
 		<![CDATA[
 			select * from ( 
-				select /*+INDEX_DESC(book_author 인덱스명) */ rownum as rn, authorid, authorname, nationid, regdate, updatedate 
+				select /*+INDEX_DESC(book_author SYS_C009172) */ rownum as rn, authorid, authorname, nationid, regdate, updatedate 
             	from book_author  
             	where 
 		]]>

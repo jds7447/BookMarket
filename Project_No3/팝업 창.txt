@@ -12,3 +12,7 @@ developer.mozilla.org/ko/docs/Web/API/Window/open#window_features
 각 설정에 따라 적용이 가능한 브라우저가 정해져 있습니다
 따라서 설정을 원할 시엔 위의 문서에 적용 가능 유무부터 확인해야 합니다
 저는 팝업창의 크기, 위치, 스크롤바 기능에 대한 설정만 할 것입니다
+
+팝업창의 작가 이름을 클릭하였을 때 팝업창이 닫히면서 부모 창의 작가 <input> 태그에 데이터 입력되도록 구현
+Javascript 코드를 통해 제어할 것인데 아래의 MDN 페이지에 있는 부모 창의 요소에 접근하는 방법을 참고
+	developer.mozilla.org/ko/docs/Web/API/Window/opener

@@ -1,10 +1,14 @@
 package com.market.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.market.mapper.AdminMapper;
 import com.market.model.BookVO;
+import com.market.model.CateVO;
+import com.market.model.Criteria2;
 
 import lombok.extern.log4j.Log4j;
 
@@ -21,6 +25,41 @@ public class AdminServiceImpl implements AdminService {
 		log.info("(srevice)bookEnroll........");
 		
 		adminMapper.bookEnroll(book);
+	}
+	
+	/* 카테고리 리스트 */
+	@Override
+	public List<CateVO> cateList() {
+		log.info("(service)cateList........");
+		
+		return adminMapper.cateList();
+	}
+	
+	/* 상품 리스트 */
+	@Override
+	public List<BookVO> goodsGetList(Criteria2 cri) {
+		log.info("(service)goodsGetTotalList()..........");
+		return adminMapper.goodsGetList(cri);
+	}
+
+	/* 상품 총 갯수 */
+	public int goodsGetTotal(Criteria2 cri) {
+		log.info("(service)goodsGetTotal().........");
+		return adminMapper.goodsGetTotal(cri);
+	}
+	
+	/* 상품 상세 조회 페이지 */
+	@Override
+	public BookVO goodsGetDetail(int bookId) {
+		log.info("(service)bookGetDetail......." + bookId);
+		return adminMapper.goodsGetDetail(bookId);
+	}
+	
+	/* 상품 정보 수정 */
+	@Override
+	public int goodsModify(BookVO vo) {
+		log.info("goodsModify........");
+		return adminMapper.goodsModify(vo);
 	}
 	
 }
