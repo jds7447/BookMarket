@@ -57,5 +57,10 @@
   		set authorName=#{authorName}, nationId=#{nationId}, authorIntro=#{authorIntro}, updatedate=sysdate 
   		where authorId = #{authorId}
   	</update>
+  	
+  	<!-- 작가 정보 삭제 -->
+  	<delete id="authorDelete">
+  		delete from book_author where authorId = #{authorId}
+  	</delete>
 
 </mapper>

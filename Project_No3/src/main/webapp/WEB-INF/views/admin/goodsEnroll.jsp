@@ -24,6 +24,36 @@
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 		<script src="//code.jquery.com/ui/1.8.18/jquery-ui.min.js"></script>
+		<!-- 업로드 이미지 출력 태그 스타일 -->
+		<style type="text/css">
+			#result_card img{
+				max-width: 100%;
+			    height: auto;
+			    display: block;
+			    padding: 5px;
+			    margin-top: 10px;
+			    margin: auto;	
+			}
+			#result_card {
+				position: relative;
+			}
+			.imgDeleteBtn{
+			    position: absolute;
+			    top: 0;
+			    right: 5%;
+			    background-color: #ef7d7d;
+			    color: wheat;
+			    font-weight: 900;
+			    width: 30px;
+			    height: 30px;
+			    border-radius: 50%;
+			    line-height: 26px;
+			    text-align: center;
+			    border: none;
+			    display: block;
+			    cursor: pointer;	
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -167,6 +197,25 @@
 	                    				<span class="ck_warn bookContents_warn">책 목차를 입력해주세요.</span>   <%-- 공란 유효성 검사 --%>
 	                    			</div>
 	                    		</div>
+	                    		<div class="form_section">
+	                    			<div class="form_section_title">
+	                    				<label>상품 이미지</label>
+	                    			</div>
+                    				<div class="form_section_content">
+                    					<input type="file" id ="fileItem" name='uploadFile' style="height: 30px;">
+                    					<!-- 위에 추가 해준 <input> 태그는 파일 1개만 추가할 수 있는 형식, 파일 여러 개 선택 시 'multiple' 속성 추가 -->
+                    					<!-- 파일 여러개 -->
+										<!-- <input type="file" multiple> -->
+										
+										<div id="uploadResult">   <!-- 업로드 한 이미지를 출력 -->
+											<!-- <div id="result_card">
+												<div class="imgDeleteBtn">x</div>   이미지 삭제 기능을 수행 버튼
+												<img src="/display?fileName=기존거백업/P1234.png">   테스트이미지
+											</div> -->
+											
+										</div>
+	                    			</div>
+	                    		</div> 
 	                   		</form>
 	                   		
                    			<div class="btn_section">   <%-- 버튼 --%>
@@ -478,6 +527,120 @@
 					$(".span_discount").html(discountPrice);
 				}
 			});
+			
+			/* type이 file인 <input> 태그에 접근하기 위해서 해당 <input> 태그가 change 이벤트가 일어났을 때 동작하는 메서드 추가 */
+			/* 이미지 업로드 */
+			$("input[type='file']").on("change", function(e){
+				/* FileList 객체에 접근 */
+				//"type이 file인 <input> 요소(element)"[0].files   /* Jquery */
+				//"type이 file인 <input> 요소(element)".files   /* Javascript */
+				let fileInput = $('input[name="uploadFile"]');
+				let fileList = fileInput[0].files;
+				//console.log("fileList : " + fileList);
+				/* FileList의 요소로 있는 File 객체에 접근 */
+				let fileObj = fileList[0];
+				//console.log("fileObj : " + fileObj);
+				/* File 객체에 담긴 데이터가 정말 <input> 태그를 통해 선택한 파일의 데이터가 맞는지를 확인
+				File 인터페이스가 가진 속성(MDN File API 참고)을 사용하여 파일 이름, 파일 사이즈, 파일 타입 */
+				//console.log("fileName : " + fileObj.name);
+				//console.log("fileSize : " + fileObj.size);
+				//console.log("fileType(MimeType) : " + fileObj.type);
+				
+				/* FormData 객체를 인스턴스화 하여 변수에 저장 */
+				let formData = new FormData();
+				
+				if(!fileCheck(fileObj.name, fileObj.size)){   //not(!) 연산자로 fileCheck 메서드가 false 반환하면 true로 되어 이벤트 탈출
+					return false;
+				}
+				
+				/* 사용자가 선택한 파일을 FormData에 "uploadFile"이란 이름(key)으로 추가 */
+				formData.append("uploadFile", fileObj);   //위의 if문 조건이 false가 되어 그냥 넘어가야 이벤트 통과
+				
+				/* 지금 현재 우리는 사용자가 한 개의 파일만 선택할 수 있도록 제한을 했기 때문에 한개의 파일만 FormData객체에 저장되도록 작성을 하였습니다
+				만약 <input> 태그에 multiple 속성을 부여하여서 사용자가 여러 개의 파일을 선택할 수 있다면 아래와 같이 코드를 작성하면 됩니다 */
+				/* for(let i = 0; i < fileList.length; i++){
+					formData.append("uploadFile", fileList[i]);
+				} */
+				
+				/* 준비된 데이터를 AJAX를 사용하여 서버로 전송하는 코드 - 업로드한 이미지 파일 전송 */
+				$.ajax({
+					url : '/admin/uploadAjaxAction',
+			    	processData : false,
+			    	contentType : false,
+			    	data : formData,
+			    	type : 'POST',
+			    	dataType : 'json',
+			    	success : function(result){   //서버로부터 성공적으로 반환 값(상태코드 200)을 전달 받았을 때 작동하는 콜백 함수
+			    		console.log(result);
+			    		showUploadImage(result);   //이미지 업로드를 요청 후 성공적으로 업로드 한 이미지에 대한 데이터(path, filename, uuid)들을 전달받았을 때 전달받은 이미지 데이터를 활용하여 이미지가 출력되도록 하는 함수 호출
+			    	},
+			    	error : function(result){   //서버로부터 잘못된 반환 값(상태코드 400)을 전달 받았을 때 작동하는 콜백 함수
+			    		alert("이미지 파일이 아닙니다.");
+			    	}
+				});
+				//주의할 점은 processData, 와 contenttype 속성의 값을 'false'로 해주어야만 첨부파일이 서버로 전송
+				//url : 서버로 요청을 보낼 url
+				//processData : 서버로 전송할 데이터를 queryStirng 형태로 변환할지 여부
+				//contentType : 서버로 전송되는 데이터의 content-type
+				//data : 서버로 전송할 데이터
+				//type : 서보 요청 타입(GET, POST)
+				//dataType : 서버로부터 반환받을 데이터 타입
+			});
+			
+			/*  뷰(View) 단계에서 사용자가 선택 한 파일이 개발자가 허용하는 파일이 아닐 시에 경고창과 함께 <input> change 이벤트 메서드에서 벗어나도록 */
+			/* 사용자가 파일을 이미지 파일만을 올렸으면 좋겠고, 그중에서도 jpg, png 파일만 허용, 파일의 크기는 1048576byte(1MB)의 크기만 허용*/
+			let regex = new RegExp("(.*?)\.(jpg|png)$");
+			let maxSize = 1048576;   //1MB
+			/* 변수로 저장된 2가지 조건을 만족하지 못하는 파일이면 경고문구와 함께 false를 반환하도록 하였고 두 가지 모두 만족 시에 true를 반환 */
+			function fileCheck(fileName, fileSize){
+				if(fileSize >= maxSize){
+					alert("파일 사이즈 초과");
+					return false;
+				}
+				if(!regex.test(fileName)){
+					alert("해당 종류의 파일은 업로드할 수 없습니다.");
+					return false;
+				}
+				return true;
+			}
+			
+			/* 이미지 출력 함수 - 업로드 요청 후 서버에서 반환받은 데이터를 활용 */
+			function showUploadImage(uploadResultArr){
+				/* 전달받은 데이터 검증 */
+				if(!uploadResultArr || uploadResultArr.length == 0){return}
+				
+				let uploadResult = $("#uploadResult");   //이미지 출력 태그
+				
+				let obj = uploadResultArr[0];   //서버에서 뷰로 반환할 때 List타입의 데이터를 전송했기 때문 (이미지 1개만 쓰기 때문에 0번 인덱스만)
+				
+				let str = "";   //이미지 출력 태그에 추가할 태그 문자열
+				
+				//let fileCallPath = obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName;   //이미지 출력을 요청하는 url 매핑 메서드("/display")에 전달해줄 파일의 경로와 이름을 포함하는 값
+				
+				//경로 에러로 아래와 같이 수정
+				//let fileCallPath = obj.uploadPath.replace(/\\/g, '/') + "/s_" + obj.uuid + "_" + obj.fileName;
+				/* replace(/\\/g, '/') 의미는 대상 String 문자열 중 모든 '\'을 '/'로 변경
+				Javascript는 Java의 reaplceAll과 같은 메서드가 없기 때문에 replace 메서드의 인자 값으로 정규표현식을 사용하여 치환 대상 모든 문자를 지정 */
+				
+				//브라우저에 따른 인코딩 문제 예방으로 아래 같이 수정
+				let fileCallPath = encodeURIComponent(obj.uploadPath.replace(/\\/g, '/') + "/s_" + obj.uuid + "_" + obj.fileName);
+				/* UTF-8로 인코딩을 자동으로 해주지 않는 웹브라우저가 있기 때문에 지금의 코드가 동작하지 않을 수도 있습니다
+				encodeURIComponent() 메서드는 A-Z a-z 0-9 - _ . ! ~ * ' ( )을 제외한 모든 문자를 UTF-8로 인코딩하여 이스케이프 문자로 변환
+				더불어서 encodeURIComponent() 메서드는 '/'와 '\'문자 또한 인코딩을 하기 때문에 replace() 메서드를 사용 안 해도 해당 URI로 동작
+				// replace 적용 => 동작 o
+				let fileCallPath = encodeURIComponent(obj.uploadPath.replace(/\\/g, '/') + "/s_" + obj.uuid + "_" + obj.fileName);
+				// replace 적용 x => 동작 o
+				let fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
+				*/
+				
+				/* 추가되어야 할 태그 코드인 문자열 */
+				str += "<div id='result_card'>";
+				str += "<img src='/display?fileName=" + fileCallPath +"'>";
+				str += "<div class='imgDeleteBtn'>x</div>";
+				str += "</div>";
+				
+				uploadResult.append(str);   //태그 코드가 담긴 문자열 값(str)을 uploadResult 태그에 append() 혹은 html() 메서드로 추가
+			}
 			
 		</script>
 		

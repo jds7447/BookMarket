@@ -1,18 +1,33 @@
 package com.market.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.model.AttachImageVO;
 import com.market.model.AuthorVO;
 import com.market.model.BookVO;
 import com.market.model.Criteria2;
@@ -21,6 +36,7 @@ import com.market.service.AdminService;
 import com.market.service.AuthorService;
 
 import lombok.extern.log4j.Log4j;
+import net.coobird.thumbnailator.Thumbnails;
 
 /* 제어 계층 => AuthorController.java 작성 - 뷰(View)로부터의 요청 처리하는 url 맵핑 메서드 작성 */
 @Controller
@@ -80,8 +96,8 @@ public class AdminController {
         model.addAttribute("cateList", cateList);
         
 		/* 변환 데이터 확인 */
-        log.info("변경 전.........." + list);
-		log.info("변경 후.........." + cateList);
+//        log.info("변경 전.........." + list);
+//        log.info("변경 후.........." + cateList);
     }
     
     /* 작가 등록 페이지 접속 */
@@ -159,6 +175,32 @@ public class AdminController {
 		return "redirect:/admin/authorManage";   //수정 후 작가 목록(관리) 페이지로 이동
 	}
 	
+	/* 외래 키 조건으로 인해 작가 테이블을 참조(reference) 하고 있는 상품 테이블
+	 * 참조되지 않고 있는 행을 지운다면 문제가 없지만 만약 참조되고 있는 행을 지우려고 시도를 한다면 '무결성 제약 조건을 위반' 한다는 경고와 함께
+	 * SQLIntegrityConstraintViolationException 예외가 발생
+	 * 따라서 try catch 문을 사용하여 참조되지 않는 행을 지울땐 삭제를 수행하고 '작가 목록' 페이지로 1을 전성하도록 하고,
+	 * 예외가 발생한 상황에는 '작가 목록' 페이지로 2를 전송하도록 작성  */
+	/* 작가 정보 삭제 */
+	@PostMapping("/authorDelete")
+	public String authorDeletePOST(int authorId, RedirectAttributes rttr) {
+		log.info("authorDeletePOST..........");
+		
+		int result = 0;
+		
+		try {
+			result = authorService.authorDelete(authorId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = 2;
+			rttr.addFlashAttribute("delete_result", result);
+			
+			return "redirect:/admin/authorManage";
+		}
+		rttr.addFlashAttribute("delete_result", result);
+		
+		return "redirect:/admin/authorManage";
+	}
+	
 	/* 상품 등록 */
 	@PostMapping("/goodsEnroll")
 	public String goodsEnrollPOST(BookVO book, RedirectAttributes rttr) {
@@ -191,6 +233,148 @@ public class AdminController {
 		
 		/* 페이지 이동 인터페이스 데이터 */
 		model.addAttribute("pageMaker", new PageMakerDTO2(cri, authorService.authorGetTotal(cri)));
+	}
+	
+	/* 이미지 첨부 파일 업로드 */
+	/* 이미지 파일 이름이 한글인 경우 업로드는 정상적으로 수행을 하겠지만 뷰로 반환되는 이미지 정보의 파일 이름(fileName) 데이터가 깨져 있을 수가 있음
+	 * 이를 위해서 RequestMapping 어노테이션에 produce 속성을 추가하여 전송되는 JSON데이터가 UTF8인코딩이 된 채로 전송되도록 속성값을 부여
+	 * RequestMapping 어노테이션의 produces 속성은 서버에서 뷰로 전송되는 Response의 Content-type을 제어 할 수 있는 속성 */
+//	@PostMapping("/uploadAjaxAction")
+//	@PostMapping(value="/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	/* 스프링 부트 2.2.*부터 MediaType 중에 (UTF8)인코딩이 들어간 상수가 deprecation (비활성 또는 사용 중지)
+	 * 5.2 버전 부터 Chrome 같은 메이저 브라우저들이 해당 parameter 없이도 올바르게 잘 interpret 하기 때문에 필요 없다 */
+	@PostMapping(value="/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_VALUE)
+//	public void uploadAjaxActionPOST(MultipartFile uploadFile) {   //첨부파일 데이터를 전달받기 위해 MultipartFile 매개변수로
+					/* MultiparFile에 대해 간략히 설명을 하면 뷰(View)에서 전송한 multipart 타입의 파일을 다룰 수 있도록 해주는 인터페이스
+					 * 해당 인터페이스의 메서드들은 파일의 이름 반환, 파일의 사이즈 반환, 파일을 특정 경로에 저장 등을 수행 */
+	/* 업로드를 수행하는 url 매핑 메서드를 여러 개의 파일 업로드도 처리를 할 수 있도록 변경
+	 * 여러개의 파일을 처리할 수 있도록 변경하더라도 한 개의 데이터만 전달받았을 경우에도 업로드 처리에는 영향이 없습 */
+//	public void uploadAjaxActionPOST(MultipartFile[] uploadFile) {
+	/* 반환형을 void에서 ResponseEntity로 변경
+	 * 반환 타입이 ResponseEntity 객체이고 Http의 Body에 추가될 데이터는 List <AttachImageVO>라는 의미 */
+	public ResponseEntity<List<AttachImageVO>> uploadAjaxActionPOST(MultipartFile[] uploadFile) {
+		log.info("uploadAjaxActionPOST..........");
+//		log.info("파일 이름 : " + uploadFile.getOriginalFilename());
+//		log.info("파일 타입 : " + uploadFile.getContentType());
+//		log.info("파일 크기 : " + uploadFile.getSize());
+		/* MultiparFile 배열 타입의 uploadFile의 모든 요소의 데이터 정보를 출력 */
+		for(MultipartFile multipartFile : uploadFile) {   //기본 for문: for(int i = 0; i < uploadFile.length; i++) {
+			log.info("-----------------------------------------------");
+			log.info("파일 이름 : " + multipartFile.getOriginalFilename());
+			log.info("파일 타입 : " + multipartFile.getContentType());
+			log.info("파일 크기 : " + multipartFile.getSize());			
+		}
+		
+		/* 이미지 파일 체크 - 전달 받은 파일이 이미지 파일인지 체크
+		 * nio 패키지 Files 클래스의 probeContentType() 메서드를 호출하여 반환받은 MIME TYPE 속성을 활용
+		 * image가 아닌 경우 업로드에 관한 코드가 실행이 되지 않고 상태 코드 400을 뷰에 반환 */
+		for(MultipartFile multipartFile: uploadFile) {
+			File checkfile = new File(multipartFile.getOriginalFilename());   //전달받은 파일(uploadfile)을 File 객체로
+			String type = null;   //MIME TYPE을 저장할 String 타입의 type 변수
+			
+			try {
+				type = Files.probeContentType(checkfile.toPath());   //반환하는 MIME TYPE 데이터를 type 변수에 대입
+				//파라미터로는 Path 객체를 전달받아야 하는데, 이를 위해 File 클래스의 toPath() 메서드를 사용
+				log.info("MIME TYPE : " + type);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			//전달받은 파일이 어떠한 MIME TYPE을 가졌는지에 대한 데이터를 image인지 아닌지 체크
+			if(!type.startsWith("image")) {   //이미지가 아니라면
+				//전달 해줄 파일의 정보는 없지만 반환 타입이 ResponseEntity<List<AttachImageVO>>이기 때문에 첨부해줄 값이 null인 List<AttachImageVO>
+				List<AttachImageVO> list = null;
+				return new ResponseEntity<>(list, HttpStatus.BAD_REQUEST);   //상태 코드 400인 ResponseEntity 객체를 인스턴스화 하여 이를 반환
+			}
+		}
+		
+		/* 업로드 하는 날짜에 맞게 폴더가 생성되고, 생성된 폴더에 업로드 파일을 저장되도록 할 것
+		 * 예를 들어 '2021년 05월 10일' 날짜의 경우 c/upload 경로에 '2021/05/10' 경로의 폴더가 생성되도록 */
+		String uploadFolder = "C:\\upload";   //파일을 저장할 기본적 경로
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");   //폴더 이름 날짜 형식
+		Date date = new Date();   //오늘 날짜 데이터 가져오기
+		String str = sdf.format(date);   //오늘 날짜 데이터를 지정한 날짜 형식을 적용한 문자열로
+		String datePath = str.replace("-", File.separator);   //날짜 문자열의 "-" 값을 현 운영체제에 맞는 경로 구분자(File.separator)로 변경
+		
+		/*File 타입의 uploadpath 변수를 선언하여 우리가 만들고자 하는 "c:\\upload\\yyyy\\MM\\dd' 경로의 디렉터리를 대상으로 하는 File 객체로 초기화
+		 * 객체화해주는 코드에 첫 번째 인자로 부모 경로인 uploadFoler 변수를 두 번째 인자로 자식 경로인 datePath 변수를 부여 */
+		File uploadPath = new File(uploadFolder, datePath);
+		/* 폴더를 생성을 수행하기 위해서 File 클래스의 mkdir() 혹은 mkdirs()를 사용
+		 * 두 메서드는 폴더를 생성한다는 것을 동일 하지만 한 개의 폴더를 생성할 수 있느냐 여러 개의 폴더를 생성할 수 있느냐의 차이
+		 * 우리는 여러개의 폴더를 생성해야 하기 때문에 mkdirs() 메서드를 사용 */
+		if(uploadPath.exists() == false) {   //폴더 중복 생성 방지 (대상 파일 혹은 디렉터리가 존재하는지 유무를 반환하는 exists() 메서드, 없으면 false)
+			uploadPath.mkdirs();
+		}
+		
+		/* 이미저 정보 담는 객체 */
+		List<AttachImageVO> list = new ArrayList();
+		
+		for(MultipartFile multipartFile : uploadFile) {   //기본 for문: for(int i = 0; i < uploadFile.length; i++) {
+			/* 이미저 정보 객체 */
+			AttachImageVO vo = new AttachImageVO();
+			
+			/* 파일 이름 */
+			String uploadFileName = multipartFile.getOriginalFilename();   //파일 이름의 경우 뷰로부터 전달받은 파일 이름을 그대로 사용
+			vo.setFileName(uploadFileName);   //이미지 객체에 원본 파일명 저장
+			vo.setUploadPath(datePath);   //이미지 객체에 자식(유동) 폴더 경로 저장 (기본 경로: C:\\upload) (유동 경로: \\yyyy\\MM\\dd)
+			
+			/* uuid 적용 파일 이름 */
+			String uuid = UUID.randomUUID().toString();   //UUID를 저장할 String 타입의 변수 uuid를 선언하고 UUID로 초기화
+			uploadFileName = uuid + "_" + uploadFileName;   //기존 파일 이름인 uploadFileName 변수를 "UUID_파일 이름" 형식이 되도록 변경
+			vo.setUuid(uuid);   //이미지 객체에 uuid 저장
+			
+			/* 파일 저장 위치, 파일 이름을 매개변수로 사용한 File 객체 */
+			File saveFile = new File(uploadPath, uploadFileName);
+			
+			/* 파일 저장 */
+			try {
+				multipartFile.transferTo(saveFile);   //전달 받은 파일을 설정한 경로, 이름으로 저장
+				
+				/* 썸네일 방법 1 - ImageIO 사용 *//*
+				File thumbnailFile = new File(uploadPath, "s_" + uploadFileName);   //썸네일 이미지 File 객체로 초기화 (경로, 이름)
+				
+				BufferedImage bo_image = ImageIO.read(saveFile);   //원본 이미지 파일을 BufferedImage 타입으로 변경
+				double ratio = 3;   //원본 이미지를 축소할 비율
+				int width = (int) (bo_image.getWidth() / ratio);   //원본 이미지 넓이 지정한 비율값으로
+				int height = (int) (bo_image.getHeight() / ratio);   //원본 이미지 높이 지정한 비율값으로
+//				BufferedImage bt_image = new BufferedImage(300, 500, BufferedImage.TYPE_3BYTE_BGR);   //썸네일 이미지 BuffedImage 객체 생성
+					//일종의 크기를 지정하여 흰색 도화지를 만드는 것 ('넓이', '높이', '생성될 이미지의 타입')
+				BufferedImage bt_image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);   //비율 적용 도화지
+								
+				Graphics2D graphic = bt_image.createGraphics();   //Graphic2D 객체 생성 (만든 도화지에 그림을 그릴 수 있도록 하는 과정)
+				
+//				graphic.drawImage(bo_image, 0, 0, 300, 500, null);   //좌상단(0,0)부터 썸네일 이미지 그리기 (도화지에 이미지를 그리는 과정)
+				//그려놓고자 하는 이미지, 시작 x y 좌표, 넓이 높이, ImageObserver (일반적인 경우 null을 전달)
+				graphic.drawImage(bo_image, 0, 0, width, height, null);   //비율 적용 이미지
+					
+				ImageIO.write(bt_image, "jpg", thumbnailFile);   //제작한 썸네일 이미지 파일로 저장
+				//파일로 저장할 이미지, 확장자, 저장될 경로와 이름으로 생성한 File 객체
+				*//* 썸네일 방법 1 끝 */
+				
+				/* 썸네일 방법 2 - thumbnailaotor 라이브러리 사용 */
+				File thumbnailFile = new File(uploadPath, "s_" + uploadFileName);	   //썸네일 이미지 File 객체로 초기화 (경로, 이름)
+				
+				BufferedImage bo_image = ImageIO.read(saveFile);   //원본 이미지 파일을 BufferedImage 타입으로 변경
+
+				double ratio = 3;   //원본 이미지를 축소할 비율
+				int width = (int) (bo_image.getWidth() / ratio);   //원본 이미지 넓이 지정한 비율값으로
+				int height = (int) (bo_image.getHeight() / ratio);   //원본 이미지 높이 지정한 비율값으로	
+				
+				Thumbnails.of(saveFile)   //해당 이미지 파일로 썸네일 생성
+						        .size(width, height)   //썸네일 가로, 세로 크기 지정
+						        .toFile(thumbnailFile);   //썸네일 이미지를 파일로 저장
+				/* 썸네일 방법 2 끝 */
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			list.add(vo);   //파일의 데이터가 담긴 이미지 객체를 이미지 객체 리스트에 저장
+		}
+		
+		/* ResponseEntity 참조 변수를 선언하고 생성자로 초기화
+		 * Http의 바디에 추가될 데이터는 List <AttachImageVO>이고 상태 코드가 OK(200)인 ReseponseEntity 객체가 생성 */
+		ResponseEntity<List<AttachImageVO>> result = new ResponseEntity<List<AttachImageVO>>(list, HttpStatus.OK);
+		return result;   //작성한 ResponseEntity를 뷰로 반환
 	}
 	
 	/* 상품 조회 페이지 */
@@ -233,6 +417,18 @@ public class AdminController {
 		rttr.addFlashAttribute("modify_result", result);
 		
 		return "redirect:/admin/goodsManage";		
+	}
+	
+	/* 상품 정보 삭제 */
+	@PostMapping("/goodsDelete")
+	public String goodsDeletePOST(int bookId, RedirectAttributes rttr) {
+		log.info("goodsDeletePOST..........");
+		
+		int result = adminService.goodsDelete(bookId);
+		
+		rttr.addFlashAttribute("delete_result", result);
+		
+		return "redirect:/admin/goodsManage";
 	}
 	
 }

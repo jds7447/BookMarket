@@ -215,6 +215,23 @@
 		    <artifactId>jackson-databind</artifactId>
 		    <version>2.12.1</version>
 		</dependency>
+		<!-- 이미지에 관한 정보가 담긴 AttachImageVO 객체를 뷰에 전송하도록 할 것인데, 뷰에서는 해당 객체 데이터가 JSON 타입으로 전달받아야만 해당 데이터를 활용
+		스프링에서 Java의 객체 데이터를 JSON 타입의 데이터로 변환하여 뷰로 전송을 해주어야 하는데, 이를 위해 Jackson-databind 관련 라이브러리를 추가 -->
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.dataformat</groupId>
+		    <artifactId>jackson-dataformat-xml</artifactId>
+		    <version>2.12.1</version>
+		</dependency>
+		
+		<!-- 썸네일 이미지 생성 및 저장(thumbnailaotor 라이브러리 사용) -->
+		<!-- thumbnail -->
+		<!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.13</version>
+		</dependency>
 
 		<!-- @Inject -->
 		<dependency>

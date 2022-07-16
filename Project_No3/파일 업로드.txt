@@ -1,0 +1,228 @@
+컴퓨터에 업로드하고자하는 이미지를 저장시키고, 업로드한 이미지의 정보를 DB에 저장
+'이미지 업로드(저장)', '등록 이미지 정보 DB 저장' 크게 2가지의 과정이 필요
+이 2가지 과정을 구현하는데 있어서 크게 2가지 방식
+첫 번째, '상품 등록 페이지' 에서 사용자가 이미지를 선택하였을때 이미지가 업로드(컴퓨터에 저장) 되고, 최종적으로 다른 상품 정보들이 작성된 뒤 '등록 버튼'을 눌렀을 때 '업로드 된 이미지'의 정보가 DB에 저장되도록 하는 방식
+두 번째, '상품 등록 페이지' 에서 사용자가 이미지를 선택을 하고 다른 상품 정보를 다 작성한 뒤 '등록 버튼'을 눌렀을 때 이미지를 업로드하고, 업로드 이미지 정보를 DB 저장을 하는 방식
+
+첫 번째 방식으로 구현
+(뷰) 사용자가 이미지를 선택 => (뷰) 선택된 이미지 서버로 전송 => (서버) 전송 받은 이미지 저장 후, 저장 한 이미지 정보 뷰로 재전송 => (뷰) 전송 받은 데이터를 활용하여 이미지 미리보기, <input>태그에 데이터 저장 => (뷰) '등록 버튼' 클릭 => (서버) 이미지 정보 DB 저장
+
+
+라이브러리 추가
+스프링 MVC 프로젝트는 servlet 라이브러리를 기본적으로 사용
+기존 라이브러리 버전을 3.0이상으로 변경
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.1.0</version>
+    <scope>provided</scope>
+</dependency>
+
+
+web.xml 설정
+web에 대한 설정은 web.xml 아니면 웹 관련 Java 클래스를 따로 만들어서 설정
+web.xml 상단의 xml 네임스페이스가 2.5 버전으로 되어 있습니다. 이를 3.1버전의 네임스페이스로 변경
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+multipart-config 설정 코드를 web.xml의 <servlet>태그 내부에 삽입
+<!-- 업로드 관련 설정 -->
+<multipart-config>
+	<location>C:\\upload\\temp</location>		
+	<max-file-size>20971520</max-file-size>					<!-- 1MB * 20 -->
+	<max-request-size>41943040</max-request-size>			<!-- 40MB -->
+	<file-size-threshold>20971520</file-size-threshold>		<!-- 20MB -->
+</multipart-config>
+
+웹 클라이언트와 웹 서버간에 데이터를 주고 받을 때 해당 데이터의 인코딩 되는 방식을 enctype
+흔히 우리가 사용하는 <form> 태그에 속성으로 추가하여 속성값을 지정
+enctype의 속상 값으로는 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain'
+보통 <form>태그에 데이터를 저장하여 서버로 전송할때는 기본값인 'application/x-www-form-urlencoded'이 사용
+하지만 파일과 같은 데이터를 주고 받기 위해서는 enctype 속상값이 'multipart/form-data'
+<multipart-config>는 'multipart/form-data' 타입의 데이터를 주고 받을때의 설정(configuration)을 위한 태그
+
+<location> :  업로드한 파일이 임시로 저장되는 경로
+<max-file-size> : 업로드가 가능한 최대 파일 크기
+<max-request-size> : 업로드 되는 파일의 최대 크기
+<file-size-threshold> : 임시 파일로 저장 여부를 결정할 데이터 크기 (설정된 값을 넘지 않는다면 업로드된 데이터는 메모리상에 유지하고, 설정된 값을 초과 한다면 <location>에 설정된 경로에 임시파일로 저장)
+
+
+multipartResolver 등록
+스프링에서는 multipart 데이터를 처리하기 위해서는 MultipartResolver 클래스를 bean으로 등록 해주는 설정이 필요
+MultipartResolver는 파일 업로드 처리를 위해 스프링 프레임워크에서 제공하는 CommonsMultipartResolver,  StandardServletMultipartResolver 의 구현체
+웹과 관련된 설정이기 때문에 servlet-context.xml 파일에 MultipartResolver 클래스를 bean으로 등록
+<!-- 업로드 관련 빈 -->
+<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
+
+
+사용자가 선택한 파일을 서버에 전송을 하기 위해서 선택된 파일에 접근하는 방법
+<input> 태그를 통해 사용자에 의해 선택된 파일은 File 객체의 형태로 표현
+이 File 객체는 FileList 객체의 요소로 저장
+FileList는 배열 형태의 객체
+FileList의 요소에는 File 객체가 저장
+File 객체는 type이 'file'인 <input> 태그의 "files" 속성
+사용자가 <input> 태그를 통해서 파일 1개를 선택을 하게 된다면 FieList 첫 번째 요소(FileList[0])인 File 객체에 파일 데이터가 저장
+사용자가 여러개의 파일을 선택을 한다면 선택한 갯수(n)만큼 FileList  첫번째 요수(FileList [0])부터  순서대로 각 요소(FileList [n]) File 객체에 저장
+사용자가 선택한 파일을 선택한 파일인 File 객체에 접근 하기 위해선 결국 FileList 객체(<input> 태그의 files 속성)에 접근
+해당 FileList 객체의 접근은 <input>태그의 change 이벤트를 통해서 접근이 가능
+
+
+첨부 파일을 서버로 전송하기 위해선 FormData 객체를 사용
+FormData는 쉽게 말해 가상의 <form> 태그
+흔히 뷰(view)에 서버로 데이터를 전송하기 위해서 <form> 태그를 사용
+화면의 이동을 하면서 서버로 첨부파일 전송을 하는 것이라면 <form> 태그를 사용
+하지만 화면의 이동 없이 첨부파일을 서버로 전송을 위해 <form> 태그와 같은 역할을 해주는 FormData객체를 생성하여 첨부파일을 FormData에 저장을 하고 FormData 자체를 서버로 전송
+FormData 객체에 데이터를 추가하는 방법은 FormData.append(key, value) 메서드를 사용
+추가할 데이터를 파라미터 value에 작성
+파라미터 key의 경우 추가해줄 데이터의 변수를 작성
+<input> name과 Controller의 url 매핑 메서드의 매개변수 이름과 동일하게 해 주었듯이, key와 추후 추가할 url 매핑 메서드의 매개변수명이 동일
+기존 특정 Key 있는 상태에서 동일한 Key로 데이터를 추가하면 기존 값을 덮어쓰지 않고 기존 값 집합의 끝에 새로운 값을 추가 (서버에서는 배열 타입으로 데이터를 전달)
+
+
+/* 업로드 하는 날짜에 맞게 폴더가 생성되고, 생성된 폴더에 업로드 파일을 저장되도록 할 것
+ * 예를 들어 '2021년 05월 10일' 날짜의 경우 c/upload 경로에 '2021/05/10' 경로의 폴더가 생성되도록 */
+String uploadFolder = "C:\\upload";   //파일을 저장할 기본적 경로
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");   //폴더 이름 날짜 형식
+Date date = new Date();   //오늘 날짜 데이터 가져오기
+String str = sdf.format(date);   //오늘 날짜 데이터를 지정한 날짜 형식을 적용한 문자열로
+String datePath = str.replace("-", File.separator);   //날짜 문자열의 "-" 값을 현 운영체제에 맞는 경로 구분자(File.separator)로 변경
+
+/*File 타입의 uploadpath 변수를 선언하여 우리가 만들고자 하는 "c:\\upload\\yyyy\\MM\\dd' 경로의 디렉터리를 대상으로 하는 File 객체로 초기화
+ * 객체화해주는 코드에 첫 번째 인자로 부모 경로인 uploadFoler 변수를 두 번째 인자로 자식 경로인 datePath 변수를 부여 */
+File uploadPath = new File(uploadFolder, datePath);
+/* 폴더를 생성을 수행하기 위해서 File 클래스의 mkdir() 혹은 mkdirs()를 사용
+ * 두 메서드는 폴더를 생성한다는 것을 동일 하지만 한 개의 폴더를 생성할 수 있느냐 여러 개의 폴더를 생성할 수 있느냐의 차이
+ * 우리는 여러개의 폴더를 생성해야 하기 때문에 mkdirs() 메서드를 사용 */
+if(uploadPath.exists() == false) {   //폴더 중복 생성 방지 (대상 파일 혹은 디렉터리가 존재하는지 유무를 반환하는 exists() 메서드, 없으면 false)
+	uploadPath.mkdirs();
+}
+
+
+뷰로부터 전달 받은전달받은 파일을 지정한 폴더에 저장하기 위해서 MultipartFile 클래스의 transferTo() 메서드를 사용
+전달받은 파일인 MultipartFile 객체에 저장하고자 하는 위치를 지정한 File 객체를 파라미터로 하여 transferTo() 메서드를 호출
+MultipartFile.transferTo(File detination);
+
+위의 메서드를 사용하기 위해서 저장될 파일 이름과 위치 전체를 포함하는 File 객체를 만들어
+파일 이름의 경우 뷰로부터 전달받은 파일 이름을 그대로 사용할 것이기 때문에 getOriginalFilename() 메서드를 사용
+파일의 경로는 작성해둔 uploadPath 변수를 사용
+File 객체를 만들어 주기 전 먼저 파일의 이름을 사용하기 위해 아래와 같이 String 타입의 uploadfileName 변수를 선언하여 파일 이름을 저장
+/* 파일 이름 */
+String uploadFileName = multipartFile.getOriginalFilename();
+
+파일 저장 위치인 uploadPath와 파일 이름인 uploadFileName을 활용하여 아래와 같이 File 타입의 saveFile 변수를 선언하고 파일 경로와 파일 이름을 포함하는 File 객체로 초기화
+/* 파일 위치, 파일 이름을 합친 File 객체 */
+File saveFile = new File(uploadPath, uploadFileName);
+
+파일을 저장하는 메서드인 transferTo()를 호출
+/* 파일 저장 */
+multipartFile.transferTo(saveFile);
+transferTo() 경우 IOException와 IllegalStateException을 일으킬 가능성이 있기 때문에 컴파일러에서 try catch문을 사용하라는 경고문
+
+
+동일한 이름을 가진 파일을 저장하게 되면 기존의 파일을 덮어씌워 버린다는 점
+이러한 문제점을 보완하기 위해서 각 파일이 저장될 때 고유한 이름을 가지도록
+파일에 고유한 이름을 가지도록 하기 위해서 기존 파일 이름에 UUID가 포함되도록 할 것
+UUID(범용 고유 식별자)는 쉽게 말해 국제기구에서 표준으로 정한 식별자(일련번호)
+UUID는 총 5개 버전이 있으며 각 버전에 따라 식별자 생성 방식이 다릅
+Java에서도 UUID라는 클래스를 통해 구제기구에서 표준으로 정한 식별자를 사용할 수 있도록
+Java에서도 5개의 버전 방식으로 제공을 하고 있는데 그중 가장 쉽게 사용할 수 있는 버전 4(랜덤) 방식의 radomUUID() 메서드를 사용
+해당 메서드는 정적(static) 메서드 이기 때문에 UUID를 인스턴스화 하지 않고도 사용할 수 있
+주의할 점은 UUID.randomUUID()를 통해 생성된 '식별자'는 UUID 타입의 데이터 이기 때문에 toString() 메서들 사용하여 String 타입으로 변경해주어야 우리가 사용할 수 있
+
+파일 이름을 "UUID_파일 이름"과 같은 방식으로 저장하도록 할 것
+먼저 UUID를 저장할 String 타입의 변수 uuid를 선언하고 UUID로 초기화
+/* uuid 적용 파일 이름 */
+String uuid = UUID.randomUUID().toString();
+
+기존 파일 이름인 uploadFileName 변수를 "UUID_파일 이름" 형식이 되도록 변경
+uploadFileName = uuid + "_" + uploadFileName;
+
+
+썸네일 이미지를 저장 파일이름
+"s_" + "uuid_" + "원본파일 이름. 이미지 타입"
+
+ImageIO를 통해서 썸네일을 만들기 위해서 ImageIO, BufferedImage, Graphics2D 클래스를 사용
+ImageIO 클래스는 이미지를 읽어오거나 생성(작성?) 할 수 있도록 도와주는 메서드
+BufferedImage의 경우 이미지 데이터를 처리하거나 조작에 필요한 값과 메서드를 제공
+Graphics2D의 경우 그림을 그리는데 필요로 한 설정값과 메서드를 제공
+ImageIO도 결국 입출력에 관한 클래스 이기 때문에 해당 클래스의 메서드들은 IllegalArgumentException, IOException 을 일으킬 가능성
+
+ImageIO를 통해 썸네일을 만들기 위해선 먼저 원본 파일의 File 객체와 썸네일 이미지 파일의 File 객체가 필요
+File 타입의 참조 변수를 선언하여 썸네일 이미지 File 객체로 초기화
+File thumbnailFile = new File(uploadPath, "s_" + uploadFileName);
+
+원본 이미지 파일을 ImageIO의 read() 메서드를 호출하여 BufferedImage 타입으로 변경 해준 뒤 BufferedImage 타입의 참조 변수를 선언하여 해당 변수에 대입
+BufferedImage bo_image = ImageIO.read(saveFile);
+
+BuffedImage 생성자를 사용하여 썸네일 이미지인 BuffedImage 객체를 생성해주고 참조 변수에 대입
+일종의 크기를 지정하여 흰색 도화지를 만드는 것
+BufferedImage bt_image = new BufferedImage(300, 500, BufferedImage.TYPE_3BYTE_BGR);
+사용한 BufferedImage 생성자는 매개변수로 '넓이', '높이', '생성될 이미지의 타입'을 작성
+
+썸네일 BufferedImage 객체(bt_image)에서 createGraphics() 메서드를 호출을 통해 Graphic2D 객체를 생성 해준 후 Graphic2D 타입의 참조 변수에 대입
+만든 도화지에 그림을 그릴 수 있도록 하는 과정
+Graphics2D graphic = bt_image.createGraphics();
+
+drawImage 메서드를 호출하여 원본 이미지(원본 BuffedImage)를 썸네일 BufferedImage에 지정한 크기로 변경하여 왼쪽 상단 "0, 0" 좌표부터 그려
+도화지에 이미지를 그리는 과정
+graphic.drawImage(bo_image, 0, 0,300,500, null);
+첫 번째 인자는 그려놓고자 하는 이미지
+두 번째, 세 번째 인자는 그림을 어느 좌표부터 그릴 것인지에 대한 'x'값과 'y'값 (좌 상단 맨 끝점이 "0, 0")
+네 번째, 다섯 번째 인자 값은 첫 번째 인자로 작성한 이미지의 '넓이'와 '높이'
+여섯 번째 인자는 ImageObserver 객체
+ImageObserver는 이미지의 정보를 전달받아서 이미지를 업데이트시키는 역할 (일반적인 경우 null을 전달)
+
+제작한 썸네일 이미지(bt_image)를 ImageIO의 write 메서드를 호출하여 파일로 저장
+ImageIO.write(bt_image, "jpg", thumbnailFile);
+첫 번째 인자는 파일로 저장할 이미지
+두 번째 인자는 어떠한 이미지 형식으로 저장할 것인지 String 타입으로 작성 ('jpg', 'png' 등)
+세 번째 인자는 우리가 앞서 썸네일 이미지가 저장될 경로와 이름으로 생성한 File 객체(thumbnailFile)를 부여
+
+원본 이미지 크기를 개발자가 지정한 비율에 따라 축소되도록 비율을 저장할 변수를 선언
+/* 비율 */
+double ratio = 3;
+
+원본 이미지 높이 넓이를 알아내 지정한 비율값으로 나누어 줄이기
+/*넓이 높이*/
+int width = (int) (bo_image.getWidth() / ratio);
+int height = (int) (bo_image.getHeight() / ratio);
+
+
+썸네일 이미지 생성 및 저장(thumbnailaotor 라이브러리 사용)
+pom.xml에 추가
+<!-- thumbnail -->
+<!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+<dependency>
+    <groupId>net.coobird</groupId>
+    <artifactId>thumbnailator</artifactId>
+    <version>0.4.13</version>
+</dependency>
+
+썸네일을 생성하는 코드를 try catch 문 안에 작성
+File thumbnailFile = new File(uploadPath, "s_" + uploadFileName);
+Thumbnails.of(saveFile)
+			.size(160, 160)
+			.toFile(thumbnailFile);
+
+비율대로 축소를 원하시면	        
+File thumbnailFile = new File(uploadPath, "s_" + uploadFileName);
+BufferedImage bo_image = ImageIO.read(saveFile);
+//비율
+double ratio = 3;
+//넓이 높이
+int width = (int) (bo_image.getWidth() / ratio);
+int height = (int) (bo_image.getHeight() / ratio);
+Thumbnails.of(saveFile)
+			.size(width, height)
+			.toFile(thumbnailFile);
+
+thumbnailaotr 라이브러리는 이미지 생성에 세부적 설정을 할 수 있도록 몇몇 메서드들을 제공
+ImageIO를 통한 코드 작성 보다 훨씬 간단히 생성
+
+
+비동기 방식의 서버에서 뷰로 데이터를 전송하기 위해선 Controller의 url 매핑 메서드에 @ResponseBody 어노테이션을 붙여 주거나 메서드의 반환 타입을 ResponseEntity 방식으로
+@Responsebody와 ResponseEntity 모두 서버에서 뷰로 전송하는 Http body에 뷰로 전달하고 싶은 데이터를 포함시켜서 보낸 다는 점을 동일
+
+ResponseEntity의 경우 뷰로 전송될 HTTP의 세부 정보를 조작하여 뷰로 전송할 수 있다는 점
+HTTP는 크게 'status', 'header', 'body' 3개의 범주로 구성되어 있는데 ResponseEntity 클래스에는 'status'와 'header'의 속성들을 조작할 수 있는 메서드들을 제공
+

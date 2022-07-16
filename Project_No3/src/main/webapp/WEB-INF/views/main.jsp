@@ -60,7 +60,7 @@
 				</div>
 				<div class="top_area">
 					<div class="logo_area">
-						<a href="/main"><img src="/resources/img/Logo.PNG"></a>
+						<a href="/main"><img src="/resources/img/Logo.png"></a>
 					</div>
 					<div class="search_area">
 						<h1>Search area</h1>
@@ -117,7 +117,7 @@
 		        <div class="footer">
 		            <div class="footer_container">
 		                <div class="footer_left">
-		                    <img src="/resources/img/Logo.PNG">
+		                    <img src="/resources/img/Logo.png">
 		                </div>
 		                <div class="footer_right">
 		                    (주) BookMarket    대표이사 : OOO

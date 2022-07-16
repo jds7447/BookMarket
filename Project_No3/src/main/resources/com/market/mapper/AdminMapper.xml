@@ -63,5 +63,10 @@
 		bookPrice = #{bookPrice}, bookStock = #{bookStock}, bookDiscount = #{bookDiscount}, bookIntro = #{bookIntro}, bookContents = #{bookContents}, updateDate = sysdate
 		where bookId = ${bookId}
 	</update>
+	
+	<!-- 상품 정보 삭제 -->
+	<delete id="goodsDelete">
+		delete from book_goods where bookId = #{bookId}
+	</delete>
 
 </mapper>

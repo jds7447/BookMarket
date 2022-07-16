@@ -55,4 +55,11 @@ public class AuthorServiceImpl implements AuthorService {
 		return authorMapper.authorModify(author);   //수정 성공 시 1 반환, 실패 시 0 반환
 	}
 	
+	/* 작가 정보 삭제 */
+	@Override
+	public int authorDelete(int authorId) {
+		log.info("authorDelete..........");
+		return authorMapper.authorDelete(authorId);
+	}
+	
 }
