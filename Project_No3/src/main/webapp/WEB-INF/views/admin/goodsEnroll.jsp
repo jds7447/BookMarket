@@ -531,6 +531,11 @@
 			/* type이 file인 <input> 태그에 접근하기 위해서 해당 <input> 태그가 change 이벤트가 일어났을 때 동작하는 메서드 추가 */
 			/* 이미지 업로드 */
 			$("input[type='file']").on("change", function(e){
+				/* 이미 업로드 된 이미지 존재시 삭제 */
+				if($(".imgDeleteBtn").length > 0){   //미리보기 이미지 태그의 존재 유무 확인 (이미지 삭제 버튼을 선택자로)
+					deleteFile();
+				}
+				
 				/* FileList 객체에 접근 */
 				//"type이 file인 <input> 요소(element)"[0].files   /* Jquery */
 				//"type이 file인 <input> 요소(element)".files   /* Javascript */
@@ -635,12 +640,53 @@
 				
 				/* 추가되어야 할 태그 코드인 문자열 */
 				str += "<div id='result_card'>";
-				str += "<img src='/display?fileName=" + fileCallPath +"'>";
-				str += "<div class='imgDeleteBtn'>x</div>";
+				str += "<img src='/display?fileName=" + fileCallPath +"'>";   //썸네일 이미지 출력
+				/* str += "<div class='imgDeleteBtn'>x</div>"; */
+				str += "<div class='imgDeleteBtn' data-file='" + fileCallPath + "'>x</div>";   //삭제 버튼에 썸네일 파일 경로 담기
 				str += "</div>";
 				
 				uploadResult.append(str);   //태그 코드가 담긴 문자열 값(str)을 uploadResult 태그에 append() 혹은 html() 메서드로 추가
 			}
+			
+			/* 이미지 파일 삭제 함수 */
+			function deleteFile(){
+				let targetFile = $(".imgDeleteBtn").data("file");   //삭제 <div> 태그에 심어둔 썸네일 파일 경로 데이터
+				let targetDiv = $("#result_card");   //이미지 파일 업로드 시 출력되는 미리 보기 이미지를 감싸고 있는 result_card <div> 태그
+				
+				/* 파일의 삭제를 요청하는 ajax 코드 */
+				$.ajax({
+					url: '/admin/deleteFile',
+					data : {fileName : targetFile},
+					dataType : 'text',
+					type : 'POST',
+					success : function(result){
+						console.log(result);
+						/* 파일 삭제를 성공한 경우 미리 보기 이미지를 삭제해 주고 파일 <input> 태그를 초기화 */
+						targetDiv.remove();
+						$("input[type='file']").val("");
+					},
+					error : function(result){
+						console.log(result);
+						/* 파일 실패의 경우 경고창을 띄우기 위해 경고창을 띄우는 코드를 작성 */
+						alert("파일을 삭제하지 못하였습니다.");
+					}
+				});
+//				url : 이전 포스팅에서 작성한 파일 삭제를 수행하는 url을 작성
+//				data : 객체 초기자를 활용하여 fileName 속성명에 targetFile(이미지 파일 경로) 속성 값을 부여, 서버의 메서드 파라미터에 String fileName을 선언하였기 때문에 스프링에서 해당 데이터를 매핑
+//				type : 서버 요청 방식입니다. 'POST'를 지정
+//				dataType : 전송하는 targetFile은 문자 데이터이기 때문에 'text'를 지정
+//				success : 성공할 경우 실행되는 속성
+//				error : 요청이 실패 혹은 에러일 경우 실행되는 속성
+			}
+			
+			/* 'x' 버튼을 클릭한 경우 '파일 삭제'가 동작 */
+			/* 'x'가 출력되어 있는 <div> 태그는 웹 페이지가 완전히 렌더링 된 이후 Javascript 코드를 통해 새롭게 출력된(동적으로 출력된) 태그이기 때문에
+				$(".imgDeletBtn").click(function(){} 는 동작하지 않는다
+				아래 코드는 기존 렌더링 될 때 추가되어 있는 '#uploadReulst" <div> 태그를 식별자로 하여
+				그 내부에 있는 'imgDeleteBtn' <div> 태그를 클릭(click) 하였을 때 콜백 함수가 호출 된다는 의미 */
+			$("#uploadResult").on("click", ".imgDeleteBtn", function(e){
+				deleteFile();   //파일 삭제 함수 호출
+			});
 			
 		</script>
 		

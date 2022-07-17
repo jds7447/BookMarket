@@ -3,6 +3,7 @@ package com.market.controller;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -375,6 +376,36 @@ public class AdminController {
 		 * Http의 바디에 추가될 데이터는 List <AttachImageVO>이고 상태 코드가 OK(200)인 ReseponseEntity 객체가 생성 */
 		ResponseEntity<List<AttachImageVO>> result = new ResponseEntity<List<AttachImageVO>>(list, HttpStatus.OK);
 		return result;   //작성한 ResponseEntity를 뷰로 반환
+	}
+	
+	/* 업로드 된 첨부 이미지 파일 삭제 */
+	@PostMapping("/deleteFile")
+	public ResponseEntity<String> deleteFile(String fileName){
+		log.info("deleteFile........" + fileName);
+		
+		File file = null;
+		
+		try {
+			/* 썸네일 파일 삭제 */
+			/* 파일 업로드 메서드에서 뷰 페이지로 보낸 파일 경로를 뷰 페이지에서 경로 문제로 인해 encodeURIComponent() 메서드를 통해 UTF-8로 인코딩 후 사용
+			 * 인코딩된 경로를 파일 삭제 메서드로 그대로 보내오기 때문에 File 클래스에 사용시 다시 경로 문제가 발생할 수 있음
+			 * 따라서 다시 디코딩 하는 작업이 필요 */
+			file = new File("c:\\upload\\" + URLDecoder.decode(fileName, "UTF-8"));   //썸네일 파일 경로
+			file.delete();   //전달 받은 경로의 파일 삭제 (썸네일 파일 삭제)
+			
+			/* 원본 파일 삭제 */
+			/* File 클래스의 getAbsolutePath() 메서드 : 대상 File 객체의 경로를 문자열(String) 타입의 데이터로 반환 */
+			/* replace() 메서드 : 첫 번째 인자로 부여한 문자열 데이터를 찾아서, 두 번째 인자로 부여한 문자열 데이터로 치환 */
+			String originFileName = file.getAbsolutePath().replace("s_", "");   //원본 파일명
+			log.info("originFileName : " + originFileName);
+			file = new File(originFileName);   //원본 파일 경로			
+			file.delete();   //원본 파일 삭제
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>("fail", HttpStatus.NOT_IMPLEMENTED);   //이미지 삭제 실패 알림을 뷰로 반환
+		}
+		/* 성공 상태 코드와 함께 성공과 관련된 문자열을 뷰로 전송 */
+		return new ResponseEntity<String>("success", HttpStatus.OK);
 	}
 	
 	/* 상품 조회 페이지 */
