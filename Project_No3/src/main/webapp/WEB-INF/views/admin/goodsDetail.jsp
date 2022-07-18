@@ -341,7 +341,7 @@
 						str += "<img src='/resources/img/No_Image.png'>";
 						str += "</div>";
 						
-						uploadReslut.html(str);	
+						uploadReslut.html(str);
 					}
 					
 					let str = "";   //uploadResult 태그 내부에 삽입될 태그 코드(String 데이터)
