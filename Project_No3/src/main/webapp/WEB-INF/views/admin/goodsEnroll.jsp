@@ -612,7 +612,9 @@
 			/* 이미지 출력 함수 - 업로드 요청 후 서버에서 반환받은 데이터를 활용 */
 			function showUploadImage(uploadResultArr){
 				/* 전달받은 데이터 검증 */
-				if(!uploadResultArr || uploadResultArr.length == 0){return}
+				if(!uploadResultArr || uploadResultArr.length == 0){
+					return
+				}
 				
 				let uploadResult = $("#uploadResult");   //이미지 출력 태그
 				
@@ -643,6 +645,10 @@
 				str += "<img src='/display?fileName=" + fileCallPath +"'>";   //썸네일 이미지 출력
 				/* str += "<div class='imgDeleteBtn'>x</div>"; */
 				str += "<div class='imgDeleteBtn' data-file='" + fileCallPath + "'>x</div>";   //삭제 버튼에 썸네일 파일 경로 담기
+				/* DB에 이미지 정보를 담기 위한 input 태그 추가 */
+				str += "<input type='hidden' name='imageList[0].fileName' value='"+ obj.fileName +"'>";
+				str += "<input type='hidden' name='imageList[0].uuid' value='"+ obj.uuid +"'>";
+				str += "<input type='hidden' name='imageList[0].uploadPath' value='"+ obj.uploadPath +"'>";
 				str += "</div>";
 				
 				uploadResult.append(str);   //태그 코드가 담긴 문자열 값(str)을 uploadResult 태그에 append() 혹은 html() 메서드로 추가

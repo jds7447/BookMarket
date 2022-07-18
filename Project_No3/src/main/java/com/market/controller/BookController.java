@@ -3,15 +3,21 @@ package com.market.controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.market.mapper.AttachMapper;
+import com.market.model.AttachImageVO;
 
 import lombok.extern.log4j.Log4j;
 
@@ -21,6 +27,9 @@ public class BookController {
 	
 	//@Log4j 어노테이션 사용 안할 시
 //	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
+	
+	@Autowired
+	private AttachMapper attachMapper;   //이미지 데이터 가져오기 서비스
 	
 	/* 메인 페이지 이동 */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)   // 혹은 @GetMapping("/main")
@@ -70,6 +79,15 @@ public class BookController {
 		
 		//return에 생성한 ResponseEntity 객체(변수 result)를 작성
 		return result;
+	}
+	
+	/* 이미지 데이터 반환 - 반환해주는 데이터가 JSON형식이 되도록 지정해주기 위해 @GetMapping 어노테이션에 produces 속성 */
+	@GetMapping(value="/getAttachList", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<AttachImageVO>> getAttachList(int bookId){
+		log.info("getAttachList.........." + bookId);
+		
+		//리턴 값으로  getAttachList(bookId) 메서드를 통해 반환받은 이미지 정보와 상태 코드가 OK 데이터를 담고 있는 ResponeEntity 객체
+		return new ResponseEntity<List<AttachImageVO>>(attachMapper.getAttachList(bookId), HttpStatus.OK);
 	}
 	
 }

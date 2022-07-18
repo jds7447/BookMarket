@@ -6,6 +6,21 @@
 
 	<!-- 상품 등록 -->
   	<insert id="bookEnroll">
+  		<!-- <selectkey> : 자동생성키 컬럼(autoincrement(mysql), IDENTITY(Orace))을 지원하지 않는 데이터베이스에 자동생성키 기능과 비슷한 효과를 구현하거나,
+  			쿼리(예를 들어 insert)에서 수행된 특정 칼럼 값을 반환받기 위해 사용 -->
+  		<!-- <selectKey resultType="int" keyProperty="bookId" order="BEFORE"> -->   <!-- 등록한 'bookId' 컬럼(Column)값을 반환 (이미지 테이블용) -->
+  		<!-- 해석을 하면 oreder의 속성 값이 "BEFORE"이기 때문에 '상품 정보'를 등록하는 insert문이 실행되기 전에 <selectkey> 태그 내의 쿼리문이 실행이 되고,
+  		쿼리 문의 결과 값이 keyProperty 속성 값으로 지정한 'bookId'(BookVO 멤버 변수)에 resultType 속성 값으로 지정한 int 타입으로 반환한다는 의미
+		<selectKey>태그 내부의 쿼리문은 book_goods 테이블의 'bookId' 칼럼 값 중 가장 큰 값(MAX(bookId))을 가져와서 거기에 +1을 해준 결과를 반환
+		이는 insert문의 결과로 삽입될 'bookId' 칼럼(Column)의 값이 기존 'bookId'값들 중 가장 큰 값에서 +1 된 값이기 때문 -->
+  			<!-- SELECT MAX(bookId)+1 FROM book_goods -->
+  		<selectKey resultType="int" keyProperty="bookId" order="AFTER">
+  		<!-- 기존 컬럼을 지우고 새로운 상품 등록을 하면 잘못된 값을 가져오는 점을 보완하고자
+  			order="AFTER" 를 통해 insert 문이 싱행 후 동작하는 방식으로 변경하고,
+  			book_goods 테이블의 기본키인 bookId 컬럼에 사용하는 시퀀스의 현재 값을 가져오는 쿼리로 변경 -->
+  			SELECT seq_bookgoods_num.currval from dual
+  		</selectKey> 
+  		
   		insert into book_goods(bookId, bookName, authorId, publeYear, publisher, cateCode, bookPrice, bookStock, bookDiscount, bookIntro, bookContents)
 		values(seq_bookgoods_num.nextval, #{bookName}, #{authorId}, #{publeYear}, #{publisher}, #{cateCode}, #{bookPrice}, #{bookStock}, #{bookDiscount}, #{bookIntro}, #{bookContents})
   	</insert>
@@ -68,5 +83,10 @@
 	<delete id="goodsDelete">
 		delete from book_goods where bookId = #{bookId}
 	</delete>
+	
+	<!-- 이미지 등록 -->
+	<insert id="imageEnroll">
+		insert into book_image(bookId, fileName, uploadPath, uuid) values (#{bookId}, #{fileName}, #{uploadPath}, #{uuid})
+	</insert>
 
 </mapper>

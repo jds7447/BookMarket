@@ -16,6 +16,17 @@
 				crossorigin="anonymous"></script>
 		<!-- ckeditor를 사용하기 위한 cdn 코드 -->
 		<script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
+		<!-- 상품 이미지 태그 스타일 -->
+		<style type="text/css">
+			#result_card img{
+				max-width: 100%;
+			    height: auto;
+			    display: block;
+			    padding: 5px;
+			    margin-top: 10px;
+			    margin: auto;	
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -138,6 +149,18 @@
                     			</div>
                     			<div class="form_section_content bct">
                     				<textarea name="bookContents" id="bookContents_textarea" disabled>${goodsInfo.bookContents}</textarea>
+                    			</div>
+                    		</div>
+                    		
+                    		<!-- 상품 이미지 추가 -->
+                    		<div class="form_section">
+                    			<div class="form_section_title">
+                    				<label>상품 이미지</label>
+                    			</div>
+                    			<div class="form_section_content">
+									<div id="uploadReslut">
+																		
+									</div>
                     			</div>
                     		</div>
                    		
@@ -300,6 +323,40 @@
 					if(targetCate2.cateParent === obj.value){
 						$(obj).attr("selected", "selected");
 					}
+				});
+				
+				/* 이미지 정보 호출 */
+				/* 페이지에 접속하자마자 실행되도록 하기 위해서 기존 작성되어 있는 $(document).ready(functino() 메서드 구현부에서 코드를 추가 */
+				let bookId = '<c:out value="${goodsInfo.bookId}"/>';   //상품id (이미지 데이터 호출용)
+				let uploadReslut = $("#uploadReslut");   //이미지 출력할 태그
+				
+				/* getJSON - GET 방식으로 요청 및 응답을 하는 서버로부터 JSON으로 인코딩 된 데이터를 전달받기 위해 사용하는 메서드 */
+				/* 첫 번째 인자는 서버에 요청할 GET방식 url, 두 번째 인자는 요청할 때 전달할 데이터, 세 번째 인자는 서버의 반환 데이터 획득 시 실행할 콜백함수
+					getJSON(url[,data][,success]); */
+				$.getJSON("/getAttachList", {bookId : bookId}, function(arr){
+					/* 해당 상품에 이미지 없는 경우 - 이미지 없음 이미지를 추가 */
+					if(arr.length === 0){			
+						let str = "";
+						str += "<div id='result_card'>";
+						str += "<img src='/resources/img/No_Image.png'>";
+						str += "</div>";
+						
+						uploadReslut.html(str);	
+					}
+					
+					let str = "";   //uploadResult 태그 내부에 삽입될 태그 코드(String 데이터)
+					let obj = arr[0];   //서버로부터 전달받은 이미지 정보 객체
+					
+					/* str 변수에 uploadResult 태그에 삽입될 코드를 값으로 부여 */
+					let fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);
+					str += "<div id='result_card'";
+					str += "data-path='" + obj.uploadPath + "' data-uuid='" + obj.uuid + "' data-filename='" + obj.fileName + "'";
+					str += ">";
+					str += "<img src='/display?fileName=" + fileCallPath +"'>";
+					str += "</div>";
+					
+					/*  html() 메서드를 사용해 str변수에 저장된 값들을 uploadReuslt 태그 내부에 추가 */
+					uploadReslut.html(str);
 				});
 			});
 			

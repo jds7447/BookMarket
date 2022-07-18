@@ -149,11 +149,11 @@
 		    <version>${org.springframework-version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
-		<dependency>
+		<dependency>   <!-- 하나의 비즈니스 로직에서 두 개 이상의 작업 수행 시 에러 발생으로 누락되는 작업이 없도록 해당 작업들을 하나로 묶음 -->
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-tx</artifactId>
 		    <version>${org.springframework-version}</version>
-		</dependency>
+		</dependency>   <!-- 트랜잭션의 4가지 특성 검색(참조) -->
 		
 		<!-- Log4jdbc-log4je 추가 : 스프링에서 SQL문을 실행한 로그를 효과적이고 직관적으로 볼 수 있도록 해주는 라이브러리 -->
 		<!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4 -->
