@@ -73,10 +73,25 @@ public class AdminServiceImpl implements AdminService {
 	}
 	
 	/* 상품 정보 수정 */
+	@Transactional   //두 개 이상의 작업을 수행하기 때문에 트랜잭션 원자성(all or nothing)으로 일부의 작업만 수행되지 않도록
 	@Override
 	public int goodsModify(BookVO vo) {
 		log.info("goodsModify........");
-		return adminMapper.goodsModify(vo);
+		/* 업로드 이미지 수정을 위한 변경 */
+//		return adminMapper.goodsModify(vo);
+		int result = adminMapper.goodsModify(vo);   //상품 정보 수정
+		
+		//상품 정보 수정이 정상적으로 이루어졌고, 수정되는 이미지 정보가 있는 경우(업로드 이미지가 수정된 경우)
+		if(result == 1 && vo.getImageList() != null && vo.getImageList().size() > 0) {
+			adminMapper.deleteImageAll(vo.getBookId());   //상품 정보 수정 전(기존) 이미지 정보를 모두 삭제
+			
+			vo.getImageList().forEach(attach -> {   //List 형태로 전달받은 이미지 정보(BookVO의 imageList)를 순서대로 DB에 저장되도록 람다식 반복문
+				attach.setBookId(vo.getBookId());   //수정되는 상품의 id를 이미지 객체에 셋팅
+				adminMapper.imageEnroll(attach);   //이미지 객체를 DB 이미지 테이블에 저장
+			});
+		}
+		
+		return result;
 	}
 	
 	/* 상품 정보 삭제 */
