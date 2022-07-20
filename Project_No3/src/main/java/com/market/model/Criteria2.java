@@ -1,5 +1,7 @@
 package com.market.model;
 
+import java.util.Arrays;
+
 /*페이징 쿼리를 동적 제어하기 위해 필요한 데이터 'pageNum'과 'amount'을 같이 파라미터로 전달하기 위한 용도로 Criteria 클래스(class)를 작성
   각각의 데이터를 분리하여 파라미터로 전달해도 되지만 연관성 있는 데이터를 같이 관리함으로써 관리하기 편하고 재사용성에도 장점 때문에 클래스를 작성*/
 public class Criteria2 {
@@ -17,6 +19,12 @@ public class Criteria2 {
     private String type;
 	// type변수에  담길 데이터는 "T"(제목), "C"(내용), "W"(작성자), "TC"(제목 + 내용), "TW"(제목 + 작성자), "TCW"(제목 + 내용 + 작성자)
 	// "T", "C", "W"와 같이 문자 하나가 저장된 데이터 사용을 위해 "TC", "TW", "TCW" 데이터들이 문자 하나씩 저장된 데이터가 될 수 있도록 배열로 변환 필요
+    
+    /* 작가 리스트 */
+	private String[] authorArr;
+	
+	/* 카테고리 코드 */
+	private String cateCode;   //사용자가 요청하는 카테고리 번호
     
     /* 기본 생성자 -> 기본 세팅 : pageNum = 1, amount = 10 */
     public Criteria2() {
@@ -71,11 +79,26 @@ public class Criteria2 {
 		this.type = type;
 	}
 
+	public String[] getAuthorArr() {
+		return authorArr;
+	}
+
+	public void setAuthorArr(String[] authorArr) {
+		this.authorArr = authorArr;
+	}
+
+	public String getCateCode() {
+		return cateCode;
+	}
+
+	public void setCateCode(String cateCode) {
+		this.cateCode = cateCode;
+	}
+
 	@Override
 	public String toString() {
-		return "Criteria2 [pageNum=" + pageNum + ", amount=" + amount + ", keyword=" + keyword + ", type=" + type + "]";
+		return "Criteria2 [pageNum=" + pageNum + ", amount=" + amount + ", keyword=" + keyword + ", type=" + type
+				+ ", authorArr=" + Arrays.toString(authorArr) + ", cateCode=" + cateCode + "]";
 	}
-    
-    
     
 }

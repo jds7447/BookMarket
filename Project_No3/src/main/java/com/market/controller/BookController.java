@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.market.mapper.AttachMapper;
 import com.market.model.AttachImageVO;
+import com.market.model.BookVO;
+import com.market.model.Criteria2;
+import com.market.model.PageMakerDTO2;
+import com.market.service.BookService;
 
 import lombok.extern.log4j.Log4j;
 
@@ -30,6 +35,9 @@ public class BookController {
 	
 	@Autowired
 	private AttachMapper attachMapper;   //이미지 데이터 가져오기 서비스
+	
+	@Autowired
+	private BookService bookService;
 	
 	/* 메인 페이지 이동 */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)   // 혹은 @GetMapping("/main")
@@ -88,6 +96,28 @@ public class BookController {
 		
 		//리턴 값으로  getAttachList(bookId) 메서드를 통해 반환받은 이미지 정보와 상태 코드가 OK 데이터를 담고 있는 ResponeEntity 객체
 		return new ResponseEntity<List<AttachImageVO>>(attachMapper.getAttachList(bookId), HttpStatus.OK);
+	}
+	
+	/* 상품 검색 */
+	@GetMapping("search")
+	public String searchGoodsGET(Criteria2 cri, Model model) {
+		log.info("cri : " + cri);
+		
+		List<BookVO> list = bookService.getGoodsList(cri);
+		
+		log.info("pre list : " + list);
+		if(!list.isEmpty()) {   //검색한 상품이 있을 경우
+			model.addAttribute("list", list);
+			log.info("list : " + list);
+		} else {   //상품이 없을 경우
+			model.addAttribute("listcheck", "empty");
+			
+			return "search";
+		}
+		
+		model.addAttribute("pageMaker", new PageMakerDTO2(cri, bookService.goodsGetTotal(cri)));
+		
+		return "search";
 	}
 	
 }

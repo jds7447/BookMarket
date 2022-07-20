@@ -66,7 +66,7 @@ a{
 .search_area{
 	width: 50%;
 	height: 100%;
-	background-color: yellow;
+	/* background-color: yellow; */
 	float:left;	
 }
 
@@ -205,3 +205,4 @@ a{
     margin-left: 70px;
     margin-top : 30px;
 }
+

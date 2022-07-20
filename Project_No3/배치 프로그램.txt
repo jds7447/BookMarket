@@ -1,0 +1,43 @@
+배치 프로그램이란
+배치 작업(Batch Processor)을 수행하는 프로그램
+배치 작업이란 최종 사용자의 개입 없이(또는 자원이 허가한다면) 실행을 스케줄링할 수 있는 작업(job)의 실행을 의미합니다
+쉽게 말해 수행되어야 할 어떠한 '작업'을 실시간으로 바로바로 수행하는 것이 아니라, 지정한 시간에 일괄적으로 작업을 처리하는 것
+이러한 배치 작업을 수행하는 배치 프로그램은 은행의 정산작업과 같은 업무에 적용을 할 수 있습니다
+또 다른 예로는 주문 앱에서 주문 정보를 DB에 저장하는 작업
+인기가 많은 주문 앱의 경우 분당 수 만 건의 주문 요청이 있을 수 있습니다
+이러한 정보들을 실시간으로 DB에 저장을 하게 된다면 너무 많은 자원이 불 규칙적으로 소모되어야 할 것입니다
+따라서 이러한 정보들을 임시 저장소에 저장해 두었다가 지정한 시간에 주기적으로 지정한 수만큼의 데이터를 DB에 저장하는데 배치 프로그램을 활용할 수 있을 것입니다
+배치 프로그램은 'Spring Batch', 'Quartz' 등 이 있습니다
+
+<!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz-jobs -->
+<dependency>
+    <groupId>org.quartz-scheduler</groupId>
+    <artifactId>quartz-jobs</artifactId>
+    <version>2.3.2</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
+<dependency>
+    <groupId>org.quartz-scheduler</groupId>
+    <artifactId>quartz</artifactId>
+    <version>2.3.2</version>
+</dependency>
+
+'어노테이션 설정' 방법을 사용
+root-context.xml 에서 스케쥴링 어노테이션을 사용하기 위한 설정과, 추가한 패키지의 클래스가 스프링에서 인식할 수 있도록 <component-scsan> 태그를 추가
+root-context.xml 파일을 연 후 하단의 'namespace'탭을 클릭 후 "task"를 체크
+<task:annotation-driven/>
+<context:component-scan base-package="com..task"></context:component-scan>
+
+배치를 적용할 메서드 위에 아래와 같은 형식의 어노테이션 추가
+@Scheduled(cron = "0 * * * * *")
+cron 표기 : @Scheduled(cron = "* * * * * * *") 초 분 시 일 월 요일 년도(년도생략가능 - 생략시에는 매년의 의미)
+표시는 ALL의 의미로 매초, 매분, 매시간, 매일, 매월, 매요일, 매년의 의미
+요일의 경우는 *대신 ?를 사용할 수도 있습니다 (뜻은 다른데, 결과는 같습니다)
+그리고 그외에 지정을 할 때는 숫자로 표시를 합니다
+참고로 요일의 경우는 일요일부터 토요일까지 1~7 혹은 0~6의 수를 사용하거나 SUN~SAT 의 단어로 표시
+예로 「0 0 10 1 1 1」이라는 표현식으로 지정을 하게 되면 매년(생략됨) 1월 1일 10시 00분 00초의 월요일인 경우(화요일이면 실행하지 않습니다) 실행하라는 문법
+지정된 일자를 둘이상 지정을 할 때는 콤마로 구분을 합니다
+예로 「0,10 0 10 * * *」이라고 표현식으로 지정을 하게 되면 매년(생략됨) 매월 매일 10시 00분 0초와 10초에 실행하라라는 뜻이 됩니다
+초 설정에 0,10,20,30,40,50이라고 하면 0초, 10초, 20초, 30초, 40초, 50초에 실행하라는 뜻이 되는데
+편하게 0/10라고 하면 10초 마다라는 의미가 되므로 좀 더 간단한 표현식을 나타낼 수 있습니다
+그리고 하이픈(-)으로 범위를 지정할 수도 있는데 일에 1-10이라고 하면 1일부터 10일까지라는 의미

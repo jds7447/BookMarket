@@ -98,5 +98,10 @@
 	<select id="checkFileList" resultType="com.market.model.AttachImageVO">
 		select * from book_image where uploadpath = to_char(sysdate -1, 'yyyy\mm\dd')
 	</select>   <!-- sysdate -1 : 오늘 날짜 - 1일, 'yyyy\mm\dd' : 지정 형식 -->
+	
+	<!-- 지정 상품 이미지 정보 얻기 -->
+	<select id="getAttachInfo" resultType="com.market.model.AttachImageVO">
+		select * from book_image where bookId = #{bookId}
+	</select>
 
 </mapper>

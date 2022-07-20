@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.market.mapper.AdminMapper;
+import com.market.model.AttachImageVO;
 import com.market.model.BookVO;
 import com.market.model.CateVO;
 import com.market.model.Criteria2;
@@ -95,10 +96,21 @@ public class AdminServiceImpl implements AdminService {
 	}
 	
 	/* 상품 정보 삭제 */
+	@Transactional   //2개 이상의 작업이 수행되기 때문에 트랜잭션 처리
 	@Override
 	public int goodsDelete(int bookId) {
 		log.info("goodsDelete..........");
-		return adminMapper.goodsDelete(bookId);
+		
+		adminMapper.deleteImageAll(bookId);   //이미지 정보 삭제
+		
+		return adminMapper.goodsDelete(bookId);   //상품 정보 삭제
+	}
+	
+	/* 지정 상품 이미지 정보 얻기 */
+	@Override
+	public List<AttachImageVO> getAttachInfo(int bookId) {
+		log.info("getAttachInfo........");
+		return adminMapper.getAttachInfo(bookId);
 	}
 	
 }
