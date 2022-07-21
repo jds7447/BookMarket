@@ -7,9 +7,29 @@
 
 	<!-- criteria2 (검색조건) -->
 	<sql id="criteria2">
-	    <if test="keyword != null">
-		    bookName like '%' || #{keyword} || '%' and
-		</if>
+		<trim prefix="(" suffix=") AND" prefixOverrides="AND">   <!-- trim 태그 내부의 쿼리 처음 시작은 "(" 로 시작하고 마지막은 ") AND" 로 끝 -->
+			<foreach collection="typeArr" item="type">   <!-- typeArr 배열을 전달 받아 type 이라는 변수로 하나씩 꺼내 사용 (확장 for문) -->
+				<trim prefix="AND">   <!-- type이 여러 개일 경우 두 번째 쿼리부터 앞에 "AND" 적용 (제일 밖 trim 태그 prefixOverrides="AND" 속성으로 첫 번째 쿼리 앞 "AND" 는 지움) -->
+					<choose>   <!-- Switch~case 문처럼 when 태그 test 조건에 맞는 쿼리 적용 -->
+						<when test="type == 'A'.toString()">   <!-- 작가 검색 -->
+							<trim prefix="(" suffix=")" prefixOverrides="OR">   <!-- 작가 리스트를 배열로 전달 받기 때문에 여러 작가 검색을 위한 OR 조건 설정 -->
+								<foreach collection="authorArr" item="authorId">
+									<trim prefix="OR">
+										authorId = #{authorId}
+									</trim>
+								</foreach>
+							</trim>
+						</when>
+						<when test="type == 'C'.toString()">   <!-- 카테고리 검색 -->
+							cateCode like '%' || #{cateCode} || '%'
+						</when>
+						<when test="type == 'T'.toString()">   <!-- 상품 이름 검색 -->
+							bookName like '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
 	</sql>
 
 	
@@ -19,7 +39,7 @@
 		    select * from(
 		        select /*+INDEX_DESC(book_goods SYS_C009231)*/ rownum as rn, bookId, bookName,
 		            (select authorName from book_author where book_goods.authorId = book_author.authorId) authorName, authorId,
-		            (select cateName from book_bcate where book_goods.cateCode = book_bcate.cateCode) cateName,cateCode, publisher, publeYear, bookPrice  
+		            (select cateName from book_bcate where book_goods.cateCode = book_bcate.cateCode) cateName, cateCode, publisher, publeYear, bookPrice, bookDiscount 
 		        from book_goods
 		        where 
 	    ]]>
@@ -30,15 +50,16 @@
 		        rownum <= #{pageNum} * #{amount} 
 	        	)
 	        where rn > (#{pageNum} -1) * #{amount}
-		]]>	  		
-	
+		]]>
 	</select>
 	
 	<!-- 상품 총 개수 -->
 	<select id="goodsGetTotal" resultType="int">
 		select count(*) from book_goods
 		where
+		
 		<include refid="criteria2"></include> 
+		
 		bookId > 0
 	</select>
 	

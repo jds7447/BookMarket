@@ -10,7 +10,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Welcome BookMall</title>
-		<link rel="stylesheet" href="resources/css/main.css">
+		<link rel="stylesheet" href="/resources/css/main.css">
 		<!--  jquery를 사용할 것이기 때문에 jquery url 코드 추가 -->
 		<script src="https://code.jquery.com/jquery-3.4.1.js"
   				integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
@@ -67,6 +67,10 @@
 						<div class="search_wrap">
 	                		<form id="searchForm" action="/search" method="get">
 	                			<div class="search_input">
+	                				<select name="type">
+	                					<option value="T">책 제목</option>
+	                					<option value="A">작가</option>
+                					</select>
 	                				<input type="text" name="keyword">
 	                    			<button class='btn search_btn'>검 색</button>                				
 	                			</div>

@@ -44,7 +44,7 @@ public class Criteria2 {
 	 * "getTypeArr()"메서드를 호출하기 때문에 typeArr변수를 선언하지 않았음에도 해당 변수가 존재하는 것처럼 처리가 됩니다 */
     /* 검색 타입 데이터 배열 변환 */
     public String[] getTypeArr() {
-        return type == null? new String[] {}:type.split("");
+        return type == null ? new String[] {} : type.split("");
     }
 
 	public int getPageNum() {
