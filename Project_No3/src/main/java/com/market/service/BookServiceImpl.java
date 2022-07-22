@@ -10,6 +10,7 @@ import com.market.mapper.AttachMapper;
 import com.market.mapper.BookMapper;
 import com.market.model.AttachImageVO;
 import com.market.model.BookVO;
+import com.market.model.CateVO;
 import com.market.model.Criteria2;
 
 import lombok.extern.log4j.Log4j;
@@ -44,9 +45,11 @@ public class BookServiceImpl implements BookService {
 //				cri.setAuthorArr(authorArr);   //작가 ID 리스트를 검색 객체에 담기
 //			}
 //		}
-		String[] authorArr = bookMapper.getAuthorIdList(cri.getKeyword());   //작가 이름 키워드를 통해 작가 ID 리스트 검색
+		String[] authorArr = null;   //작가 ID 리스트 담을 문자열 배열
 		
 		if(type.equals("A") || type.equals("AC") || type.equals("AT") || type.equals("ACT")) {   //검색 타입에 작가 타입이 들어갈 경우
+			authorArr = bookMapper.getAuthorIdList(cri.getKeyword());   //작가 이름 키워드를 통해 작가 ID 리스트 검색
+			
 			if(authorArr.length == 0) {   //검색한 작가 키워드에 해당하는 작가가 없는 경우
 				return new ArrayList();   //컨트롤러에 빈 배열 객체를 반환 후 메서드 종료
 			}
@@ -77,6 +80,20 @@ public class BookServiceImpl implements BookService {
 	public int goodsGetTotal(Criteria2 cri) {
 		log.info("goodsGetTotal().......");
 		return bookMapper.goodsGetTotal(cri);
+	}
+	
+	/* 국내 카테고리 리스트 */
+	@Override
+	public List<CateVO> getCateCode1() {
+		log.info("getCateCode1().........");
+		return bookMapper.getCateCode1();
+	}
+
+	/* 외국 카테고리 리스트 */
+	@Override
+	public List<CateVO> getCateCode2() {
+		log.info("getCateCode2().........");
+		return bookMapper.getCateCode2();
 	}
 	
 }
