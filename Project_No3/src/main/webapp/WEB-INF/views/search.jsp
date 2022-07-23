@@ -108,7 +108,32 @@
 					<!-- <h1>content area</h1> -->
 					<%-- 게시물(검색결과) o --%>
 					<c:if test="${listcheck != 'empty'}">
-						<div class="list_search_result">
+						<div class="search_filter">   <%-- 카테고리 필터 --%>
+							<div class="filter_button_wrap">
+								<button class="filter_button filter_active" id="filter_button_a">국내</button>
+								<button class="filter_button" id="filter_button_b">외국</button>
+							</div>
+							<div class="filter_content filter_a">   <%-- 국내 상품 카테고리 정보 --%>
+								<c:forEach items="${filter_info}" var="filter">
+									<c:if test="${filter.cateGroup eq '1'}">
+										<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
+									</c:if>
+								</c:forEach>
+							</div>
+							<div class="filter_content filter_b">   <%-- 국외 상품 카테고리 정보 --%>
+								<c:forEach items="${filter_info}" var="filter">
+									<c:if test="${filter.cateGroup eq '2'}">
+										<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
+									</c:if>
+								</c:forEach>		
+							</div>
+							<form id="filter_form" action="/search" method="get" >   <%-- 필터링 데이터 --%>
+								<input type="hidden" name="keyword">
+								<input type="hidden" name="cateCode">
+								<input type="hidden" name="type">
+							</form>
+						</div>
+						<div class="list_search_result">   <%-- 상품 목록 --%>
 							<table class="type_list">
 								<colgroup>
 									<col width="110">
@@ -252,7 +277,8 @@
 				// 검색 타입 selected (사용자가 검색 전에 선택했던 검색 타입으로 검색 타입 태그 옵션 설정)
 				const selectedType = '<c:out value="${pageMaker.cri.type}"/>';
 				if(selectedType != ""){
-					$("select[name='type']").val(selectedType).attr("selected", "selected");	
+					let type = selectedType.split("")[0];
+					$("select[name='type']").val(type).attr("selected", "selected");	
 				}
 				
 				
@@ -283,6 +309,28 @@
 						$(this).find("img").attr('src', '/resources/img/No_Image.png');
 					}
 				});
+				
+				
+				/* 필터링 선택 시 기존 선택(국내, 국내) 설정 */
+				let filterCode = '<c:out value="${pageMaker.cri.cateCode}"/>';   //검색 객체에 담겨 있는 카테고리 코드
+				if(filterCode != "" && filterCode != null){   //카테고리 코드가 비어있지 않다면
+					let nowCode = filterCode.split("")[0];   //검색 객체에 담겨 있는 카테고리 코드 맨 앞자리
+					if(nowCode == 1){   //이전에 선택한 필터링 카테고리가 국내 카테고리일 경우
+						console.log("이전에 선택한 필터링 카테고리가 국내 카테고리");
+						$(".filter_b").css("display", "none");
+						$(".filter_a").css("display", "block");		
+						buttonA.attr("class", "filter_button filter_active");
+						buttonB.attr("class", "filter_button");
+					}
+					if(nowCode == 2){   //이전에 선택한 필터링 카테고리가 국외 카테고리일 경우
+						console.log("이전에 선택한 필터링 카테고리가 국외 카테고리");
+						$(".filter_a").css("display", "none");
+						$(".filter_b").css("display", "block");
+						buttonB.attr("class", "filter_button filter_active");
+						buttonA.attr("class", "filter_button");
+					}
+				}
+				
 			});
  
 			
@@ -308,6 +356,42 @@
 				moveForm.find("input[name='pageNum']").val($(this).attr("href"));
 				
 				moveForm.submit();
+			});
+			
+			
+			/* 검색 필터 */
+			let buttonA = $("#filter_button_a");   //국내 버튼
+			let buttonB = $("#filter_button_b");   //국외 버튼
+			
+			buttonA.on("click", function(){   //국내 버튼이 눌리면 국내 버튼이 눌린 효과, 국외 버튼은 눌린 효과 제거
+				$(".filter_b").css("display", "none");
+				$(".filter_a").css("display", "block");		
+				buttonA.attr("class", "filter_button filter_active");
+				buttonB.attr("class", "filter_button");
+			});
+			
+			buttonB.on("click", function(){   //국외 버튼이 눌리면 국외 버튼이 눌린 효과, 국내 버튼은 눌린 효과 제거
+				$(".filter_a").css("display", "none");
+				$(".filter_b").css("display", "block");
+				buttonB.attr("class", "filter_button filter_active");
+				buttonA.attr("class", "filter_button");		
+			});
+			
+			$(".filter_content a").on("click", function(e){   //필터링 정보 a태그 클릭 시 필더링 된 검색 페이지로 이동
+				e.preventDefault();
+			
+				let type = '<c:out value="${pageMaker.cri.type}"/>';
+				if(type === 'A' || type === 'T'){   //타입이 책이름 혹은 작가 단독으로만 있을 경우 기존 검색 타입에 카테고리 타입 추가
+					type = type + 'C';	
+				}
+				
+				let keyword = '<c:out value="${pageMaker.cri.keyword}"/>';   //검색 키워드 데이터
+				let cateCode= $(this).attr("href");   //해당 버튼의 href 값 (filter.cateCode = 카테고리 코드)
+				
+				$("#filter_form input[name='keyword']").val(keyword);   //필터링 폼에 들어갈 필터링 데이터 (검색어)
+				$("#filter_form input[name='cateCode']").val(cateCode);   //필터링 폼에 들어갈 필터링 데이터 (카테고리 코드)
+				$("#filter_form input[name='type']").val(type);   //필터링 폼에 들어갈 필터링 데이터 (검색 타입)
+				$("#filter_form").submit();   //필터링 검색 수행
 			});
 		    
 		</script>

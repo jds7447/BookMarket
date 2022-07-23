@@ -82,4 +82,59 @@
 		]]>
 	</select>
 	
+	<!-- 검색 대상 카테고리 리스트 -->
+	<select id="getCateList" resultType="String">
+		select DISTINCT cateCode from book_goods where    <!-- DISTINCT : 검색 데이터들의 중복 없음 -->
+		<foreach collection="typeArr" item="type">		
+			<choose>
+				<when test="type == 'A'.toString()">   <!-- 검색 타입이 작가일 경우 -->
+					<trim prefixOverrides="OR">
+	 					<foreach collection="authorArr" item="authorId">
+	 						<trim prefix="OR">
+	 							authorId = #{authorId}
+	 						</trim>
+	 					</foreach>  						
+					</trim>
+				</when>
+				<when test="type == 'T'.toString()">   <!-- 검색 타입이 책 이름일 경우 -->
+					bookName like '%' || #{keyword} || '%'
+				</when>  					
+			</choose>
+  		</foreach>
+	</select>
+	
+	<!-- 카테고리 정보 (+검색대상 갯수) -->
+	<!-- '개수'데이터를 얻기 위해서 "COUNT()"함수를 사용
+	주의할 점은 별칭을 반드시 주어야 한다는 점
+	별칭을 주지 않는다면 메서드 반환 객체인 CateFilterDTO의 cateCount 변수에 데이터가 저장되지 않은 채 반환
+	MyBatis는 '자바 빈 규약'에 따라서 지정한 반환 타입에 데이터를 세팅하게 되는데,
+	SELECT문에 지정한 컬럼(Column)이름에 따라 "set컬럼이름" 메서드를 호출하여 객체의 변수들에 데이터를 세팅을 하기 때문
+	Oracle의 경우 GORUP BY 키워드를 사용하지 않으면 오류가 뜹니다
+	COUNT() 함수를 사용하여서 중복되지 않은 결과들이 뜨긴 하지만, 좀 더 명확히 하기 위해 DISTINCT를 같이 작성
+	DISTINCT를 쓰든 쓰지 않든 의도한 결과가 뜹니다 -->
+	<select id="getCateInfo" resultType="com.market.model.CateFilterDTO">
+		select DISTINCT count(*) cateCount, a.cateCode, b.cateName 
+		from book_goods a left join book_bcate b    <!-- 상품 테이블 기분으로 카테고리 테이블을 아우터 조인 (상품 테이블은 모두 표시되고 상품 테이블에 매칭되지 않는 카테고리 테이블은 null) -->
+		on a.cateCode = b.cateCode    <!-- 각 테이블의 cateCode 컬럼으로 매칭 -->
+		where 
+		<foreach collection="typeArr" item="type">		
+			<choose>
+				<when test="type == 'A'.toString()">   <!-- 검색 타입이 작가일 경우 -->
+					<trim prefix="(" suffix=")" prefixOverrides="or">
+	 					<foreach collection="authorArr" item="authorId">
+	 						<trim prefix="or">
+	 							authorId = #{authorId}    <!-- 작가 번호가 같고 -->
+	 						</trim>
+	 					</foreach>
+					</trim>
+					and a.cateCode = #{cateCode}    <!-- 카테고리 번호가 같을 것 -->
+				</when>
+				<when test="type == 'T'.toString()">   <!-- 검색 타입이 책 이름일 경우 -->
+					bookName like '%' || #{keyword} || '%' and a.cateCode = #{cateCode}
+				</when>
+			</choose>
+		</foreach>
+  		group by a.cateCode, b.cateName    <!-- 상품테이블 카테고리 번호로 오름차순 정렬, 카테고리 번호 같으면 카테고리테이블 카테고리 이름으로 오름차순 정렬 -->
+	</select>
+	
 </mapper>

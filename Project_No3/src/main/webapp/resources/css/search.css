@@ -335,3 +335,57 @@ a{
     height: auto;
     display: block;
 }
+
+/* 필터정보 */
+.search_filter {
+    width: 85%;
+    margin: auto;
+	margin-top: 30px;
+    margin-bottom: 50px;    
+}
+.filter_button_wrap {
+    width: 100%;
+}
+.filter_button_wrap button {
+    width: 50%;
+}
+.filter_button{   /* 버튼(.filter_button)들에 색상, 테투리 색, float 속성 */
+	background-color: #04AA6D;
+	border: 1px solid green;
+	color: white;
+	padding: 10px 24px;
+	cursor: pointer;
+	float: left;
+} 
+.filter_button_wrap:after {
+/* 버튼(.fitler_buttton)에 float속성을 주었기 때문에 그 뒤의 태그들에 float 속성 영향을 받지 않도록
+버튼을 감싸고 잇는 ".filter_button_wrap"<div>태그 끝 가상요소(".filter_button_wrap:after")가 추가되도록 하여 clear 속성을 추가 */
+    content: "";
+    clear: both;
+    display: table;
+}  	
+.filter_button_wrap button:not(:last-child) {
+/* 버튼 두 개다 가장자리에 색을 주었기 때문에 버튼이 겹치는 가장자리는 찐해지게 됨
+이것을 방지하기 위해 버튼(.filter_button_wrap button)들 중 마지막 버튼을 제외하고 모든 버튼에 오른쪽 가장자리는 색을 갖지 않도록 코드를 추가 */
+    border-right: none;
+}
+.filter_button:hover {   /* 버튼에 마우스를 올렸을 때 색이 변하도록 버튼에 hover 속성 */
+    background-color: #3e8e41;
+}
+.filter_active{   /* 선택된 버튼을 사용자가 직관적으로 알 수 있도록 ".filter_active" 식별자를 가질 땐 색상이 변하도록 코드를 추가 (현재는 국내 성택 됨) */
+	background-color: #045d3c;
+}
+.filter_content{   /* 필터링 정보가 출력될 ".search_content" <div> 태그에 padding 속성과 가장자리 색상 */
+	padding:20px 50px 20px 50px;
+	border: 1px solid gray;
+}
+.filter_content a:not(:first-child){
+/* ".search_content"<div> 태그 내에 있는 <a>태그 들 중 첫 번째 <a> 태그를 제외한 모든 <a> 태그가 왼쪽 공간을 주도록 */
+	margin-left: 10px;
+}
+.filter_a{   /* "국내", "국외" 버틑 중에 선택되어 있는 버튼 보이기 (현재는 국내 성택 됨) */
+	display: block;
+}
+.filter_b{   /* "국내", "국외" 버틑 중에 선택되어 있는 버튼 보이기 (현재는 국내 성택 됨) */
+	display: none;
+}

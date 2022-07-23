@@ -10,6 +10,7 @@ import com.market.mapper.AttachMapper;
 import com.market.mapper.BookMapper;
 import com.market.model.AttachImageVO;
 import com.market.model.BookVO;
+import com.market.model.CateFilterDTO;
 import com.market.model.CateVO;
 import com.market.model.Criteria2;
 
@@ -94,6 +95,39 @@ public class BookServiceImpl implements BookService {
 	public List<CateVO> getCateCode2() {
 		log.info("getCateCode2().........");
 		return bookMapper.getCateCode2();
+	}
+	
+	/* 검색결과 카테고리 필터 정보 */
+	@Override
+	public List<CateFilterDTO> getCateInfoList(Criteria2 cri) {
+		List<CateFilterDTO> filterInfoList = new ArrayList<CateFilterDTO>();   //반환할 카테고리 정보 데이터가 담길 상자 역할
+		
+		String[] typeArr = cri.getType().split("");
+		String [] authorArr;
+		
+		for(String type : typeArr) {   //검색 타입 확인
+			if(type.equals("A")) {   //검색 타입이 작가인 경우
+				authorArr = bookMapper.getAuthorIdList(cri.getKeyword());   //검색 키워드가 포함된 작가 이름을 가진 작가 id 리스트 획득
+				if(authorArr.length == 0) {   //해당 작가가 없는 경우 빈 카테고리 정보 객체를 반환
+					return filterInfoList;
+				}
+				cri.setAuthorArr(authorArr);
+			}
+		}
+		
+		String[] cateList = bookMapper.getCateList(cri);   //검색 대상의 카테고리 코드 리스트 획득
+		
+		String tempCateCode = cri.getCateCode();   //검색 객체에 담겨 전달받은 카테고리 코드를 임시로 담을 변수
+		
+		for(String cateCode : cateList) {   //획득한 카테고리 리스트의 카테고리 코드들을 하나씩 순회하며 해당 코드에 맞는 카테고리 정보를 얻어 리스트에 담기
+			cri.setCateCode(cateCode);
+			CateFilterDTO filterInfo = bookMapper.getCateInfo(cri);
+			filterInfoList.add(filterInfo);
+		}
+		
+		cri.setCateCode(tempCateCode);   //임시로 저장했던 기존의 카테고리 코드를 다시 검색 객체에 담기
+
+		return filterInfoList;   //검색 대상의 카테고리 정보 리스트를 반환
 	}
 	
 }

@@ -117,7 +117,15 @@ public class BookController {
 			return "search";
 		}
 		
-		model.addAttribute("pageMaker", new PageMakerDTO2(cri, bookService.goodsGetTotal(cri)));
+		model.addAttribute("pageMaker", new PageMakerDTO2(cri, bookService.goodsGetTotal(cri)));   //페이징 데이터
+		
+		String[] typeArr = cri.getType().split("");   //검색 타입 분할
+		
+		for(String s : typeArr) {
+			if(s.equals("T") || s.equals("A")) {   //검색 타입이 책 이름 또는 작가인 경우
+				model.addAttribute("filter_info", bookService.getCateInfoList(cri));   //카테고리 정보 리스트		
+			}
+		}
 		
 		return "search";
 	}
