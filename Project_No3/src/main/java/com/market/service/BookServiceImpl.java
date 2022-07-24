@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.market.mapper.AdminMapper;
 import com.market.mapper.AttachMapper;
 import com.market.mapper.BookMapper;
 import com.market.model.AttachImageVO;
@@ -25,6 +26,9 @@ public class BookServiceImpl implements BookService {
 	
 	@Autowired
 	private AttachMapper attachMapper;   //이미지 데이터 가져오기 위해
+	
+	@Autowired
+	private AdminMapper adminMapper;   //이미지 데이터 가져오기 위해
 	
 	/* 상품 검색 */
 	@Override
@@ -128,6 +132,15 @@ public class BookServiceImpl implements BookService {
 		cri.setCateCode(tempCateCode);   //임시로 저장했던 기존의 카테고리 코드를 다시 검색 객체에 담기
 
 		return filterInfoList;   //검색 대상의 카테고리 정보 리스트를 반환
+	}
+	
+	/* 상품 상세 정보 */
+	@Override
+	public BookVO getGoodsInfo(int bookId) {
+		BookVO goodsInfo = bookMapper.getGoodsInfo(bookId);   //상품 상세 정보
+		goodsInfo.setImageList(adminMapper.getAttachInfo(bookId));   //해당 상품의 이미지 데이터 가져와 저장
+		
+		return goodsInfo;
 	}
 	
 }

@@ -95,3 +95,23 @@ public class SampleTests {
 	(Java설정 경우 RootConfig.java에서 @ComponentScan이 해당 역할 수행)
 4. 해당 패키지에 있는 클래스들 중에서 스프링이 사용하는 @Component라는 어노테이션이 존재하는 클래스의 인스턴스를 생성합니다.
 5. Restaurant 객체는 Chef객체가 필요하다는 어노테이션(@Autowired) 설정이 있으므로, 스프링 Chef객체의 레퍼런스를 Restaurant 객체에 주입합니다.
+
+
+
+
+=================================== @PathVariable 어노테이션 ===================================
+'식별자 값'을 파라미터로 넘기지 않고 URL 경로에 삽입할 수 있게 됩니다
+@PathVarialbe 사용 경우
+"goodsDetail/61?pageNum=1&amount=10&keywod="
+
+/* @GetMapping 어노테이션의 Spring에서 사용자가 전송한 식별자 값을 변수로 인식하도록 하기 위해 템플릿 변수({bookId})를 작성
+ * URL로 전달받은 식별자 값을 인수로 전달받기 위해서 메서드의 파라미터에 bookId 변수를 선언해주고 파라미터 변수 앞에 @PathVarialbe 어노테이션을 추가
+ * 그리고 @PathVariable 어노테이션 파라미터로 앞서 @GetMapping에 작성한 템플릿 변수명을 추가
+ * 만약 클라이언트가 "/goodsDetail/15" URL 경로로 요청을 하면 작성한 URL 매핑 메서드(goodsDetailGET())가 매핑되어 호출되고
+ * @PathVarialbe 어노테이션을 통해 URL 경로에 작성된 식별자 값 "15"가 추출되어 파라미터 변수 'bookId'로 대입되어 값을 사용 가능 */
+@GetMapping("/goodsDetail/{bookId}")
+public String goodsDetailGET(@PathVariable("bookId")int bookId, Model model) {
+	log.info("goodsDetailGET()..........");
+	model.addAttribute("goodsInfo", bookService.getGoodsInfo(bookId));   //이미지 데이터가 담긴 상품 정보를 가져와 뷰로 전송
+	return "/goodsDetail";
+}

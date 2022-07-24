@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.market.model.Criteria2;
+import com.market.model.BookVO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
@@ -166,19 +166,29 @@ public class BookMapperTests {
 //	}
 	
 	/* 카테고리 정보 얻기 */	
+//	@Test
+//	public void getCateInfoTest1() {
+//		Criteria2 cri = new Criteria2();
+//		
+//		String type = "TC";
+//		String keyword = "mapper";
+//		String cateCode="104001";
+//
+//		cri.setType(type);
+//		cri.setKeyword(keyword);
+//		cri.setCateCode(cateCode);
+//		
+//		mapper.getCateInfo(cri);
+//	}
+	
+	/* 상품 상세 정보 */
 	@Test
-	public void getCateInfoTest1() {
-		Criteria2 cri = new Criteria2();
-		
-		String type = "TC";
-		String keyword = "mapper";
-		String cateCode="104001";
-
-		cri.setType(type);
-		cri.setKeyword(keyword);
-		cri.setCateCode(cateCode);
-		
-		mapper.getCateInfo(cri);
+	public void getGoodsInfo() {
+		int bookId = 26;
+		BookVO goodsInfo = mapper.getGoodsInfo(bookId);
+		System.out.println("===========================");
+		System.out.println(goodsInfo);
+		System.out.println("===========================");
 	}
 	
 }

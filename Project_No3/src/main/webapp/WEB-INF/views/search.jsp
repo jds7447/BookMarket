@@ -155,7 +155,9 @@
 													[${list.cateName}]
 												</div>
 												<div class="title">
-													${list.bookName}
+													<a href="/goodsDetail/${list.bookId}">   <%-- 책 이름 클릭 시 상품 상세 페이지로 --%>
+														${list.bookName}
+													</a>
 												</div>
 												<div class="author">
 													<%-- BookVO의 publeYear는 String 타입의 데이터라서 이 데이터를 먼저 Date 타입으로 변경을 해준 뒤 <fmt:formDate> 태그를 사용해 날짜 형식 변경

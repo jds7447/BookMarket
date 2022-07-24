@@ -30,4 +30,7 @@ public interface BookMapper {
 	/* 카테고리 정보 (+검색대상 개수) */
 	public CateFilterDTO getCateInfo(Criteria2 cri);
 	
+	/* 상품 상세 정보 */
+	public BookVO getGoodsInfo(int bookId);
+	
 }

@@ -137,4 +137,12 @@
   		group by a.cateCode, b.cateName    <!-- 상품테이블 카테고리 번호로 오름차순 정렬, 카테고리 번호 같으면 카테고리테이블 카테고리 이름으로 오름차순 정렬 -->
 	</select>
 	
+	<!-- 상품 상세 정보 -->
+	<select id="getGoodsInfo" resultType="com.market.model.BookVO">
+			select a.BOOKID, a.BOOKNAME, a.AUTHORID, b.AUTHORNAME, a.PUBLEYEAR, a.PUBLISHER, a.CATECODE, c.CATENAME, a.BOOKPRICE, a.BOOKSTOCK, a.BOOKDISCOUNT, a.BOOKINTRO, a.BOOKCONTENTS
+			from book_goods a left outer join book_author b on a.authorId = b.authorId
+			left outer join book_bcate c on a.catecode = c.catecode
+			where bookid = ${bookId}	
+	</select>
+	
 </mapper>
