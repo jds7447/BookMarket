@@ -79,4 +79,26 @@ where rn > 10;
     --힌트는 대용량의 데이터를 가진 테이블 또는 복잡한 구조(ex. JOIN)를 가진 테이블을 검색할 때 성능을 향상하기 위해서 주로 사용합니다.
     --지금 현재의 테이블 경우 아주 단순한 구조와 상황이 때문에 사용해도 큰 문제는 없지만, 힌트(hint) 사용에 확신을 할 수 없는 상황에는 되도록이면 사용을 지양하는 것이 좋습니다.
     --어중간한 힌트(hint)로 인해 오히려 검색의 성능이 더 떨어질 수 있기 때문입니다.
+--인덱스 힌트를 활용하기 위해 인덱스명 확인
+--SELECT * FROM USER_INDEXES WHERE TABLE_NAME = '테이블명';
 
+--게시물 제목 검색 기능 : 페이징 서브 쿼리에 and 연산자를 활용하여 title 컬럼에 대한 조건을 추가하면 제목 검색에 대한 SQL
+select bno, title, content, writer, regdate, updatedate from(
+        select /*+INDEX_DESC(vam_board pk_board) */ rownum  as rn, bno, title, content, writer, regdate, updatedate
+        from vam_board where rownum <= 10 and title like '%검색%')
+where rn > 0;
+
+--각 주제별 게시물 검색 : 서브 쿼리의 and title like '%검색%' 구문을 선택된 주제에 따라 아래의 주제 별로 바꿔 끼울 것임
+--myBatis의 <trim>, <foreach>, <choose>, <when>, <sql>, <include> 태그 등을 이용
+-- 제목
+--title like '%검색%'
+-- 내용
+--content like '%검색%'
+-- 작성자
+--writer like '%검색%'    
+-- 제목 + 내용
+--(title like '%검색%' OR content like '%검색%')
+-- 내용 + 작성자
+--(content like '%검색%' OR writer like '%검색%')
+-- 제목 + 내용 + 작성자
+--(title like '%검색%' OR content like '%검색%' OR writer like '%검색%')

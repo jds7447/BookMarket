@@ -49,7 +49,7 @@
 		                        마이룸
 		                    </li>
 		                    <li>
-		                        장바구니
+		                        <a href="/cart/${member.memberId}">장바구니</a>
 		                    </li>
 		                </c:if>
 		                <!-- 공통 -->
@@ -142,17 +142,21 @@
 								<div class="discount_price">
 									판매가 : <span class="discount_price_number"><fmt:formatNumber value="${goodsInfo.bookPrice - (goodsInfo.bookPrice*goodsInfo.bookDiscount)}" pattern="#,### 원" /></span> 
 									[<fmt:formatNumber value="${goodsInfo.bookDiscount*100}" pattern="###" />% 
-									<fmt:formatNumber value="${goodsInfo.bookPrice*goodsInfo.bookDiscount}" pattern="#,### 원" /> 할인]</div>							
+									<fmt:formatNumber value="${goodsInfo.bookPrice*goodsInfo.bookDiscount}" pattern="#,### 원" /> 할인]
+								</div>
+								<div>
+									적립 포인트 : <span class="point_span"></span>원
+								</div>
 							</div>			
 							<div class="line">
-							</div>	
+							</div>
 							<div class="button">						
 								<div class="button_quantity">
 									주문수량
-									<input type="text" value="1">
+									<input type="text" value="1" class="quantity_input">
 									<span>
-										<button>+</button>
-										<button>-</button>
+										<button class="plus_btn">+</button>
+										<button class="minus_btn">-</button>
 									</span>
 								</div>
 								<div class="button_set">
@@ -260,7 +264,60 @@
 			
 			$(".publeyear").html(publeYear);   //완성한 날짜 형식을 출판일 출력 태그에 html로 적용
 			
+			
+			/* 포인트 삽입 */
+			let salePrice = "${goodsInfo.bookPrice - (goodsInfo.bookPrice * goodsInfo.bookDiscount)}";   //할인된 상품 가격
+			let point = salePrice * 0.05;   //상품 가격의 5% 를 포인트로
+			point = Math.floor(point);   //포인트의 소수점 아래 내림 (1.8 -> 1)
+			$(".point_span").text(point);   //포인트 출력 태그에 포인트 삽입
+			
 		});
+		
+		
+		// 수량 버튼 조작
+		let quantity = $(".quantity_input").val();   //수량 표시 태그
+		$(".plus_btn").on("click", function(){   // +버튼 조작
+			$(".quantity_input").val(++quantity);
+		});
+		$(".minus_btn").on("click", function(){   // -버튼 조작
+			if(quantity > 1){   //0 이하로 떨어지지 않게
+				$(".quantity_input").val(--quantity);	
+			}
+		});
+		
+		
+		// 서버로 전송할 데이터
+		const form = {
+				memberId : '${member.memberId}',
+				bookId : '${goodsInfo.bookId}',
+				bookCount : ''   //수량('bookCount') 경우 '장바구니 버튼' 클릭 직전까지 변경할 수 있기 때문에 빈 값
+		}
+		
+		// 장바구니 추가 버튼
+		$(".btn_cart").on("click", function(e){
+			form.bookCount = $(".quantity_input").val();   //버튼 클릭 시 수량 부여
+			$.ajax({   //장바구니 등록 요청 ajax
+				url: '/cart/add',
+				type: 'POST',
+				data: form,
+				success: function(result){   //서버가 반환한 값에 따라 알림창 출력 메서드 호출
+					cartAlert(result);
+				}
+			})   //장바구니 등록 요청 ajax 끝
+		});
+		
+		//전달 받은 값에 따라 알림창 출력 메서드
+		function cartAlert(result){
+			if(result == '0'){
+				alert("장바구니에 추가를 하지 못하였습니다.");
+			} else if(result == '1'){
+				alert("장바구니에 추가되었습니다.");
+			} else if(result == '2'){
+				alert("장바구니에 이미 추가되어져 있습니다.");
+			} else if(result == '5'){
+				alert("로그인이 필요합니다.");	
+			}
+		}
 		    
 		</script>
 	</body>

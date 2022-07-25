@@ -49,7 +49,7 @@
 		                        마이룸
 		                    </li>
 		                    <li>
-		                        장바구니
+		                        <a href="/cart/${member.memberId}">장바구니</a>
 		                    </li>
 		                </c:if>
 		                <!-- 공통 -->
