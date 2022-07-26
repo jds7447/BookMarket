@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.market.mapper.AttachMapper;
 import com.market.mapper.CartMapper;
+import com.market.model.AttachImageVO;
 import com.market.model.CartDTO;
 
 @Service
@@ -14,6 +16,10 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	private CartMapper cartMapper;
 	
+	@Autowired
+	private AttachMapper attachMapper;
+	
+	/* 장바구니 추가 */
 	@Override
 	public int addCart(CartDTO cart) {
 		// 장바구니 데이터 체크
@@ -30,15 +36,33 @@ public class CartServiceImpl implements CartService {
 		}
 	}
 
+	/* 장바구니 정보 리스트 */
 	@Override
 	public List<CartDTO> getCartList(String memberId) {
 		List<CartDTO> cart = cartMapper.getCart(memberId);   //회원의 장바구니에 담은 상품 정보를 모두 가져와 리스트로
 		
 		for(CartDTO dto : cart) {   //반복문을 이용해 각 상품의 initSaleTotal() 메서드를 호출하여
 			dto.initSaleTotal();   //'salePrice', 'totalPrice', 'point', 'totalPoint' 변수를 초기화
+			
+			/* 이미지 정보 얻기 */
+			int bookId = dto.getBookId();   //장바구니 상품에서 id 값 가져오기
+			List<AttachImageVO> imageList = attachMapper.getAttachList(bookId);   //상품 id로 해당 상품에 등록된 이미지 리스트 가져오기
+			dto.setImageList(imageList);   //이미지 리스트를 장바구니 상품 객체에 저장
 		}
 		
 		return cart;   //설정 완료한 장바구니 리스트 반환
+	}
+	
+	/* 카트 수량 수정 */
+	@Override
+	public int modifyCount(CartDTO cart) {
+		return cartMapper.modifyCount(cart);
+	}
+	
+	/* 카트 삭제 */
+	@Override
+	public int deleteCart(int cartId) {
+		return cartMapper.deleteCart(cartId);
 	}
 	
 }

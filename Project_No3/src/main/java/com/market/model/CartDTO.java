@@ -1,5 +1,7 @@
 package com.market.model;
 
+import java.util.List;
+
 public class CartDTO {
 
 	private int cartId;   //장바구니 id
@@ -25,6 +27,8 @@ public class CartDTO {
     private int point;   //상품 한 개의 받을 수 있는 포인트
     
     private int totalPoint;   //총 받을 수 있는 포인트 (point * bookCount)
+    
+    private List<AttachImageVO> imageList;   //상품 이미지 리스트
 
     
 	/* 할인율 적용된 상품 가격, 상품 총합 가격, 상품 한 개의 포인트, 장바구니에 담은 총합 포인트는
@@ -108,12 +112,20 @@ public class CartDTO {
 		return totalPoint;
 	}
 
+	public List<AttachImageVO> getImageList() {
+		return imageList;
+	}
+
+	public void setImageList(List<AttachImageVO> imageList) {
+		this.imageList = imageList;
+	}
+
 	@Override
 	public String toString() {
 		return "CartDTO [cartId=" + cartId + ", memberId=" + memberId + ", bookId=" + bookId + ", bookCount="
 				+ bookCount + ", bookName=" + bookName + ", bookPrice=" + bookPrice + ", bookDiscount=" + bookDiscount
 				+ ", salePrice=" + salePrice + ", totalPrice=" + totalPrice + ", point=" + point + ", totalPoint="
-				+ totalPoint + "]";
+				+ totalPoint + ", imageList=" + imageList + "]";
 	}
     
     

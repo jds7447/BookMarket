@@ -28,6 +28,8 @@ public class CartController {
 	@PostMapping("/cart/add")
 	@ResponseBody   //페이지 전환이 아니기 때문에 @ResponseBody 사용
 	public String addCartPOST(CartDTO cart, HttpServletRequest request) {   //장바구니 등록할 객체, 로그인 여부 확인용 세션을 위한 요청 객체
+		log.info("addCartPOST..........");
+		
 		// 로그인 체크
 		HttpSession session = request.getSession();
 		MemberVO mvo = (MemberVO)session.getAttribute("member");
@@ -46,9 +48,32 @@ public class CartController {
 	 * 조회한 장바구니 데이터를 뷰에 넘기기 위해 Model을 파라미터로 추가 */
 	@GetMapping("/cart/{memberId}")
 	public String cartPageGET(@PathVariable("memberId") String memberId, Model model) {
+		log.info("cartPageGET..........");
+		
 		model.addAttribute("cartInfo", cartService.getCartList(memberId));   //장바구니 상품 리스트를 뷰로 전송
 		
 		return "/cart";
+	}
+	
+	/* 카트 수량 수정 */
+	@PostMapping("/cart/update")
+	public String updateCartPOST(CartDTO cart) {
+		log.info("updateCartPOST..........");
+		
+		cartService.modifyCount(cart);   //전달받은 장바구니 객체에 담긴 수량으로 DB 수정
+		
+		return "redirect:/cart/" + cart.getMemberId();   //요청했던 유저의 장바구니로 다시 이동
+	}
+	
+	/* 카트 삭제 */
+	@PostMapping("/cart/delete")
+	public String deleteCartPOST(CartDTO cart) {
+		log.info("deleteCartPOST..........");
+		
+		cartService.deleteCart(cart.getCartId());
+		
+		return "redirect:/cart/" + cart.getMemberId();
+		
 	}
 	
 }
