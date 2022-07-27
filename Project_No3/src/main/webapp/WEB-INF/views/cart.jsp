@@ -144,6 +144,7 @@
 											<input type="hidden" class="individual_totalPrice_input" value="${ci.salePrice * ci.bookCount}">
 											<input type="hidden" class="individual_point_input" value="${ci.point}">
 											<input type="hidden" class="individual_totalPoint_input" value="${ci.totalPoint}">
+											<input type="hidden" class="individual_bookId_input" value="${ci.bookId}">
 										</td>
 										<td class="td_width_2">   <!-- 상품당 이미지를 1개씩만 담도록 했기 때문에 이미지 리스트의 0번 데이터 저장 -->
 											<div class="image_wrap" data-bookid="${ci.imageList[0].bookId}" data-path="${ci.imageList[0].uploadPath}" data-uuid="${ci.imageList[0].uuid}" data-filename="${ci.imageList[0].fileName}">
@@ -261,10 +262,16 @@
 							<input type="hidden" name="cartId" class="delete_cartId">
 							<input type="hidden" name="memberId" value="${member.memberId}">
 						</form>
+						
+						<!-- 주문 form -->
+						<form action="/order/${member.memberId}" method="get" class="order_form">
+							
+						</form>
 					</div>
 					<!-- 구매 버튼 영역 -->
 					<div class="content_btn_section">
-						<a>주문하기</a>
+						<!-- <a>주문하기</a> -->
+						<a class="order_btn">주문하기</a>
 					</div>
 				</div>
 				
@@ -433,7 +440,6 @@
 				let cartId = $(this).attr("data-cartId");   //위에 것으로 소문자 써도 되지만 그냥 attr로 data 속성 통째로 써서 값을 가져옴
 				let bookCount = $(this).parent("td").find("input").val();   //해당 선택자의 부모 태그인 td 안에 input 태그의 값
 				//가져온 값들을 서버로 보낼 form 태그 내의 hidden input 태그 값으로 적용 후 제출
-				alert(cartId);
 				$(".update_cartId").val(cartId);
 				$(".update_bookCount").val(bookCount);
 				$(".quantity_update_form").submit();
@@ -447,6 +453,33 @@
 				let cartId = $(this).attr("data-cartId");
 				$(".delete_cartId").val(cartId);
 				$(".quantity_delete_form").submit();
+			});
+			
+			
+			/* 주문 페이지 이동 */	
+			$(".order_btn").on("click", function(){
+				let form_contents ='';   //주문 form에 추가될 태그 작성할 변수
+				let orderNumber = 0;   //주문 form에 추가될 각 태그의 name 값에 들어갈 인덱스 번호용
+				
+				$(".cart_info_td").each(function(index, element){   //선택된 상품들의 데이터를 하나씩 주문 form에 추가하기 위한 반복문
+					if($(element).find(".individual_cart_checkbox").is(":checked") === true){	//체크여부 (체크된 상품인지)
+						let bookId = $(element).find(".individual_bookId_input").val();   //상품 관련 정보 td 태그의 상품 id 값
+						let bookCount = $(element).find(".individual_bookCount_input").val();   //상품 관련 정보 td 태그의 상품 개수 값
+						
+						//상품 id를 OrderPageDTO 객체의 List<OrderPageItemDTO> 에 넣기 위한 형태로 name 설정 후 form 태그에 추가할 변수에 적용
+						let bookId_input = "<input name='orders[" + orderNumber + "].bookId' type='hidden' value='" + bookId + "'>";
+						form_contents += bookId_input;
+						
+						//상품 개룰를 OrderPageDTO 객체의 List<OrderPageItemDTO> 에 넣기 위한 형태로 name 설정 후 form 태그에 추가할 변수에 적용
+						let bookCount_input = "<input name='orders[" + orderNumber + "].bookCount' type='hidden' value='" + bookCount + "'>";
+						form_contents += bookCount_input;
+						
+						orderNumber += 1;   //현재 인덱스에 상품 데이터를 모두 저장 후 인덱스 값 상승
+					}
+				});
+				
+				$(".order_form").html(form_contents);   //주문 form에 작성한 태그들 적용
+				$(".order_form").submit();
 			});
 		    
 		</script>

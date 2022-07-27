@@ -181,6 +181,12 @@
 					<div class="content_bottom">
 						리뷰
 					</div>
+					
+					<!-- 주문 form -->
+					<form action="/order/${member.memberId}" method="get" class="order_form">
+						<input type="hidden" name="orders[0].bookId" value="${goodsInfo.bookId}">
+						<input type="hidden" name="orders[0].bookCount" value="">
+					</form>
 				</div>
 				
 				<%-- Footer 영역 --%>
@@ -274,7 +280,7 @@
 		});
 		
 		
-		// 수량 버튼 조작
+		// 주문 수량 버튼 조작
 		let quantity = $(".quantity_input").val();   //수량 표시 태그
 		$(".plus_btn").on("click", function(){   // +버튼 조작
 			$(".quantity_input").val(++quantity);
@@ -318,6 +324,14 @@
 				alert("로그인이 필요합니다.");	
 			}
 		}
+		
+		
+		/* 바로구매 버튼 */
+		$(".btn_buy").on("click", function(){
+			let bookCount = $(".quantity_input").val();   //주문 수량 태그 요소 값
+			$(".order_form").find("input[name='orders[0].bookCount']").val(bookCount);   //주문 폼 개수 데이터
+			$(".order_form").submit();
+		});
 		    
 		</script>
 	</body>
