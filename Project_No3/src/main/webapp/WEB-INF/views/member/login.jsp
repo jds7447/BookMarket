@@ -31,7 +31,7 @@
 						</div>
 						<div class="pw_wrap">
 							<div class="pw_input_box">
-								<input class="pw_iput" name="memberPw">   <!-- VO객체의 멤버변수 명과 같은 이름으로 name 설정 -->
+								<input type="password" class="pw_iput" name="memberPw">   <!-- VO객체의 멤버변수 명과 같은 이름으로 name 설정 -->
 							</div>
 						</div>
 						

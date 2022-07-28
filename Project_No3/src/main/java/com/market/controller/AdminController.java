@@ -34,6 +34,7 @@ import com.market.model.AttachImageVO;
 import com.market.model.AuthorVO;
 import com.market.model.BookVO;
 import com.market.model.Criteria2;
+import com.market.model.OrderDTO;
 import com.market.model.PageMakerDTO2;
 import com.market.service.AdminService;
 import com.market.service.AuthorService;
@@ -482,6 +483,21 @@ public class AdminController {
 		rttr.addFlashAttribute("delete_result", result);
 		
 		return "redirect:/admin/goodsManage";
+	}
+	
+	/* 주문 현황 페이지 */
+	@GetMapping("/orderList")
+	public String orderListGET(Criteria2 cri, Model model) {
+		List<OrderDTO> list = adminService.getOrderList(cri);   //주문 목록
+		
+		if(!list.isEmpty()) {
+			model.addAttribute("list", list);
+			model.addAttribute("pageMaker", new PageMakerDTO2(cri, adminService.getOrderTotal(cri)));
+		} else {
+			model.addAttribute("listCheck", "empty");
+		}
+		
+		return "/admin/orderList";
 	}
 	
 }

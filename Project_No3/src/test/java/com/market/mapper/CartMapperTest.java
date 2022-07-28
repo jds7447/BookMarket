@@ -1,9 +1,12 @@
 package com.market.mapper;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.market.model.CartDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
@@ -77,5 +80,18 @@ public class CartMapperTest {
 //		CartDTO resutlCart = mapper.checkCart(cart);
 //		System.out.println("결과 : " + resutlCart);
 //	}
+	
+	/* 장바구니 제거(주문 처리) */
+	@Test
+	public void deleteOrderCart() {
+		String memberId = "admin";
+		int bookId = 3201;
+		
+		CartDTO dto = new CartDTO();
+		dto.setMemberId(memberId);
+		dto.setBookId(bookId);
+		
+		mapper.deleteOrderCart(dto);
+	}
 	
 }

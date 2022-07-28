@@ -332,6 +332,19 @@
 			$(".order_form").find("input[name='orders[0].bookCount']").val(bookCount);   //주문 폼 개수 데이터
 			$(".order_form").submit();
 		});
+		
+		
+		/* gnb_area 비동기 로그아웃 버튼 작동 */
+	    $("#gnb_logout_button").click(function(){
+	    	$.ajax({
+	            type:"POST",
+	            url:"/member/logout.do",
+	            success:function(data){
+	                alert("로그아웃 성공");
+	                document.location.reload();   //페이지 새로 고침
+	            } 
+	        }); // ajax 종료
+	    });
 		    
 		</script>
 	</body>

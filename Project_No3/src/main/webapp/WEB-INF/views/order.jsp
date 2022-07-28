@@ -45,7 +45,7 @@
 		                    </c:if>
 		                    <%-- 일반 계정일 경우 아래 메뉴만 --%>
 		                    <li>
-		                        <a id="gnb_logout_button">로그아웃</a>   <!-- 특정 화면 이동 없이 현 페이지가 새로고침 되는 비동기 방식 구현 -->
+		                        <a href="/member/logout.do">로그아웃</a>   <!-- 특정 화면 이동 없이 현 페이지가 새로고침 되는 비동기 방식 구현 -->
 		                    </li>
 		                    <li>
 		                        마이룸
@@ -144,7 +144,13 @@
 											<tr>
 												<th>주소</th>
 												<td>
-													${memberInfo.memberAddr1} ${memberInfo.memberAddr2}<br>${memberInfo.memberAddr3}										
+													${memberInfo.memberAddr1} ${memberInfo.memberAddr2}<br>${memberInfo.memberAddr3}
+													<%-- '사용자 정보 주소록' 선택했을 때 가져올 데이터 --%>
+													<input class="selectAddress" value="T" type="hidden">   <%-- 기존 주소 방식 --%>
+													<input class="addressee_input" value="${memberInfo.memberName}" type="hidden">
+													<input class="address1_input" type="hidden" value="${memberInfo.memberAddr1}">
+													<input class="address2_input" type="hidden" value="${memberInfo.memberAddr2}">
+													<input class="address3_input" type="hidden" value="${memberInfo.memberAddr3}">
 												</td>
 											</tr>
 										</tbody>
@@ -166,6 +172,7 @@
 											<tr>
 												<th>주소</th>
 												<td>
+													<input class="selectAddress" value="F" type="hidden">   <%-- 주소 직접 입력 방식 --%>
 													<input class="address1_input" readonly="readonly"> <a class="address_search_btn" onclick="execution_daum_address()">주소 찾기</a><br>
 													<input class="address2_input" readonly="readonly"><br>
 													<input class="address3_input" readonly="readonly">
@@ -289,6 +296,20 @@
 					</div>
 				</div>
 				
+				<!-- 주문 요청 form -->
+				<form class="order_form" action="/order" method="post">
+					<!-- 주문자 회원번호 -->
+					<input name="memberId" value="${memberInfo.memberId}" type="hidden">
+					<!-- 주소록 & 받는이-->
+					<input name="addressee" type="hidden">
+					<input name="memberAddr1" type="hidden">
+					<input name="memberAddr2" type="hidden">
+					<input name="memberAddr3" type="hidden">
+					<!-- 사용 포인트 -->
+					<input name="usePoint" type="hidden">
+					<!-- 상품 정보 -->
+				</form>
+				
 				<%-- Footer 영역 --%>
 		        <div class="footer_nav">
 		            <div class="footer_nav_container">
@@ -370,6 +391,14 @@
 				$(".address_btn").css('backgroundColor', '#555');
 				// 지정 색상 변경
 				$(".address_btn_"+className).css('backgroundColor', '#3c3838');
+				
+				/* selectAddress Type - T/F ==> 회원이 선택한 값(주소 방식)을 T로 만드는 작업 */
+				/* 모든 selectAddress F만들기 */
+					$(".addressInfo_input_div").each(function(i, obj){
+						$(obj).find(".selectAddress").val("F");
+					});
+				/* 선택한 selectAdress T만들기 */
+					$(".addressInfo_input_div_" + className).find(".selectAddress").val("T");
 			}
 			
 			
@@ -449,6 +478,10 @@
 			//0 이상 & 최대 포인트 수 이하
 			$(".order_point_input").on("propertychange change keyup paste input", function(){   //포인트 사용 입력란에 변화가 감지될 때 실행
 				const maxPoint = parseInt('${memberInfo.point}');   //DB에서 가져온 회원의 포인트(String)을 정수(int)로 바꿔서 변수 저장 (사용 가능 포인트)
+				console.log("hihi");
+				let totalPrice = $(".finalTotalPrice_span").val();
+				console.log(totalPrice);
+				console.log("hihi");
 				
 				let inputValue = parseInt($(this).val());   //사용자가 포인트 사용 입력란에 작성한 값 저장
 				
@@ -456,7 +489,12 @@
 				if(inputValue < 0){
 					$(this).val(0);
 				} else if(inputValue > maxPoint){
-					$(this).val(maxPoint);
+					if(maxPoint > totalPrice){
+						$(this).val(totalPrice);
+					}
+					else{
+						$(this).val(maxPoint);	
+					}
 				}
 				
 				/* 포인트 사용에 따른 주문 정보 최신화 */
@@ -548,6 +586,38 @@
 				$(".finalTotalPrice_span").text(finalTotalPrice.toLocaleString());   // 최종 가격(총 가격 + 배송비)
 				$(".usePoint_span").text(usePoint.toLocaleString());   // 할인가(사용 포인트)
 			}   /* 총 주문 정보 세팅(배송비, 총 가격, 마일리지, 물품 수, 종류) 함수 종료 */
+			
+			
+			/* 주문 요청 - 결제하기 버튼 클릭 시 */
+			$(".order_btn").on("click", function(){
+				/* 입력된 주소 정보 & 받는이 값을 가져와 서버로 보낼 form 의 hidden input 태그에 셋팅 */
+				$(".addressInfo_input_div").each(function(i, obj){
+					if($(obj).find(".selectAddress").val() === 'T'){
+						$("input[name='addressee']").val($(obj).find(".addressee_input").val());
+						$("input[name='memberAddr1']").val($(obj).find(".address1_input").val());
+						$("input[name='memberAddr2']").val($(obj).find(".address2_input").val());
+						$("input[name='memberAddr3']").val($(obj).find(".address3_input").val());
+					}
+				});
+				
+				/* 사용 포인트 값을 가져와 서버로 보낼 form 의 hidden input 태그에 셋팅 */
+				$("input[name='usePoint']").val($(".order_point_input").val());
+				
+				/* 상품정보 값을 가져와 필요한 hidden input 태그를 만들어 서버로 보낼 form에 추가 */
+				let form_contents = ''; 
+				$(".goods_table_price_td").each(function(index, element){
+					let bookId = $(element).find(".individual_bookId_input").val();
+					let bookCount = $(element).find(".individual_bookCount_input").val();
+					let bookId_input = "<input name='orders[" + index + "].bookId' type='hidden' value='" + bookId + "'>";
+					form_contents += bookId_input;
+					let bookCount_input = "<input name='orders[" + index + "].bookCount' type='hidden' value='" + bookCount + "'>";
+					form_contents += bookCount_input;
+				});	
+				$(".order_form").append(form_contents);
+				
+				/* 서버 전송 */
+				$(".order_form").submit();
+			});
 		    
 		</script>
 	</body>
