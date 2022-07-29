@@ -114,7 +114,7 @@ ul{
     color: white;	
 }
 
-/* 작가 목록 영역 */
+/* 주문 목록 영역 */
 .order_table_wrap{
 	padding: 20px 35px;
 	min-height: 570px;
@@ -140,6 +140,16 @@ ul{
     text-align: center;
     margin: 200px 0 215px 0px;
     font-size: 25px;
+}
+.delete_btn{
+    border: none;
+    color: white;
+    padding: 5px 15px;
+    cursor: pointer;
+    background-color: #f7564b;	
+}
+.delete_btn:hover{
+	background-color : #da190b;
 }
 
 /* 검색 영역 */

@@ -50,7 +50,9 @@
 			                    			<td><fmt:formatDate value="${list.orderDate}" pattern="yyyy-MM-dd"/></td>
 			                    			<td><c:out value="${list.orderState}"/></td>
 			                    			<td>
-			                    				주문 취소
+			                    				<c:if test="${list.orderState == '배송준비' }">   <!-- 배송 준비 상태일 때만 취소 버튼 보임 -->
+			                    					<button class="delete_btn" data-orderId="${list.orderId}">주문 취소</button>
+			                    				</c:if>
 			                    			</td>
 			                    		</tr>
 		                    		</c:forEach>
@@ -112,12 +114,21 @@
 		                    </ul>
 	                    </div>
 					
-					<!-- 페이지 이동 후 서버로부터 전달받은 "pageMaker" 데이터에 있는 pageNum, amount, keyword 값이 기본적으로 저장되도록 -->
-                    <form id="moveForm" action="/admin/orderList" method="get">
-						<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
-						<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-						<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
-					</form>
+						<!-- 페이지 이동 후 서버로부터 전달받은 "pageMaker" 데이터에 있는 pageNum, amount, keyword 값이 기본적으로 저장되도록 -->
+	                    <form id="moveForm" action="/admin/orderList" method="get">
+							<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
+							<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
+							<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
+						</form>
+						
+						<!-- 주문 최소 데이터 폼 -->
+						<form id="deleteForm" action="/admin/orderCancle" method="post">
+	                    	<input type="hidden" name="orderId">
+							<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
+							<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
+							<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
+							<input type="hidden" name="memberId" value="${member.memberId}">
+	                    </form>
 	                </div>
 	                
 		<%@include file="../includes/admin/footer.jsp" %>
@@ -167,6 +178,17 @@
 				
 				searchForm.find("input[name='pageNum']").val("1");
 				searchForm.submit();
+			});
+			
+			
+			/* 주문 취소 버튼 동작 */
+			$(".delete_btn").on("click", function(e){
+				e.preventDefault();
+
+				let id = $(this).attr("data-orderId");   //주문 id
+				
+				$("#deleteForm").find("input[name='orderId']").val(id);   //주문 id를 주문 취소 데이터 폼에 셋팅
+				$("#deleteForm").submit();
 			});
 			
 		</script>

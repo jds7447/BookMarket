@@ -18,6 +18,7 @@ import com.market.model.AttachImageVO;
 import com.market.model.BookVO;
 import com.market.model.CartDTO;
 import com.market.model.MemberVO;
+import com.market.model.OrderCancelDTO;
 import com.market.model.OrderDTO;
 import com.market.model.OrderItemDTO;
 import com.market.model.OrderPageItemDTO;
@@ -90,8 +91,8 @@ public class OrderServiceImpl implements OrderService {
 		/*DB 주문,주문상품(,배송정보) 넣기*/
 		/* orderId만들기 및 OrderDTO객체 orderId에 저장 */
 		Date date = new Date();
-		SimpleDateFormat format = new SimpleDateFormat("_yyyyMMddhhmm");
-		String orderId = member.getMemberId() + format.format(date);   //"회원 아이디" + "_년도 월 일 시 분"
+		SimpleDateFormat format = new SimpleDateFormat("_yyyyMMddHHmmss");
+		String orderId = member.getMemberId() + format.format(date);   //"회원 아이디" + "_년도 월 일 시 분 초"
 		ord.setOrderId(orderId);
 		/* db넣기 */
 		orderMapper.enrollOrder(ord);   //book_order 등록
@@ -128,6 +129,51 @@ public class OrderServiceImpl implements OrderService {
 			dto.setBookId(oit.getBookId());
 			
 			cartMapper.deleteOrderCart(dto);
+		}
+	}
+	
+	/* 주문취소 */
+	@Override
+	@Transactional
+	public void orderCancle(OrderCancelDTO dto) {
+		/* 주문, 주문상품 객체 (데이터 가져오기) */
+		/*회원*/
+		MemberVO member = memberMapper.getMemberInfo(dto.getMemberId());   //주문 취소한 회원 정보 (BOOK_MEMBER 테이블)
+		
+		/*주문상품*/
+		List<OrderItemDTO> ords = orderMapper.getOrderItemInfo(dto.getOrderId());   //주문한 상품들 리스트 (BOOK_ORDERITEM 테이블)
+		for(OrderItemDTO ord : ords) {   //각 상품들의 총 가격, 포인트 등 계산 값들 셋팅
+			ord.initSaleTotal();
+		}
+		
+		/* 주문 */
+		OrderDTO orw = orderMapper.getOrder(dto.getOrderId());   //주문 정보 (BOOK_ORDER 테이블)
+		orw.setOrders(ords);   //주문 정보에 주문 상품들 정보 담기
+		orw.getOrderPriceInfo();   //주문 정보에 배송비, 최종 가격 등 계산 값들 셋팅
+		
+		/* 주문상품 취소 DB */
+		orderMapper.orderCancle(dto.getOrderId());
+		
+		
+		/* 주문 취소로 돈, 포인트, 재고 변환 (주문 전으로 복구) */
+		/* 돈 */
+		int calMoney = member.getMoney();   //회원 돈
+		calMoney += orw.getOrderFinalSalePrice();   //주문 시 결제 금액을 회원 돈에 추가
+		member.setMoney(calMoney);   //회원에게 주문 금액 추가된 돈 셋팅
+		
+		/* 포인트 */
+		int calPoint = member.getPoint();   //회원 포인트
+		calPoint = calPoint + orw.getUsePoint() - orw.getOrderSavePoint();   //회원 포인트에 사용 포인트 더하고 적립 포인트 빼기
+		member.setPoint(calPoint);   //계산된 포인트를 회원에게 셋팅
+		
+		/* 셋팅한 돈과 포인트 적용된 회원 데이터 DB적용 */
+		orderMapper.deductMoney(member);
+		
+		/* 재고 */
+		for(OrderItemDTO ord : orw.getOrders()) {   //주문 정보에 저장한 주문 상품 정보들을 하나씩 꺼내 반복
+			BookVO book = bookMapper.getGoodsInfo(ord.getBookId());   //각 주문 상품의 상품 정보
+			book.setBookStock(book.getBookStock() + ord.getBookCount());   //각 상품 정보의 재고 수량에 주문 수량 더하기
+			orderMapper.deductStock(book);   //DB에 재고 수량 적용
 		}
 	}
 	

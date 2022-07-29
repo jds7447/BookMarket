@@ -37,5 +37,22 @@
 	<update id="deductStock">
 		update book_goods set bookStock = #{bookStock} where bookId = #{bookId}
 	</update>
+	
+	<!-- 주문취소 -->
+	<update id="orderCancle">
+		update book_order set orderState = '주문취소' where orderId = #{orderId}
+	</update>	
+
+	<!-- 주문 상품 정보 (주문취소) -->
+	<select id="getOrderItemInfo" resultType="com.market.model.OrderItemDTO">
+		select * from book_orderItem
+		where orderId = #{orderId}
+	</select>
+	
+	<!-- 주문 정보 (주문 취소) -->
+	<select id="getOrder" resultType="com.market.model.OrderDTO">
+		select * from book_order
+		where orderId = #{orderId}
+	</select>
 
 </mapper>

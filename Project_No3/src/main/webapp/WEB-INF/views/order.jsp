@@ -222,7 +222,7 @@
 											<td class="goods_table_price_td">
 												<fmt:formatNumber value="${ol.salePrice}" pattern="#,### 원" /> | 수량 ${ol.bookCount}개
 												<br><fmt:formatNumber value="${ol.totalPrice}" pattern="#,### 원" />
-												<br>[<fmt:formatNumber value="${ol.totalPoint}" pattern="#,### 원" />P]
+												<br>[<fmt:formatNumber value="${ol.totalPoint}" pattern="#,###" /> P]
 												<input type="hidden" class="individual_bookPrice_input" value="${ol.bookPrice}">
 												<input type="hidden" class="individual_salePrice_input" value="${ol.salePrice}">
 												<input type="hidden" class="individual_bookCount_input" value="${ol.bookCount}">
@@ -249,7 +249,7 @@
 									<tr>
 										<th>포인트 사용</th>
 										<td>
-											${memberInfo.point} | <input class="order_point_input" value="0">원 
+											${memberInfo.point} | <input class="order_point_input" value="0"> P  
 											<a class="order_point_input_btn order_point_input_btn_N" data-state="N">모두사용</a>
 											<a class="order_point_input_btn order_point_input_btn_Y" data-state="Y" style="display: none;">사용취소</a>
 										</td>
@@ -478,23 +478,24 @@
 			//0 이상 & 최대 포인트 수 이하
 			$(".order_point_input").on("propertychange change keyup paste input", function(){   //포인트 사용 입력란에 변화가 감지될 때 실행
 				const maxPoint = parseInt('${memberInfo.point}');   //DB에서 가져온 회원의 포인트(String)을 정수(int)로 바꿔서 변수 저장 (사용 가능 포인트)
-				console.log("hihi");
-				let totalPrice = $(".finalTotalPrice_span").val();
-				console.log(totalPrice);
-				console.log("hihi");
+				
+				/* 상품 총 가격 - 포인트 사용 입력란에 변화가 생길 때마다 반복문을 계산하여 효율이 떨어지나, 현재는 기능 구현만을 목적으로하여 이대로 진행 */
+				let totalPrice = 0;
+				$(".goods_table_price_td").each(function(index, element){
+					totalPrice += parseInt($(element).find(".individual_totalPrice_input").val());
+				});
 				
 				let inputValue = parseInt($(this).val());   //사용자가 포인트 사용 입력란에 작성한 값 저장
 				
 				/* 0보다 작은 값을 입력할 경우에는 0이 입력되도록, '사용 가능 포인트'보다 많은 값을 입력할 경우 '사용 가능 포인트' 최댓값이 입력되도록 */
-				if(inputValue < 0){
+				if(inputValue < 0 || isNaN(inputValue)){   //입력한 사용 포인트가 0 미만 또는 공란일 경우
 					$(this).val(0);
-				} else if(inputValue > maxPoint){
-					if(maxPoint > totalPrice){
-						$(this).val(totalPrice);
-					}
-					else{
-						$(this).val(maxPoint);	
-					}
+				} else if(inputValue > maxPoint){   //입력한 사용 포인트가 보유 포인트보다 많을 경우
+					$(this).val(maxPoint);
+				}
+				
+				if(maxPoint > totalPrice && inputValue > totalPrice){   //보유 포인트가 상품 총 가격보다 많고, 입력한 사용 포인트가 상품 가격보다 높을 경우 
+					$(this).val(totalPrice);   //상품 가격 만큼만 포인트 사용
 				}
 				
 				/* 포인트 사용에 따른 주문 정보 최신화 */
@@ -511,8 +512,17 @@
 				if(state == 'N'){
 					/* console.log("n동작"); */
 					/* 모두사용 */
+					/* 상품 총 가격 - 모두사용 버튼 누를 때마다 반복문을 계산하여 효율이 떨어지나, 현재는 기능 구현만을 목적으로하여 이대로 진행 */
+					let totalPrice = 0;
+					$(".goods_table_price_td").each(function(index, element){
+						totalPrice += parseInt($(element).find(".individual_totalPrice_input").val());
+					});
 					//값 변경
-					$(".order_point_input").val(maxPoint);
+					if(maxPoint > totalPrice){   //보유 포인트가 상품 총 가격보다 많을 경우 
+						$(".order_point_input").val(totalPrice);   //상품 가격 만큼만 포인트 사용
+					} else{
+						$(".order_point_input").val(maxPoint);
+					}
 					//글 변경
 					$(".order_point_input_btn_Y").css("display", "inline-block");
 					$(".order_point_input_btn_N").css("display", "none");
@@ -570,11 +580,15 @@
 				usePoint = $(".order_point_input").val();
 				
 				/* 사용된 포인트를 제외한 최종 가격 */
-				finalTotalPrice = totalPrice - usePoint;
+				finalTotalPrice = finalTotalPrice - usePoint;
 				
 				/* 포인트 사용에 따른 총 마일리지(획득 포인트) 변화 - 실제로 결제하는 가격에만 포인트 적용 (포인트 사용으로 감소된 가격은 포인트 적립 제외) */
 				if(usePoint !== 0) {
-					totalPoint = parseInt(finalTotalPrice * 0.05);
+					if(deliveryPrice === 0){
+						totalPoint = parseInt(finalTotalPrice * 0.05);
+					} else{
+						totalPoint = parseInt((finalTotalPrice - deliveryPrice) * 0.05);
+					}
 				}
 				
 				/* 값 삽입 */

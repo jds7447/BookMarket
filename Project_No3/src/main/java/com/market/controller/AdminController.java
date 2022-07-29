@@ -34,10 +34,12 @@ import com.market.model.AttachImageVO;
 import com.market.model.AuthorVO;
 import com.market.model.BookVO;
 import com.market.model.Criteria2;
+import com.market.model.OrderCancelDTO;
 import com.market.model.OrderDTO;
 import com.market.model.PageMakerDTO2;
 import com.market.service.AdminService;
 import com.market.service.AuthorService;
+import com.market.service.OrderService;
 
 import lombok.extern.log4j.Log4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -54,6 +56,9 @@ public class AdminController {
 	
 	@Autowired
 	private AdminService adminService;   //상품 서비스
+	
+	@Autowired
+	private OrderService orderService;   //주문 서비스
 	
 	/* 관리자 메인 페이지 이동 */
     @RequestMapping(value = "main", method = RequestMethod.GET)   // 혹은 @GetMapping("/main")
@@ -488,6 +493,7 @@ public class AdminController {
 	/* 주문 현황 페이지 */
 	@GetMapping("/orderList")
 	public String orderListGET(Criteria2 cri, Model model) {
+		log.info("orderListGET..........");
 		List<OrderDTO> list = adminService.getOrderList(cri);   //주문 목록
 		
 		if(!list.isEmpty()) {
@@ -498,6 +504,33 @@ public class AdminController {
 		}
 		
 		return "/admin/orderList";
+	}
+	
+	/* 주문삭제 */
+	@PostMapping("/orderCancle")
+	public String orderCanclePOST(OrderCancelDTO dto) {
+		log.info("orderCanclePOST..........");
+		
+		orderService.orderCancle(dto);   //주문 취소
+		
+		/* 메인 페이지 우측 회원 정보 칸을 주문 후 정보로 최신화
+		 * 만약 관리자가 아닌 회원이 직접 주문을 취소한다고 가정했을 때
+		 * 아래와 같은 회원의 로그인 정보를 세션에 최신화 할 필요가 있음 */
+//		MemberVO member = new MemberVO();   //주문한 회원 정보 담을 회원 정보 객체
+//		member.setMemberId(dto.getMemberId());   //주문한 회원 정보 중 id 값을 새로 만든 회원 정보 객체에 저장
+//		
+//		HttpSession session = request.getSession();
+//		
+//		try {
+//			MemberVO memberLogin = memberService.memberLogin(member);   //전달하는 회원 객체의 id를 이용해 최신화 된 회원 정보 가져오기
+//			memberLogin.setMemberPw("");   //보안을 위해 암호화 된 비밀번호 값은 공란으로 설정
+//			session.setAttribute("member", memberLogin);   //세션에 최신화 된 회원 정보 셋팅
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
+		/* 기존에 머물던 "주문 현황" 페이지를 반환 */
+		return "redirect:/admin/orderList?keyword=" + dto.getKeyword() + "&amount=" + dto.getAmount() + "&pageNum=" + dto.getPageNum();
 	}
 	
 }

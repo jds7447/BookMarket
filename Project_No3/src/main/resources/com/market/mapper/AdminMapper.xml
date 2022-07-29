@@ -110,14 +110,18 @@
 		select * 
 		from(
 		    select rownum rn, orderId, memberId, orderstate, orderdate
-		    from book_order
+		    from (
+		    	select orderId, memberId, orderstate, orderdate 
+		    	from book_order 
+				order by orderdate desc)
 		    where rownum <= #{pageNum} * #{amount} 
-		]]>    
+		]]>  
+		  
 		<if test="keyword != null">
-			and memberId like '%'||#{keyword}||'%'
+			and memberId like '%'|| #{keyword} ||'%' 
 		</if>
+		
 		<![CDATA[
-		    order by orderdate desc
 		    )
 		where rn > (#{pageNum} -1) * #{amount}
 		]]>
