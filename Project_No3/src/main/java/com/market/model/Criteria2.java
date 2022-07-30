@@ -25,7 +25,13 @@ public class Criteria2 {
 	
 	/* 카테고리 코드 */
 	private String cateCode;   //사용자가 요청하는 카테고리 번호
+	
+	/* 상품 번호(댓글 기능에서 사용) */
+	//페이징의 조건 데이터를 담을 DTO객체는 기존에 작성 해둔 Criterial2 클래스를 그대로 사용하지만 댓글 페이징에서는 bookId 조건이 필요로 하기 때문에
+	private int bookId;
     
+	
+	
     /* 기본 생성자 -> 기본 세팅 : pageNum = 1, amount = 10 */
     public Criteria2() {
         this(1, 10);
@@ -95,10 +101,18 @@ public class Criteria2 {
 		this.cateCode = cateCode;
 	}
 
+	public int getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(int bookId) {
+		this.bookId = bookId;
+	}
+
 	@Override
 	public String toString() {
 		return "Criteria2 [pageNum=" + pageNum + ", amount=" + amount + ", keyword=" + keyword + ", type=" + type
-				+ ", authorArr=" + Arrays.toString(authorArr) + ", cateCode=" + cateCode + "]";
+				+ ", authorArr=" + Arrays.toString(authorArr) + ", cateCode=" + cateCode + ", bookId=" + bookId + "]";
 	}
     
 }

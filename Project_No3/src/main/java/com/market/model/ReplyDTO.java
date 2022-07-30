@@ -1,3 +1,5 @@
+//댓글 1개의 데이터
+
 package com.market.model;
 
 import java.util.Date;

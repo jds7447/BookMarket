@@ -10,4 +10,30 @@
   		values(seq_bookreply_num.nextval, #{bookId}, #{memberId}, #{content}, #{rating})
   	</insert>
 	
+	<!-- 댓글 등록 -->
+	<select id="checkReply" resultType="integer">
+		select replyId from book_reply 
+		where memberId = #{memberId} and bookId = #{bookId}
+	</select>
+	
+	<!-- 댓글 페이징 -->
+  	<select id="getReplyList" resultType="com.market.model.ReplyDTO">
+  		<![CDATA[
+		select * from(  		
+			select rownum as rn, replyId, bookId, memberId, content, rating, regDate
+			from book_reply
+			where rownum <= #{pageNum} * #{amount} and bookId = #{bookId}	
+			order by regDate desc
+  			)
+  		where rn > (#{pageNum} -1) * #{amount}
+  		]]>	
+  	</select>
+  	
+  	<!-- 댓글 총 개수 (페이징) -->
+  	<select id="getReplyTotal" resultType="int">
+  		select count(*)
+  		from book_reply
+  		where bookId = #{bookId}
+  	</select>
+	
 </mapper>

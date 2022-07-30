@@ -144,4 +144,16 @@ public class BookController {
 		return "/goodsDetail";
 	}
 	
+	/* 리뷰 쓰기 */
+	/* 리뷰 등록 페이지라서 리뷰 관련 요청이기는 하지만 ReplyController.java 는 전체가 http 바디(body)에 바로 데이터를
+	 * 반환하도록 @RestController 어노테이션을 추가 해놓았기때문에 BookController에 팝업창 요청을 처리하는 메서드를 추가 */
+	@GetMapping("/replyEnroll/{memberId}")
+	public String replyEnrollWindowGET(@PathVariable("memberId")String memberId, int bookId, Model model) {
+		BookVO book = bookService.getBookIdName(bookId);   //상품 id를 이용해 상품 id와 상품 이름이 담긴 vo 객체 반환
+		model.addAttribute("bookInfo", book);
+		model.addAttribute("memberId", memberId);
+		
+		return "/replyEnroll";
+	}
+	
 }

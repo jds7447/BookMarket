@@ -27,4 +27,7 @@ public interface BookService {
 	/* 상품 상세 정보 */
 	public BookVO getGoodsInfo(int bookId);
 	
+	/* 상품 id 이름 */
+	public BookVO getBookIdName(int bookId);
+	
 }

@@ -145,4 +145,10 @@
 			where bookid = ${bookId}	
 	</select>
 	
+	<!-- 상품 id 이름 -->
+	<select id="getBookIdName" resultType="com.market.model.BookVO">
+		select bookId, bookName from book_goods 
+		where bookId = #{bookId}
+	</select>
+	
 </mapper>

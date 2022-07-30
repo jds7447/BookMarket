@@ -143,4 +143,10 @@ public class BookServiceImpl implements BookService {
 		return goodsInfo;
 	}
 	
+	/* 상품 id 이름 */
+	@Override
+	public BookVO getBookIdName(int bookId) {
+		return bookMapper.getBookIdName(bookId);
+	}
+	
 }
