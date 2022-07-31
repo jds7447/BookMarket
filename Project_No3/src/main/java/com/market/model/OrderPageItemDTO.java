@@ -2,7 +2,7 @@ package com.market.model;
 
 import java.util.List;
 
-/* 주문되는 상품 1개의 데이터가 들어가는 VO객체 */
+/* 주문 페이지에서 보여줄 상품 1개의 데이터가 들어가는 VO객체 */
 public class OrderPageItemDTO {
 
 	/* 뷰로부터 전달받을 값 */

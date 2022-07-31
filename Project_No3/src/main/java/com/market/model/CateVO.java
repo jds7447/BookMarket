@@ -1,3 +1,5 @@
+/* 각 카테고리 하나의 데이터를 담는 객체 */
+
 package com.market.model;
 
 import lombok.Data;

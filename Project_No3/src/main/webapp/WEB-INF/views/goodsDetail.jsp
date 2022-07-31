@@ -191,39 +191,11 @@
 							
 						</div>
 						<ul class="reply_content_ul">   <%-- 댓글이 존재하는 경우 댓글 리스트 --%>
-							<li>
-								<div class="comment_wrap">
-									<div class="reply_top">
-										<span class="id_span">sjinjin7</span>
-										<span class="date_span">2021-10-11</span>
-										<span class="rating_span">평점 : <span class="rating_value_span">4</span>점</span>
-										<a class="update_reply_btn">수정</a><a class="delete_reply_btn">삭제</a>
-									</div>
-									<div class="reply_bottom">
-										<div class="reply_bottom_txt">
-											사실 기대를 많이하고 읽기시작했는데 읽으면서 가가 쓴것이 맞는지 의심들게합니다 문체도그렇고 간결하지 않네요 제가 기대가 크던 작았던간에 책장이 사실 안넘겨집니다.
-										</div>
-									</div>
-								</div>
-							</li>
+							
 						</ul>
 						<div class="repy_pageInfo_div">   <%-- 댓글 페이징 버튼 --%>
 							<ul class="pageMaker">
-								<li class="pageMaker_btn prev">
-									<a>이전</a>
-								</li>
-								<li class="pageMaker_btn">
-									<a>1</a>
-								</li>
-								<li class="pageMaker_btn">
-									<a>2</a>
-								</li>
-								<li class="pageMaker_btn active">
-									<a>3</a>
-								</li>													
-								<li class="pageMaker_btn next">
-									<a>다음</a>
-								</li>
+								
 							</ul>
 						</div>
 					</div>
@@ -327,82 +299,9 @@
 				/* 댓글 리스트 받아오기 */
 				/* JQUERY에서는 단순히 JSON 데이터를 GET 메서드 방식으로 서버에 요청할 때 간편히 사용할 수 있는 getJOSN() 메서드를 제공
 					$.getJSON(요청 URL, 서버에 전송할 데이터, 서버로부터 응답을 성공했을 때 동작할 코드) */
-				const bookId = '${goodsInfo.bookId}';   /* 현재 상품 id */
-
+				const bookId = '${goodsInfo.bookId}';   //현재 상품 id
 				$.getJSON("/reply/list", {bookId : bookId}, function(obj){   //obj : 서버가 반환 해준 '댓글 리스트 정보(JSON 데이터)'
-					//'댓글 리스트 정보'는 ReplyPagDTO객체가 JSON으로 변환된 데이터로 JSON은 Jvascript 객체 리터럴 문법을 따르기 때문에 그 자체로 Jvascript 객체
-					//따라서 객체의 프로퍼티 접근 방식으로 '댓글 리스트 정보'의 list(댓글 정보)와 pageInfo (페이지 정보)에 접근 가능
-					//list 프로퍼티의 값에 아무 데이터가 없을 경우 댓글이 없는 경우이기 때문에 ". length"속성을 사용하여 데이터가 있는지 없는지를 판단
-					if(obj.list.length === 0){   //댓글이 없는 경우
-						$(".reply_not_div").html('<span>리뷰가 없습니다.</span>');   //동적으로 댓글이 없다는 문구가 추가
-						$(".reply_content_ul").html('');   //작성 중인 댓글 리스트를 동적으로 만드는 코드는 '회원이 댓글을 추가했을 때', '수정, 삭제했을 때' 도
-						$(".pageMaker").html('');   //댓글 최신화를 위해 그대로 사용할 것인데 기존의 남아 있는 태그들을 지워 주기 위함
-					}
-					else{   //댓글이 있는 경우
-						$(".reply_not_div").html('');   //댓글 없음 문구 삭제
-						
-						const list = obj.list;   //댓글 리스트
-						const pf = obj.pageInfo;   //페이징 데이터
-						const userId = '${member.memberId}';   //회원 id
-						
-						/* list */
-						let reply_list = '';   //댓글 목록에 추가될 태그를 작성할 변수
-						
-						$(list).each(function(i,obj){   //댓글 리스트를 반복문으로 하나씩 꺼내 태그를 작성
-							reply_list += '<li>';
-							reply_list += '<div class="comment_wrap">';
-							reply_list += '<div class="reply_top">';
-							/* 아이디 */
-							reply_list += '<span class="id_span">'+ obj.memberId+'</span>';
-							/* 날짜 */
-							reply_list += '<span class="date_span">'+ obj.regDate +'</span>';
-							/* 평점 */
-							reply_list += '<span class="rating_span">평점 : <span class="rating_value_span">'+ obj.rating +'</span>점</span>';
-							
-							if(obj.memberId === userId){   //if문으로 로그인한 회원과 댓글 아이디 가 일치할 때 '수정', '삭제' 버튼이 보이게 하기
-								reply_list += '<a class="update_reply_btn" href="'+ obj.replyId +'">수정</a><a class="delete_reply_btn" href="'+ obj.replyId +'">삭제</a>';
-							}
-							
-							reply_list += '</div>';   //<div class="reply_top">
-							reply_list += '<div class="reply_bottom">';
-							reply_list += '<div class="reply_bottom_txt">'+ obj.content +'</div>';
-							reply_list += '</div>';   //<div class="reply_bottom">
-							reply_list += '</div>';   //<div class="comment_wrap">
-							reply_list += '</li>';
-						});
-						
-						$(".reply_content_ul").html(reply_list);   //작성한 댓글 목록 태그를 html로 추가
-						
-						/* 페이지 버튼 */
-						let reply_pageMaker = '';   //추가할 페이징 태그를 저장할 변수
-						
-						/* prev */
-						if(pf.prev){   //이전 페이지 버튼이 true인 경우
-							let prev_num = pf.startPage -1;
-							reply_pageMaker += '<li class="pageMaker_btn prev">';
-							reply_pageMaker += '<a href="'+ prev_num +'">이전</a>';
-							reply_pageMaker += '</li>';	
-						}
-						/* numbre btn */
-						for(let i = pf.startPage; i < pf.endPage+1; i++){   //반복문으로 페이지 버튼 추가
-							reply_pageMaker += '<li class="pageMaker_btn ';
-							if(pf.cri.pageNum === i){
-								reply_pageMaker += 'active';
-							}
-							reply_pageMaker += '">';
-							reply_pageMaker += '<a href="'+i+'">'+i+'</a>';
-							reply_pageMaker += '</li>';
-						}
-						/* next */
-						if(pf.next){   //다전 페이지 버튼이 true인 경우
-							let next_num = pf.endPage +1;
-							reply_pageMaker += '<li class="pageMaker_btn next">';
-							reply_pageMaker += '<a href="'+ next_num +'">다음</a>';
-							reply_pageMaker += '</li>';	
-						}
-						
-						$(".pageMaker").html(reply_pageMaker);	 //작성한 페이징 태그를 html로 추가
-					}
+					makeReplyContent(obj)   //댓글(리뷰) 동적 생성 메서드 호출
 				});
 				
 			});
@@ -507,6 +406,148 @@
 							
 							window.open(popUrl,"리뷰 쓰기",popOption);							
 						}
+					}
+				});
+			});
+		    
+		    
+			/* 댓글(리뷰) 동적 생성 메서드 */
+			//댓글을 동적으로 만들어 내는 작업은 화면이 렌더링 될 때뿐만 아니라 회원이 댓글을 등록, 수정, 삭제, 페이지 이동의 경우에도 똑같은 작업이 필요
+			//따라서 중복하여 코드를 작성하지 않도록 댓글을 동적으로 만들어 내는 코드를 메서드로 추출 후 필요 시마다 호출하여 활용
+			function makeReplyContent(obj){
+				//'댓글 리스트 정보'는 ReplyPagDTO객체가 JSON으로 변환된 데이터로 JSON은 Jvascript 객체 리터럴 문법을 따르기 때문에 그 자체로 Jvascript 객체
+				//따라서 객체의 프로퍼티 접근 방식으로 '댓글 리스트 정보'의 list(댓글 정보)와 pageInfo (페이지 정보)에 접근 가능
+				//list 프로퍼티의 값에 아무 데이터가 없을 경우 댓글이 없는 경우이기 때문에 ". length"속성을 사용하여 데이터가 있는지 없는지를 판단
+				if(obj.list.length === 0){   //댓글이 없는 경우
+					$(".reply_not_div").html('<span>리뷰가 없습니다.</span>');   //동적으로 댓글이 없다는 문구가 추가
+					$(".reply_content_ul").html('');   //작성 중인 댓글 리스트를 동적으로 만드는 코드는 '회원이 댓글을 추가했을 때', '수정, 삭제했을 때' 도
+					$(".pageMaker").html('');   //댓글 최신화를 위해 그대로 사용할 것인데 기존의 남아 있는 태그들을 지워 주기 위함
+				}
+				else{   //댓글이 있는 경우
+					$(".reply_not_div").html('');   //댓글 없음 문구 삭제
+					
+					const list = obj.list;   //댓글 리스트
+					const pf = obj.pageInfo;   //페이징 데이터
+					const userId = '${member.memberId}';   //회원 id
+					
+					/* list */
+					let reply_list = '';   //댓글 목록에 추가될 태그를 작성할 변수
+					
+					$(list).each(function(i,obj){   //댓글 리스트를 반복문으로 하나씩 꺼내 태그를 작성
+						reply_list += '<li>';
+						reply_list += '<div class="comment_wrap">';
+						reply_list += '<div class="reply_top">';
+						/* 아이디 */
+						reply_list += '<span class="id_span">'+ obj.memberId+'</span>';
+						/* 날짜 */
+						reply_list += '<span class="date_span">'+ obj.regDate +'</span>';
+						/* 평점 */
+						reply_list += '<span class="rating_span">평점 : <span class="rating_value_span">'+ obj.rating +'</span>점</span>';
+						
+						if(obj.memberId === userId){   //if문으로 로그인한 회원과 댓글 아이디 가 일치할 때 '수정', '삭제' 버튼이 보이게 하기
+							reply_list += '<a class="update_reply_btn" href="'+ obj.replyId +'">수정</a><a class="delete_reply_btn" href="'+ obj.replyId +'">삭제</a>';
+						}
+						
+						reply_list += '</div>';   //<div class="reply_top">
+						reply_list += '<div class="reply_bottom">';
+						reply_list += '<div class="reply_bottom_txt">'+ obj.content +'</div>';
+						reply_list += '</div>';   //<div class="reply_bottom">
+						reply_list += '</div>';   //<div class="comment_wrap">
+						reply_list += '</li>';
+					});
+					
+					$(".reply_content_ul").html(reply_list);   //작성한 댓글 목록 태그를 html로 추가
+					
+					/* 페이지 버튼 */
+					let reply_pageMaker = '';   //추가할 페이징 태그를 저장할 변수
+					
+					/* prev */
+					if(pf.prev){   //이전 페이지 버튼이 true인 경우
+						let prev_num = pf.startPage -1;
+						reply_pageMaker += '<li class="pageMaker_btn prev">';
+						reply_pageMaker += '<a href="'+ prev_num +'">이전</a>';
+						reply_pageMaker += '</li>';	
+					}
+					/* numbre btn */
+					for(let i = pf.startPage; i < pf.endPage+1; i++){   //반복문으로 페이지 버튼 추가
+						reply_pageMaker += '<li class="pageMaker_btn ';
+						if(pf.cri.pageNum === i){
+							reply_pageMaker += 'active';
+						}
+						reply_pageMaker += '">';
+						reply_pageMaker += '<a href="'+i+'">'+i+'</a>';
+						reply_pageMaker += '</li>';
+					}
+					/* next */
+					if(pf.next){   //다전 페이지 버튼이 true인 경우
+						let next_num = pf.endPage +1;
+						reply_pageMaker += '<li class="pageMaker_btn next">';
+						reply_pageMaker += '<a href="'+ next_num +'">다음</a>';
+						reply_pageMaker += '</li>';	
+					}
+					
+					$(".pageMaker").html(reply_pageMaker);	 //작성한 페이징 태그를 html로 추가
+				}
+			}
+			
+			
+			/* 댓글 초기화 메서드 - 댓글을 등록, 수정, 삭제 혹은 페이지 이동시 해당 댓글 정보로 데이터가 초기화되어야 하는 4가지 상황에서 호출할 수 있는 메서드 */
+			/* 댓글 페이지 정보 */
+			const cri = {
+				bookId : '${goodsInfo.bookId}',
+				pageNum : 1,
+				amount : 10
+			}
+			/* 댓글 데이터 서버 요청 및 댓글 동적 생성 메서드 */
+			let replyListInit = function(){
+				$.getJSON("/reply/list", cri, function(obj){   //서버에 댓글 리스트 요청 (obj : 서버가 반환 해준 '댓글 리스트 정보(JSON 데이터)')
+					makeReplyContent(obj);   //최신화 된 댓글 리스트로 동적 생성
+				});
+			}
+			/* 댓글 페이지 이동 버튼 */
+//		    $(".pageMaker_btn a").on("click", function(e){   //클릭 대상인 페이지 버튼 태그가 Javascript를 통해 동적으로 생성된 태그이기에 동작 안함
+			//따라서 아래와 같이 접근할 선택자를 현재 페이지 문서 객체로 수정
+			//document 객체에 접근해서 on 메서드를 호출
+			//on('이벤트 종류(클릭)', 이벤트 대상인 선택자(댓글 페이지 버튼 태그), 대상 성택자에 이벤트가 발생했을 때 동작하는 함수)
+			$(document).on('click', '.pageMaker_btn a', function(e){
+				e.preventDefault();
+				
+				let page = $(this).attr("href");   //클릭한 페이지 번호
+				
+				cri.pageNum = page;   //위에 작성한 댓글 페이지 정보 객체의 페이지 번호를 클릭한 번호로 변경
+				
+				replyListInit();   //댓글 데이터 서버 요청 및 댓글 동적 생성 메서드 호출
+			});
+			/* 댓글 수정 버튼 - 동적으로 추가된 태그에 접근 */
+			$(document).on('click', '.update_reply_btn', function(e){
+				e.preventDefault();
+				
+				let replyId = $(this).attr("href");   //댓글 수정 버튼(a 태그)에 담긴 hrem 속성의 값(댓글id)
+				
+				//쿼리 스트링이 포함된 댓글 수정 요청 url
+				let popUrl = "/replyUpdate?replyId=" + replyId + "&bookId=" + '${goodsInfo.bookId}' + "&memberId=" + '${member.memberId}';
+				
+				let popOption = "width = 490px, height=490px, top=300px, left=300px, scrollbars=yes"   //팝업 창 설정
+				
+				window.open(popUrl, "리뷰 수정", popOption);   // 팝업 창 생성 - url, 팝업창 이름, 팝업창 관련 설정(크기, 스크롤 방식 등)
+			});
+			/* 댓글 삭제 버튼 - 동적으로 추가된 태그에 접근 */
+			$(document).on('click', '.delete_reply_btn', function(e){
+				e.preventDefault();
+				
+				let replyId = $(this).attr("href");   //댓글 id
+				
+				//해당 댓글 삭제 비동기 요청 (상품 id는 해당 상품의 평점 평균 값 최신화에 필요)
+				$.ajax({
+					data : {
+						replyId : replyId,
+						bookId : '${goodsInfo.bookId}'
+					},
+					url : '/reply/delete',
+					type : 'POST',
+					success : function(result){
+						replyListInit();   //댓글 리스트 최신화
+						alert('삭제가 완료되엇습니다.');
 					}
 				});
 			});

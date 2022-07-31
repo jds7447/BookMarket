@@ -1,3 +1,5 @@
+/* 주문 결제에 필요한 데이터를 담는 VO 객체 */
+
 package com.market.model;
 
 import java.util.Date;

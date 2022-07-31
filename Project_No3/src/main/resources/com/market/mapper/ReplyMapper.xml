@@ -19,11 +19,14 @@
 	<!-- 댓글 페이징 -->
   	<select id="getReplyList" resultType="com.market.model.ReplyDTO">
   		<![CDATA[
-		select * from(  		
+		select * from (  		
 			select rownum as rn, replyId, bookId, memberId, content, rating, regDate
-			from book_reply
+			from (
+				select replyId, bookId, memberId, content, rating, regDate
+				from book_reply
+				order by regDate desc
+				)
 			where rownum <= #{pageNum} * #{amount} and bookId = #{bookId}	
-			order by regDate desc
   			)
   		where rn > (#{pageNum} -1) * #{amount}
   		]]>	
@@ -35,5 +38,37 @@
   		from book_reply
   		where bookId = #{bookId}
   	</select>
+  	
+  	<!-- 댓글수정 -->
+  	<update id="updateReply">
+  		update book_reply set content = #{content}, rating = #{rating}
+  		where replyId = #{replyId}
+  	</update>
+  	
+  	<!-- 댓글 한개 정보(수정페이지) -->
+  	<select id="getUpdateReply" resultType="com.market.model.ReplyDTO">
+		select * from book_reply
+		where replyId = #{replyId}
+	</select>
+	
+	<!-- 댓글 삭제 -->
+  	<delete id="deleteReply">
+  		DELETE FROM book_reply
+  		WHERE replyId = #{replyId}
+  	</delete>
+  	
+  	<!-- 평점 평균 구하기 -->
+  	<select id="getRatingAverage" resultType="double">
+  		select avg(rating)
+  		from book_reply
+  		where bookId = #{bookId}
+  	</select>
+
+	<!-- 평점 평균 반영하기 -->
+	<update id="updateRating">
+		update book_goods
+		set ratingAvg = #{ratingAvg}
+		where bookId = #{bookId}
+	</update>
 	
 </mapper>

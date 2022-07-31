@@ -1,3 +1,6 @@
+/* 상품 검색 시 해당 검색 조건에 하당하는 데이터들을 카테고리별로 분류하여 필터링하여 볼 수 있도록
+ * 각 카테고리 분류별 데이터 1개가 담긴 객체 */
+
 package com.market.model;
 
 public class CateFilterDTO {

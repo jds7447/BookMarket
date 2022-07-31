@@ -23,7 +23,9 @@ import com.market.model.AttachImageVO;
 import com.market.model.BookVO;
 import com.market.model.Criteria2;
 import com.market.model.PageMakerDTO2;
+import com.market.model.ReplyDTO;
 import com.market.service.BookService;
+import com.market.service.ReplyService;
 
 import lombok.extern.log4j.Log4j;
 
@@ -39,6 +41,9 @@ public class BookController {
 	
 	@Autowired
 	private BookService bookService;
+	
+	@Autowired
+	private ReplyService replyService;   //댓글 데이터 서비스
 	
 	/* 메인 페이지 이동 */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)   // 혹은 @GetMapping("/main")
@@ -149,11 +154,24 @@ public class BookController {
 	 * 반환하도록 @RestController 어노테이션을 추가 해놓았기때문에 BookController에 팝업창 요청을 처리하는 메서드를 추가 */
 	@GetMapping("/replyEnroll/{memberId}")
 	public String replyEnrollWindowGET(@PathVariable("memberId")String memberId, int bookId, Model model) {
+		log.info("replyEnrollWindowGET()..........");
 		BookVO book = bookService.getBookIdName(bookId);   //상품 id를 이용해 상품 id와 상품 이름이 담긴 vo 객체 반환
 		model.addAttribute("bookInfo", book);
 		model.addAttribute("memberId", memberId);
 		
-		return "/replyEnroll";
+		return "/replyEnroll";   //댓글 작성 팝업창 뷰
+	}
+	
+	/* 리뷰 수정 팝업창 */
+	@GetMapping("/replyUpdate")
+	public String replyUpdateWindowGET(ReplyDTO dto, Model model) {   //뷰로부터 replyId, bookId, memberId를 전달받아 (ReplyDTO)
+		log.info("replyUpdateWindowGET()..........");
+		BookVO book = bookService.getBookIdName(dto.getBookId());   //수정하려는 상품의 id, 이름 (어떠한 상품(책)에 관한 수정인 지를 알 수 있도록)
+		model.addAttribute("bookInfo", book);
+		model.addAttribute("replyInfo", replyService.getUpdateReply(dto.getReplyId()));   //수정하려는 댓글 데이터
+		model.addAttribute("memberId", dto.getMemberId());   //수정하는 회원의 id
+		
+		return "/replyUpdate";   //댓글 수정 팝업창 뷰
 	}
 	
 }

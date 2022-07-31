@@ -1,3 +1,5 @@
+/* 장바구니에 담긴 상품 1개의 데이터 객체 */
+
 package com.market.model;
 
 import java.util.List;

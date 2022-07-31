@@ -1,3 +1,5 @@
+/* 상품 등록 시 해당 상품의 모든 데이터가 담기는 객체 */
+
 package com.market.model;
 
 import java.util.Date;

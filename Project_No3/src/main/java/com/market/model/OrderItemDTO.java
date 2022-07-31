@@ -1,3 +1,5 @@
+/* 주문되는 각 상품 하나의 데이터를 담는 VO 객체 */
+
 package com.market.model;
 
 import lombok.Data;

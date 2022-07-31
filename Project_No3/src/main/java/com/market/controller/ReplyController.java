@@ -36,6 +36,7 @@ public class ReplyController {
 	/* 존재 : 1 / 존재x : 0 */
 	@PostMapping("/check")
 	public String replyCheckPOST(ReplyDTO dto) {
+		log.info("replyCheckPOST..........");
 		return replyService.checkReply(dto);
 	}
 	
@@ -51,7 +52,22 @@ public class ReplyController {
 	 * ReplyPageDTO는 JSON 데이터로 변환되어 뷰로 전송 */
 	@GetMapping(value="/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ReplyPageDTO replyListPOST(Criteria2 cri) {
+		log.info("replyListPOST..........");
 		return replyService.replyList(cri);
+	}
+	
+	/* 댓글 수정 */
+	@PostMapping("/update")
+	public void replyModifyPOST(ReplyDTO dto) {   //뷰로부터 전달받는 데이터는 replyId, content, rating 이므로 다 담을 수 있는 ReplyDTO 타입을 파라미터로
+		log.info("replyModifyPOST..........");
+		replyService.updateReply(dto);
+	}
+	
+	/* 댓글 삭제 */
+	@PostMapping("/delete")
+	public void replyDeletePOST(ReplyDTO dto) {
+		log.info("replyDeletePOST..........");
+		replyService.deleteReply(dto);
 	}
 	
 }

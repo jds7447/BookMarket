@@ -1,3 +1,5 @@
+/* 작가 등록 시 해당 작가의 모든 데이터가 담기는 객체 */
+
 package com.market.model;
 
 import java.util.Date;
