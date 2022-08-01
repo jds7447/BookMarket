@@ -51,6 +51,7 @@ public class BookController {
 		log.info("'메인' 페이지 진입");   //@Log4j 어노테이션 사용 안할 시 ==> logger.info("...");
 		model.addAttribute("cate1", bookService.getCateCode1());   //국내 제품 카테고리 리스트
 		model.addAttribute("cate2", bookService.getCateCode2());   //국외 제품 카테고리 리스트
+		model.addAttribute("ls", bookService.likeSelect());   //평점 높은 상품 8개 리스트
 	}
 	
 	/* 상품 등록 업로드 이미지 출력

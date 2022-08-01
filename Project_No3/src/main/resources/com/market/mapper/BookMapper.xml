@@ -151,4 +151,19 @@
 		where bookId = #{bookId}
 	</select>
 	
+	<!-- 평점순 상품 정보 -->
+	<select id="likeSelect" resultType="com.market.model.SelectDTO">
+		select * from
+		(select bookId, bookName, ratingAvg, (select cateName from book_bcate where book_goods.cateCode = book_bcate.cateCode) as cateName
+		from book_goods
+		order by ratingAvg desc nulls last)
+		<![CDATA[
+		where rownum < 9
+		]]>
+	</select>
+	<!-- order by 뒤 "nulls last"
+		book_goods의 ratingAvg에는 기본값을 따로 주지 않았기 때문에 값을 부여하지 않았다면 null값이 들어가게 됩니다
+		정렬을 했을 때 만약 null값이 포함이 되어 있다면 정렬된 값보다 null값이 앞에 배치된 결과를 반환받게 됩니다
+		null값이 있을 경우 null값을 앞에 배치할지 뒤에 배치할지를 "nulls last", "nulls first" 키워드를 통해서 조정 -->
+	
 </mapper>

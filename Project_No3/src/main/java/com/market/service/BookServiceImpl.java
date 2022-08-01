@@ -14,6 +14,7 @@ import com.market.model.BookVO;
 import com.market.model.CateFilterDTO;
 import com.market.model.CateVO;
 import com.market.model.Criteria2;
+import com.market.model.SelectDTO;
 
 import lombok.extern.log4j.Log4j;
 
@@ -147,6 +148,21 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public BookVO getBookIdName(int bookId) {
 		return bookMapper.getBookIdName(bookId);
+	}
+
+	@Override
+	public List<SelectDTO> likeSelect() {
+		List<SelectDTO> list = bookMapper.likeSelect();   //평점 높은 상품 8개
+
+		list.forEach(dto -> {   //반복문으로 상품 리스트에 담긴 각상품에 등록된 이미지 데이터 저장 
+			int bookId = dto.getBookId();
+			
+			List<AttachImageVO> imageList = attachMapper.getAttachList(bookId);
+			
+			dto.setImageList(imageList);
+		});
+		
+		return list;
 	}
 	
 }

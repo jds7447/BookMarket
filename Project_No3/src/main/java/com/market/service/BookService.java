@@ -6,6 +6,7 @@ import com.market.model.BookVO;
 import com.market.model.CateFilterDTO;
 import com.market.model.CateVO;
 import com.market.model.Criteria2;
+import com.market.model.SelectDTO;
 
 public interface BookService {
 
@@ -29,5 +30,8 @@ public interface BookService {
 	
 	/* 상품 id 이름 */
 	public BookVO getBookIdName(int bookId);
+	
+	/* 평줌순 상품 정보 */
+	public List<SelectDTO> likeSelect();
 	
 }
