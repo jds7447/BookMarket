@@ -9,7 +9,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>Welcome BookMall</title>
+		<title>Welcome BookMarket</title>
 		
 		<!--  jquery를 사용할 것이기 때문에 jquery url 코드 추가 -->
 		<script src="https://code.jquery.com/jquery-3.4.1.js"

@@ -128,3 +128,6 @@ create table book_image(
 insert into book_image values (293, 'DB파일.png', '2022\07\18', 'test1');
 insert into book_image values (293, 'DB파일2.png', '2022\07\18', 'test2');     
 commit;
+
+--상품의 평균 평점(평가점수) 값을 넣기 위한 컬럼 추가
+alter table book_goods add ratingAvg number(2,1);

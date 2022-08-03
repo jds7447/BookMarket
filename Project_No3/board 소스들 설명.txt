@@ -1,0 +1,32 @@
+파일명에 board가 들어있는 소스들은
+본편 프로젝트(book market)를 시작하기 전에
+페이징 기능과 CRUD 기능을 연습한 것들이므로
+본 프로젝트에 적용되어 있지 않습니다
+
+지워도 무방
+BoardController.java
+BoardMapper.java
+BoardMapper.xml
+BoardVO.java
+Criteria.java
+PageMakerDTO.java
+BoardService.java
+BoardServiceImpl.java
+BoardMapperTests.java
+BoardServiceTests.java
+book_board.sql
+enroll.jsp
+get.jsp
+list.jsp
+modify.jsp
+
+
+
+
+또한 아래와 같이
+spring framework 셋팅을 위한 연습용 파일들도
+
+지워도 무방
+SampleTests.java
+DataSourceTest.java
+DataSourceTest.java
