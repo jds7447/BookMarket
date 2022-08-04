@@ -59,4 +59,7 @@ public class BookVO {
 	/* 이미지 정보 */
 	private List<AttachImageVO> imageList;
 	
+	/* 상품 평점 평균 */
+	private double ratingAvg;
+	
 }

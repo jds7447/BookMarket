@@ -168,7 +168,7 @@
 											</td>
 											<td class="info">
 												<div class="rating">
-													평점(추후 추가)
+													평점 : ${list.ratingAvg}
 												</div>
 											</td>
 											<td class="price">
