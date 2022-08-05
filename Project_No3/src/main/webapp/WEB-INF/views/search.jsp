@@ -60,7 +60,7 @@
 				</div>
 				<div class="top_area">
 					<div class="logo_area">
-						<a href="/main"><img src="/resources/img/Logo.png"></a>
+						<a href="/main"><img src="/resources/img/Logo2.png"></a>
 					</div>
 					<div class="search_area">
 						<!-- <h1>Search area</h1> -->
