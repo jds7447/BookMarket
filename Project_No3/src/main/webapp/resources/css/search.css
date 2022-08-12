@@ -109,27 +109,23 @@ a{
 	width: 25%;
 	height: 100%;
 	display: inline-block;	
-	text-align: center;		
+	text-align: center;
 }
 .login_button{
 	height: 50%;
-    background-color: #D4DFE6;
+    /* background-color: #D4DFE6; */
     margin-top: 30px;
     line-height: 77px;
     font-size: 40px;
     font-weight: 900;
     border-radius: 10px;
-    cursor: pointer;	
+    cursor: pointer;
+    border: 1px solid black;
 }
 .login_area>span{
 	margin-top: 10px;
     font-weight: 900;
     display: inline-block;
-}
-.login_button{
-	height : 50%;
-	background-color: #D4DFE6;
-	margin-top:30px;
 }
 
 /* 제품 목록 네비 */

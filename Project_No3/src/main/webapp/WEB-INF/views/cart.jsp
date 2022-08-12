@@ -121,8 +121,8 @@
 							<caption>표 제목 부분</caption>
 							<tbody>
 								<tr>
-									<th class="td_width_1"></th>
-									<th class="td_width_2"></th>
+									<th class="td_width_1">선택</th>
+									<th class="td_width_2">이미지</th>
 									<th class="td_width_3">상품명</th>
 									<th class="td_width_4">가격</th>
 									<th class="td_width_4">수량</th>
@@ -152,7 +152,7 @@
 											</div>
 										</td>
 										<td class="td_width_3">${ci.bookName}</td>
-										<td class="td_width_4 price_td">
+										<td class="price_td">
 											정가 : <del><fmt:formatNumber value="${ci.bookPrice}" pattern="#,### 원" /></del><br>
 											판매가 : <span class="red_color"><fmt:formatNumber value="${ci.salePrice}" pattern="#,### 원" /></span><br>
 											마일리지 : <span class="green_color"><fmt:formatNumber value="${ci.point}" pattern="#,###" /></span>

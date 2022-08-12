@@ -160,12 +160,12 @@ a{
 		height: 110px;
 	    line-height: 110px;
 	    background-color: #5080bd;
-	    margin-bottom: 60px; 
-	 
+	    margin-bottom: 60px;
 	 }
-		 .content_subject span{ 
-		    padding-left: 30 px;
+		 .content_subject span{
 		    display: inline-block;
+		    /* padding-left: 30 px; */
+	 		text-indent: 30px;
 		    color: white;
 		    font-size: 50px;
 		    font-weight: bolder; 
@@ -277,7 +277,11 @@ a{
 			border-bottom: 1px solid #e7e7e7;
 		}
 		.goods_table tr{
-		height: 110px;
+			height: 110px;
+			text-align: center;
+		}
+		.goods_table td{
+			text-align: center;
 		}
 		.goods_table_price_td{
 			text-align: center;
@@ -286,11 +290,12 @@ a{
 		.image_wrap{
 			width: 100%;
 			height: 100%;
+			text-align: center;
 		}
 		.image_wrap img{
 		    max-width: 85%;
 		    height: auto;
-		    display: block;		
+		    /* display: block; */	
 		}
 		/* 포인트 정보 */
 		.point_div{

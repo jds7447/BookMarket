@@ -109,27 +109,23 @@ a{
 	width: 25%;
 	height: 100%;
 	display: inline-block;	
-	text-align: center;		
+	text-align: center;
 }
 .login_button{
 	height: 50%;
-    background-color: #D4DFE6;
+    /* background-color: #D4DFE6; */
     margin-top: 30px;
     line-height: 77px;
     font-size: 40px;
     font-weight: 900;
     border-radius: 10px;
-    cursor: pointer;	
+    cursor: pointer;
+    border: 1px solid black;
 }
 .login_area>span{
 	margin-top: 10px;
     font-weight: 900;
     display: inline-block;
-}
-.login_button{
-	height : 50%;
-	background-color: #D4DFE6;
-	margin-top:30px;
 }
 
 /* 제품 목록 네비 */
@@ -139,6 +135,7 @@ a{
     background-color: #7696fd; */
     overflow: hidden;
 	background-color: #5e6b9e;
+	/* background-color: darkgray; */
 }
 .navi_bar_area a {
 	float: left;
@@ -154,7 +151,7 @@ a{
 	margin-left: 10px;
 }
 .dropdown .dropbtn {
-	font-size: 16px;
+	font-size: 20px;
 	font-weight: bold;
 	border: none;
 	outline: none;
@@ -169,7 +166,7 @@ a{
 	display:none;
 	position: absolute;
 	background-color: #f9f9f9;
-	width: 466px;
+	/* width: 466px; */
 	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 	z-index: 1;
 }
@@ -179,8 +176,8 @@ a{
 	padding: 12px 16px;
 	text-decoration: none;
 	display: inline-block;
-	text-align: left;
-	width: 80px;
+	text-align: center;
+	width: 100px;
 }
 .dropdown:hover .dropdown-content {   /* '.dropdown'태그에 hover 이벤트가 발생했을 때 '.dropdown-content' 태그는 "display:block;"속성을 가져야 한다 */
 	display: block;
@@ -266,7 +263,7 @@ a{
 .footer{
     width:100%;
     height:130px;
-    background-color:#D4DFE6;
+    /* background-color:#D4DFE6; */
     padding-bottom : 50px;
 }
 .footer_container{
@@ -301,7 +298,7 @@ a{
 }
 .slide_div_wrap{
 	padding: 15px 0 15px 0;
-    background: #e6e9f6;
+    /* background: #e6e9f6; */
 }
 .image_wrap img{
 	max-width: 85%;
@@ -351,30 +348,34 @@ a{
 	padding-bottom: 10px;
 }
 
-/* 상품 슬라이드 버튼 - 슬라이드 설정에서 추가한 것 */
+/* 평점순 상품 슬라이드 버튼 - 슬라이드 설정에서 추가한 것 */
 .ls_div_content_prev{
     position: absolute;
     top: 40%;
     width: 40px;
     height: 30px;
-    left: 27px;
+    /* left: 27px; */
+    left: 0px;
     font-weight: bold;
     z-index: 1;
     opacity: 35%;
-}
-.ls_div_content_prev:hover{
-   opacity: 80%;
+    background-color: #6D7692;
+    color: white;
 }
 .ls_div_content_next{
     position: absolute;
     top: 40%;
     width: 40px;
     height: 30px;
-    right: 27px;
+    /* right: 27px; */
+    right: 0px;
     font-weight: bold;
     z-index: 1;
     opacity: 35%;
+    background-color: #6D7692;
+    color: white;
 }
-.ls_div_content_next:hover{
-   opacity: 80%;
+.ls_div_content_prev:hover, .ls_div_content_next:hover{
+   /* opacity: 80%; */
+   opacity: 100%;
 }

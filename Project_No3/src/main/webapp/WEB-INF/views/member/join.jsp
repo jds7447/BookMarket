@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<!-- JSTL을 사용하기 위해 태그라이브러리 코드 추가 -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -36,14 +40,14 @@
 					<div class="pw_wrap">
 						<div class="pw_name">비밀번호</div>
 						<div class="pw_input_box">
-							<input class="pw_input" name="memberPw">
+							<input type="password" class="pw_input" name="memberPw">
 						</div>
 						<span class="final_pw_ck">비밀번호를 입력해주세요.</span>   <!-- 유효성 검사를 위한 문구 추가 (공란) -->
 					</div>
 					<div class="pwck_wrap">
 						<div class="pwck_name">비밀번호 확인</div>
 						<div class="pwck_input_box">
-							<input class="pwck_input">
+							<input type="password" class="pwck_input">
 						</div>
 						<span class="final_pwck_ck">비밀번호 확인을 입력해주세요.</span>   <!-- 유효성 검사를 위한 문구 추가 (공란) -->
 						<!-- 비밀번호, 비밀번호 확인 일치 검사 문구 추가 -->
@@ -123,8 +127,9 @@
 		var mailnumCheck = false;   // 이메일 인증번호 확인 (입력한 이메일로 보내진 인증번호와 입력한 인증번호 일치 여부)
 		var addressCheck = false;   // 주소 공란 여부
 
-		/* '가입하기 버튼' 클릭하였을때 form태그에 속성 action(url 경로)이 추가되고, form태그가 서버에 제출이 된다는 의미 */
 		$(document).ready(function(){   //페이지 생성 시 실행
+			
+			/* '가입하기 버튼' 클릭하였을때 form태그에 속성 action(url 경로)이 추가되고, form태그가 서버에 제출이 된다는 의미 */
 			//회원가입 버튼(회원가입 기능 작동)
 			$(".join_button").click(function(){
 				/* 유효성 검사를 위해 기존의 회원가입 버튼 클릭 시 기능 비활성화 */
@@ -206,6 +211,7 @@
 			});
 		});
 		
+		
 		//아이디 중복검사 (input 태그(class="id_input")에 변화가 있을 때마다 실행)
 		$('.id_input').on("propertychange change keyup paste input", function(){
 			var memberId = $('.id_input').val();   // .id_input에 입력되는 값
@@ -230,6 +236,7 @@
 				}
 			});   // ajax 종료
 		});   //아이디 중복검사 종료
+		
 		
 		/* 인증번호 이메일 전송 */
 		/* 이메일 입력란에 이메일을 입력 후 [인증번호 전송] 버튼을 클릭하면 작동하는 메서드를 추가
@@ -263,6 +270,7 @@
 		    });   // ajax 종료
 		});   //인증번호 이메일 전송 종료
 		
+		
 		/* 인증번호 비교 */
 		$(".mail_check_input").blur(function(){   //인증번호 입력란에 데이터를 입력한 뒤 마우스로 다른 곳을 클릭 시에 실행
 			var inputCode = $(".mail_check_input").val();   //사용자가 입력하는 인증번호   
@@ -279,6 +287,7 @@
 		        mailnumCheck = false;   //인증번호 유효성 X
 		    }
 		});   //인증번호 비교 종료
+		
 		
 		/* 다음 주소 API 연동 ( https://postcode.map.daum.net/guide ) */
 		function execution_daum_address(){
@@ -351,6 +360,7 @@
 		    }).open();   //주소를 검색하는 팝업창을 띄우는 코드 종료
 		}   //다음 주소 API 연동 종료
 		
+		
 		/* 비밀번호 확인 일치 유효성 검사 (input 태그(class="pwck_input")에 변화가 있을 때마다 실행) */
 		$('.pwck_input').on("propertychange change keyup paste input", function(){
 			var pw = $('.pw_input').val();   //비밀번호 입력란 변수
@@ -388,6 +398,7 @@
 				// 해석 : ab_12  [.er_57]	  @[hk_98.]		t   n_65		. abc		   [.ab]
 				//			    [없을수도]	   [없을수도]    필수 {0~66 반복}     {2~6 반복}  [없을수도{2회반복}]  대소문자 구별 없음
 			var form = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+				
 			/* test() 메서드 : 주어진 문자열이 정규 표현식을 만족하는지 판별하고, 그 여부를 true 또는 false로 반환 */
 			return form.test(email);
 		}

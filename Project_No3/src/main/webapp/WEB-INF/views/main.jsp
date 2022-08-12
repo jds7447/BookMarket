@@ -3,7 +3,8 @@
 
 <!-- JSTL을 사용하기 위해 태그라이브러리 코드 추가 -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri = "http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -16,7 +17,7 @@
   				integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
   				crossorigin="anonymous"></script>
 		<!-- 직접 설정한 css 코드 불러오기 -->
-		<link rel="stylesheet" href="/resources/css/main.css">
+		<link rel="stylesheet" type="text/css" href="/resources/css/main.css">
 		
   		<%-- slick 라이브러리 cdn 코드 (css, js) --%>
   		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
@@ -25,19 +26,23 @@
 		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 		
 		<style type="text/css">
-			/* 슬라이드의 숨겨진 좌, 우 이동 버튼이 보이도록 위치를 이동하고
-				그림 태그 영역까지 버튼을 당겨서 버튼 태그와 그림 태그가 겹치지만 z-index 속성을 주어서 버튼 태그가 제일 앞에 위치하도록 */
+			/* 광고 배너 슬라이드의 숨겨진 좌, 우 이동 버튼이 보기 쉽도록 색, 위치를 조정
+				(그림 태그 영역까지 버튼을 당겨서 버튼 태그와 그림 태그가 겹치지만 z-index 속성을 주어서 버튼 태그가 제일 앞에 위치하도록 설정) - 안 겹치게 수정
+				css 적용 우선 순위로 인해 main.css 파일(19번줄)에 넣으면 추가한 slick 라이브러리 css 파일(25번줄) 때문에 적용되지 않아 여기에 추가 */
 			.slick-prev{
 				left: 100px;
-			    z-index: 1;
-			    color: black;
-			    background: gray;
+			    /* z-index: 1; */
+			    /* color: black; */
+			    /* background: gray; */
 			}
 			.slick-next{
 				right: 100px;
-			    z-index: 1;
+			    /* z-index: 1; */
+			    /* color: black; */
+			    /* background: gray; */
+			}
+			.slick-prev:before, .slick-next:before{
 			    color: black;
-			    background: gray;
 			}
 		</style>
 	</head>
@@ -134,7 +139,17 @@
 					    </button>
 					    <div class="dropdown-content">
 					    	<c:forEach items="${cate1}" var="cate">
-					    		<a href="search?type=C&cateCode=${cate.cateCode}">${cate.cateName}</a>
+					    		<c:if test="${ fn:substring(cate.cateCode, 3, 6) eq '000' }">
+					    			<c:if test="${ cate.cateCode ne '101000' }"><br></c:if>
+					    		</c:if>
+					    		<c:choose> 
+									<c:when test="${ fn:substring(cate.cateCode, 3, 6) eq '000' }">
+										<a style="background-color: lightgray; font-weight: bold; font-size: 17px;">${cate.cateName}</a>
+									</c:when>
+									<c:otherwise>
+					    				<a href="search?type=C&cateCode=${cate.cateCode}">${cate.cateName}</a>
+									</c:otherwise> 
+								</c:choose>
 					    	</c:forEach>
 					    </div>
 					</div>
@@ -144,7 +159,17 @@
 					    </button>
 					    <div class="dropdown-content">
 					    	<c:forEach items="${cate2}" var="cate">
-					    		<a href="search?type=C&cateCode=${cate.cateCode}">${cate.cateName}</a>
+					    		<c:if test="${ fn:substring(cate.cateCode, 3, 6) eq '000' }">
+					    			<c:if test="${ cate.cateCode ne '201000' }"><br></c:if>
+					    		</c:if>
+					    		<c:choose> 
+									<c:when test="${ fn:substring(cate.cateCode, 3, 6) eq '000' }">
+										<a style="background-color: lightgray; font-weight: bold; font-size: 17px;">${cate.cateName}</a>
+									</c:when>
+									<c:otherwise>
+					    				<a href="search?type=C&cateCode=${cate.cateCode}">${cate.cateName}</a>
+									</c:otherwise> 
+								</c:choose>
 					    	</c:forEach>
 					    </div>
 					</div>
@@ -152,7 +177,7 @@
 				<div class="content_area">
 					<!-- <h1>content area</h1> -->
 					<div class="slide_div_wrap">
-						<div class="slide_div">   <%-- 슬라이드 배너 적용 --%>
+						<div class="slide_div">   <%-- 광고 슬라이드 배너 적용 --%>
 							<div>
 								<a>
 									<img src="../resources/img/SB_1.png">
@@ -175,7 +200,7 @@
 						<div class="ls_div_subject">
 							평점순 상품
 						</div>
-						<div class="ls_div">
+						<div class="ls_div">   <%-- 평점순 상품에 슬라이드 적용 --%>
 							<c:forEach items="${ls}" var="ls">
 								<a href="/goodsDetail/${ls.bookId}">
 									<div class="ls_div_content_wrap">
@@ -221,7 +246,7 @@
 		        <div class="footer">
 		            <div class="footer_container">
 		                <div class="footer_left">
-		                    <img src="/resources/img/Logo.png">
+		                    <img src="/resources/img/Logo2.png">
 		                </div>
 		                <div class="footer_right">
 		                    (주) BookMarket    대표이사 : OOO
@@ -295,6 +320,17 @@
 		    });
 		    
 		    
+		    /* 검색버튼 동작 */
+			$(".search_btn").on("click", function(){
+				let searchKeyword = $(".search_input input[name='keyword']").val();
+				
+				if(searchKeyword == "" || searchKeyword == null){
+					alert("검색어를 입력하세요");
+					return false;
+				}
+				
+				$(this).submit();
+			});
 		    
 		</script>
 	</body>

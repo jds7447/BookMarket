@@ -108,31 +108,33 @@
 					<!-- <h1>content area</h1> -->
 					<%-- 게시물(검색결과) o --%>
 					<c:if test="${listcheck != 'empty'}">
-						<div class="search_filter">   <%-- 카테고리 필터 --%>
-							<div class="filter_button_wrap">
-								<button class="filter_button filter_active" id="filter_button_a">국내</button>
-								<button class="filter_button" id="filter_button_b">외국</button>
+						<c:if test="${ pageMaker.cri.type ne 'C' }">
+							<div class="search_filter">   <%-- 카테고리 필터 --%>
+								<div class="filter_button_wrap">
+									<button class="filter_button filter_active" id="filter_button_a">국내</button>
+									<button class="filter_button" id="filter_button_b">외국</button>
+								</div>
+								<div class="filter_content filter_a">   <%-- 국내 상품 카테고리 정보 --%>
+									<c:forEach items="${filter_info}" var="filter">
+										<c:if test="${filter.cateGroup eq '1'}">
+											<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
+										</c:if>
+									</c:forEach>
+								</div>
+								<div class="filter_content filter_b">   <%-- 국외 상품 카테고리 정보 --%>
+									<c:forEach items="${filter_info}" var="filter">
+										<c:if test="${filter.cateGroup eq '2'}">
+											<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
+										</c:if>
+									</c:forEach>		
+								</div>
+								<form id="filter_form" action="/search" method="get" >   <%-- 필터링 데이터 --%>
+									<input type="hidden" name="keyword">
+									<input type="hidden" name="cateCode">
+									<input type="hidden" name="type">
+								</form>
 							</div>
-							<div class="filter_content filter_a">   <%-- 국내 상품 카테고리 정보 --%>
-								<c:forEach items="${filter_info}" var="filter">
-									<c:if test="${filter.cateGroup eq '1'}">
-										<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
-									</c:if>
-								</c:forEach>
-							</div>
-							<div class="filter_content filter_b">   <%-- 국외 상품 카테고리 정보 --%>
-								<c:forEach items="${filter_info}" var="filter">
-									<c:if test="${filter.cateGroup eq '2'}">
-										<a href="${filter.cateCode}">${filter.cateName}(${filter.cateCount})</a>
-									</c:if>
-								</c:forEach>		
-							</div>
-							<form id="filter_form" action="/search" method="get" >   <%-- 필터링 데이터 --%>
-								<input type="hidden" name="keyword">
-								<input type="hidden" name="cateCode">
-								<input type="hidden" name="type">
-							</form>
-						</div>
+						</c:if>
 						<div class="list_search_result">   <%-- 상품 목록 --%>
 							<table class="type_list">
 								<colgroup>
@@ -394,6 +396,19 @@
 				$("#filter_form input[name='cateCode']").val(cateCode);   //필터링 폼에 들어갈 필터링 데이터 (카테고리 코드)
 				$("#filter_form input[name='type']").val(type);   //필터링 폼에 들어갈 필터링 데이터 (검색 타입)
 				$("#filter_form").submit();   //필터링 검색 수행
+			});
+			
+			
+			/* 검색버튼 동작 */
+			$(".search_btn").on("click", function(){
+				let searchKeyword = $(".search_input input[name='keyword']").val();
+				
+				if(searchKeyword == "" || searchKeyword == null){
+					alert("검색어를 입력하세요");
+					return false;
+				}
+				
+				$(this).submit();
 			});
 		    
 		</script>

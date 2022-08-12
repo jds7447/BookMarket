@@ -108,7 +108,7 @@
 				</div> -->
 				<div class="content_area">
 					<!-- <h1>content area</h1> -->
-					<div class="content_subject"><span>장바구니</span></div>
+					<div class="content_subject"><span>주문결제</span></div>
 					<div class="content_main">
 						<!-- 회원 정보 -->
 						<div class="member_info_div">

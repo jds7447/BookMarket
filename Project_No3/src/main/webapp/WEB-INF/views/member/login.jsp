@@ -3,6 +3,7 @@
 
 <!-- JSTL을 사용하기 위해 태그라이브러리 코드 추가 -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
 
 <!DOCTYPE html>
 <html>
@@ -21,17 +22,17 @@
 			<div class="wrap">
 				<form id="login_form" method="post">   <!-- 로그인 정보 검사를 위해 id, 비번 서버로 넘기기 위한 form 태그 추가 -->
 					<div class="logo_wrap">
-						<span>Book Mall</span>
+						<span>Book Market</span>
 					</div>
 					<div class="login_wrap"> 
 						<div class="id_wrap">
 							<div class="id_input_box">
-								<input class="id_input" name="memberId">   <!-- id와 비번을 VO객체에 넣어 전달하기 위해 -->
+								<input class="id_input" name="memberId" placeholder="아이디">   <!-- id와 비번을 VO객체에 넣어 전달하기 위해 -->
 							</div>
 						</div>
 						<div class="pw_wrap">
 							<div class="pw_input_box">
-								<input type="password" class="pw_iput" name="memberPw">   <!-- VO객체의 멤버변수 명과 같은 이름으로 name 설정 -->
+								<input type="password" class="pw_iput" name="memberPw" placeholder="비밀번호">   <!-- VO객체의 멤버변수 명과 같은 이름으로 name 설정 -->
 							</div>
 						</div>
 						
@@ -57,6 +58,21 @@
 		    	/* 로그인 메서드 서버 요청 */
 		        $("#login_form").attr("action", "/member/login.do");   //컨트롤러 로그인 url "login" -> "login.do" 변경
 		        $("#login_form").submit();
+		    });
+		    
+		    
+		    /* 아이디, 비밀번호 입력란 클릭(focus) 시 도움말(placeholder) 삭제, 입력란 벗어나면(blur) 도움말 다시 추가 */
+		    $(".id_input").focus(function(){
+		    	$(this).removeAttr("placeholder");
+		    });
+		    $(".id_input").blur(function(){
+		    	$(this).attr("placeholder", "아이디");
+		    });
+		    $(".pw_iput").focus(function(){
+		    	$(this).removeAttr("placeholder");
+		    });
+		    $(".pw_iput").blur(function(){
+		    	$(this).attr("placeholder", "아이디");
 		    });
 		 
 		</script>

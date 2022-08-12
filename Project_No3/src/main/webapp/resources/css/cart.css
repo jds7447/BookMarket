@@ -164,8 +164,9 @@ a{
 	 
 	 }
 		 .content_subject span{ 
-		    padding-left: 30 px;
 		    display: inline-block;
+		    /* padding-left: 30 px; */
+		    text-indent: 30px;
 		    color: white;
 		    font-size: 50px;
 		    font-weight: bolder; 
@@ -200,7 +201,7 @@ a{
 	    text-align: center; 	
 	 }
 
-		 th{
+		th{
 		text-align: center;
 	    color: #333;
 	    border-bottom: 1px solid #e7e7e7;
@@ -212,13 +213,13 @@ a{
 			width: 5%;
 		}	 	 	 
 		.td_width_2{
-			width: 10%;
+			width: 20%;
 		}	 	 
 		.td_width_3{
-			width: 25%;
+			width: 30%;
 		}	 
 		.td_width_4{
-			width: 15%;
+			width: 10%;
 		}	
 		.cart_table{
 			font-size: 14px;
@@ -226,8 +227,10 @@ a{
 		}  
 			.cart_table tr{
 				height: 110px;
+			    text-align: center;
 			}
 			.price_td{
+				width: 15%;
 				padding-left: 5px;
 			}
 				.red_color{
@@ -238,6 +241,7 @@ a{
 				}
 			.cart_table td{
 				border-bottom: 1px solid #e7e7e7;
+			    text-align: center;
 			}
 			.quantity_div{
 				position: relative;
@@ -339,11 +343,12 @@ a{
 		.image_wrap{
 			width: 100%;
 			height: 100%;
+			text-align: center;
 		}
 		.image_wrap img{
 		    max-width: 85%;
 		    height: auto;
-		    display: block;		
+		    /* display: block; */
 		}
 
 /* 로그인 성공 영역 */
