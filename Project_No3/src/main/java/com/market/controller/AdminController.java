@@ -494,8 +494,8 @@ public class AdminController {
 	@GetMapping("/orderList")
 	public String orderListGET(Criteria2 cri, Model model) {
 		log.info("orderListGET..........");
-		List<OrderDTO> list = adminService.getOrderList(cri);   //주문 목록
 		
+		List<OrderDTO> list = adminService.getOrderList(cri);   //주문 목록
 		if(!list.isEmpty()) {
 			model.addAttribute("list", list);
 			model.addAttribute("pageMaker", new PageMakerDTO2(cri, adminService.getOrderTotal(cri)));

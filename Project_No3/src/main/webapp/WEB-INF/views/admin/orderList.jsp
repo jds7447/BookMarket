@@ -51,7 +51,7 @@
 			                    			<td><c:out value="${list.orderState}"/></td>
 			                    			<td>
 			                    				<c:if test="${list.orderState == '배송준비' }">   <!-- 배송 준비 상태일 때만 취소 버튼 보임 -->
-			                    					<button class="delete_btn" data-orderId="${list.orderId}">주문 취소</button>
+			                    					<button class="delete_btn" data-orderId="${list.orderId}" data-memberId="${list.memberId}">주문 취소</button>
 			                    				</c:if>
 			                    			</td>
 			                    		</tr>
@@ -127,7 +127,7 @@
 							<input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
 							<input type="hidden" name="amount" value="${pageMaker.cri.amount}">
 							<input type="hidden" name="keyword" value="${pageMaker.cri.keyword}">
-							<input type="hidden" name="memberId" value="${member.memberId}">
+							<input type="hidden" name="memberId">
 	                    </form>
 	                </div>
 	                
@@ -186,8 +186,10 @@
 				e.preventDefault();
 
 				let id = $(this).attr("data-orderId");   //주문 id
+				let memid = $(this).attr("data-memberId");   //주문한 회원 id
 				
 				$("#deleteForm").find("input[name='orderId']").val(id);   //주문 id를 주문 취소 데이터 폼에 셋팅
+				$("#deleteForm").find("input[name='memberId']").val(memid);   //주문한 회원 id를 주문 취소 데이터 폼에 셋팅
 				$("#deleteForm").submit();
 			});
 			

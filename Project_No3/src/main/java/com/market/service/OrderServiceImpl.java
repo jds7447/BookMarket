@@ -142,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		/*주문상품*/
 		List<OrderItemDTO> ords = orderMapper.getOrderItemInfo(dto.getOrderId());   //주문한 상품들 리스트 (BOOK_ORDERITEM 테이블)
+		
 		for(OrderItemDTO ord : ords) {   //각 상품들의 총 가격, 포인트 등 계산 값들 셋팅
 			ord.initSaleTotal();
 		}

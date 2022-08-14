@@ -25,6 +25,7 @@
 				<!-- VO객체로 자동 변환을 위해 input 태그 속성 name의 값을 해당 input 태그에 입력할 값과 매칭되는 MemberVO 에서 정의한 변수 이름을 삽입 -->
 				<div class="wrap">
 					<div class="subjecet">
+						<a href="/main"><img src="/resources/img/Logo2.png"></a>  
 						<span>회원가입</span>
 					</div>
 					<div class="id_wrap">

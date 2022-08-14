@@ -22,123 +22,6 @@ a{
 	margin: auto;
 }
 
-/* 홈페이지 기능 네비 */ 
-.top_gnb_area{
-	width: 100%;
-    height: 50px;
-    /* background-color: #a2a2ea; */
-    background-color: #f0f0f1;
-    position:relative;
-}
-.top_gnb_area .list{
-    position: absolute;
-    top: 0px;
-    right: 0;
-    
-}
-.top_gnb_area .list li{
-    list-style: none;    
-    float : left;
-    padding: 13px 15px 0 10px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-/* 로고, 검색, 로그인 */
-.top_area{
-	width: 100%;
-    height: 150px;
-    /* background-color: #f7f0b9; */
-}
-
-/* 로고 영역 */
-.logo_area{
-    width: 25%;
-    height: 100%;
-    float:left;
-}
-.logo_area img{
-    width: 100%;
-    height: 100%;
-}
-
-/* 검색 박스 영역 */
-.search_area{
-	width: 50%;
-	height: 100%;
-	/* background-color: yellow; */
-	float:left;	
-}
-.search_wrap{
-	width: 100%;
-    height: 100%;
-}
-#searchForm{
-	width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.search_input{
-    display: flex;
-    height: 30%;
-    width: 80%;	
-}
-.search_input select{
-	width: 20%;
-    text-align: center;
-    font-size: 15px;	
-}
-.search_input input{
-    margin-left: 10px;
-    width: 57%;	
-    font-size: 18px;
-    padding-left: 2%;
-}
-.search_btn{
-	margin-left: 10px;
-    width: 17%;
-    border-radius: 14px;
-    font-size: 17px;
-    font-weight: 600;	
-}
-
-/* 로그인 버튼 영역 */
-.login_area{
-	width: 25%;
-	height: 100%;
-	display: inline-block;	
-	text-align: center;		
-}
-.login_button{
-	height: 50%;
-    background-color: #D4DFE6;
-    margin-top: 30px;
-    line-height: 77px;
-    font-size: 40px;
-    font-weight: 900;
-    border-radius: 10px;
-    cursor: pointer;	
-}
-.login_area>span{
-	margin-top: 10px;
-    font-weight: 900;
-    display: inline-block;
-}
-.login_button{
-	height : 50%;
-	background-color: #D4DFE6;
-	margin-top:30px;
-}
-
-/* 제품 목록 네비 */
-.navi_bar_area{
-	width: 100%;
-    height: 70px;
-    background-color: #7696fd;
-}
-
 /* 홈페이지 메인 제품 목록  */
 .content_area{
 	width: 100%;
@@ -147,410 +30,243 @@ a{
     min-height: 1000px;
 }
 .content_top{
-	    width: 100%;
-	    height: 400px;  	
-  	}
-	.content_top:after {
-	    content: "";
-	    clear: both;
-	    display: table;
-	}    	
-  	.ct_left_area{
-		float: left;
-	    width: 30%;
-	    height: 100%;
-  	}
-  		.image_wrap{
-		    height: 80%;
-		    width: 80%;
-		    margin: auto;
-		    top: 10%;
-		    position: relative;  		
-  		}
-  		.image_wrap img{
-	  		max-width: 100%;
-		    height: auto;
-		    display: block;  		
-  		}
-  		.line{
-		    width: 100%;
-		    border-top:1px solid #c6c6cf;  		
-  		}
-  		
-  		
-
-  	.ct_right_area{
-	    float: left;
-	    width: 70%;
-	    height: 100%;
-  	}
-  		.title{
-		    height: 28%;
-		    font-size: 17px;
-		    line-height: 110px;
-		    color: #3a60df;
-		    padding-left: 3%;
-  		}
-  		.author{
-		    font-size: 16px;
-		    line-height: 50px;
-		    padding-left: 3%;  		
-  		}
-  		.price{
-		    line-height: 30px;
-		    padding: 2% 0 2% 3%;  		
-  		}
-  			.discount_price_number{
-			    line-height: 30px;
-			    font-size: 22px;
-			    color: #f84450;
-			    font-weight: bold;  			
-  			}
-  		.button{
-  			padding: 2% 0 2% 3%;
-  		}
-  			.button_quantity{
-  				margin-bottom: 2%;
-  				
-  			}
-	  			.button_quantity input{
-				    height: 26px;
-				    width: 40px;
-				    text-align: center;
-				    font-weight: bold;  			
-	  			}
-		  	  	.button_quantity button{
-					border: 1px solid #aaa;
-				    color: #3a60df;
-				    width: 20px;
-				    height: 20px;
-				    padding: 3px;
-				    background-color: #fff;
-				    font-weight: bold;
-				    font-size: 15px;
-				    line-height: 15px;	  	  	
-		  	  	}
-		  	  		.btn_cart{
-						display: inline-block;
-    					width: 140px;
-					    text-align: center;
-					    height: 50px;
-    					line-height: 50px;
-    					background-color: #5e6b9f;
-    					border: 1px solid #5e6b9f;
-    					color: #fff;
-    					margin-right: 2px;  	  		
-		  	  		}
-		  	  		.btn_buy{
-						display: inline-block;
-    					width: 140px;
-					    text-align: center;
-					    height: 50px;
-    					line-height: 50px;
-    					background-color: #7b8ed1;
-    					border: 1px solid #7b8ed1;
-    					color: #fff;			  	  		
-		  	  		}
-  	
-  	.content_middle{
-		width: 100%;
-	    min-height: 600px;  	
-  	}
-
-		.book_intro{
-			width: 80%;
-			margin: auto;
-			margin-top: 40px;
-		}
-		.book_content{
-			width: 80%;
-			margin: auto;
-			margin-top: 40px;
-			margin-bottom: 40px;
-		}
-  	
-  	.content_bottom{
-		width: 100%;
-		min-height: 400px;
-	    background-color: #e7dbdb;  	
-  	}
-  	
-  	 /* 리뷰쓰기 버튼 */
-  .reply_button_wrap{
-  	padding : 10px;
-  }
-  .reply_button_wrap button{
-	background-color: #365fdd;
-    color: white;
-    font-weight: bold;
-    font-size: 15px;
-    padding: 5px 12px;
-    cursor: pointer;  
-  }
-  .reply_button_wrap button:hover{
-  	background-color: #1347e7;
-  }
-  
-  /* 리뷰 영역 */
-  	.content_bottom{
-  		width: 80%;
-  		margin : auto;
-  	}
-	.reply_content_ul{
-		list-style: none;
-	}
-	.comment_wrap{
-		position: relative;
-    	border-bottom: 1px dotted #d4d4d4;
-    	padding: 14px 0 10px 0;	
-    	font-size: 12px;
-	}
-		/* 리뷰 머리 부분 */
-		.reply_top{
-			padding-bottom: 10px;
-		}
-		.id_span{
-			padding: 0 15px 0 3px;
-		    font-weight: bold;		
-		}
-		.date_span{
-			padding: 0 15px 0;
-		}
-		/* 리뷰 컨텐트 부분 */
-		.reply_bottom{
-			padding-bottom: 10px;
-		}
-		
-	
-	/* 리뷰 선 */
-	.reply_line{
-		width : 80%;
-		margin : auto;
-		border-top:1px solid #c6c6cf;  	
-	}
-	
-	/* 리뷰 제목 */
-	.reply_subject h2{
-		padding: 15px 0 5px 5px;
-	}
-	
-	/* pageMaker */
-	.repy_pageInfo_div{
-		text-align: center;
-	    margin-top: 30px;
-	    margin-bottom: 40px;	
-	}
-	.pageMaker{
-	    list-style: none;
-	    display: inline-block;	
-	}
-	.pageMaker_btn{
-		float: left;
-	    width: 25px;
-	    height: 25px;
-	    line-height: 25px;
-	    margin-left: 20px;
-	    font-size: 10px;
-	    cursor: pointer;
-	}
-	.active{
-		border : 2px solid black;
-		font-weight:400;	
-	}
-	.next, .prev {
-	    border: 1px solid #ccc;
-	    padding: 0 10px;
-	}	
-  
-  /* 리뷰 없는 경우 div */
-  .reply_not_div{
-  	text-align: center;
-  }
-  .reply_not_div span{
-	display: block;
-    margin-top: 30px;
-    margin-bottom: 20px; 
-  }
-  
-  /* 리뷰 수정 삭제 버튼 */
-  .update_reply_btn{
- 	font-weight: bold;
-    background-color: #b7b399;
-    display: inline-block;
-    width: 40px;
-    text-align: center;
-    height: 20px;
-    line-height: 20px;
-    margin: 0 5px 0 30px;
-    border-radius: 6px;
-    color: white; 
-    cursor: pointer;
-  }
-  .delete_reply_btn{
- 	font-weight: bold;
-    background-color: #e7578f;
-    display: inline-block;
-    width: 40px;
-    text-align: center;
-    height: 20px;
-    line-height: 20px;
-    border-radius: 6px;
-    color: white; 
-  	cursor: pointer;
-  }
-
-/* 로그인 성공 영역 */
-.login_success_area{
-    height: 62%;
-    width: 80%;
-    border: 2px solid #7474ad;
-    border-radius: 15px;
-    margin: 5% auto;
-    padding-top: 5%;
+	width: 100%;
+	height: 400px;  	
 }
-.login_success_area>span{
-    display : block;
-    text-align: left;
-    margin-left: 10%;
-}
-.login_success_area>a{   /* 로그아웃 버튼 */
-    font-size: 15px;
-    font-weight: 900;
-    display: inline-block;
-    margin-top: 5px;
-    background: #e1e5e8;
-    width: 82px;
-    height: 22px;
-    line-height: 22px;
-    border-radius: 25px;
-    color: #606267;    
-}
-
-/* 검색결과 없음 */
-.table_empty{
-	height: 50px;
-    text-align: center;
-    margin: 200px 0 215px 0px;
-    font-size: 25px;
-}
-
-/* 필터정보 */
-.search_filter {
-    width: 85%;
-    margin: auto;
-	margin-top: 30px;
-    margin-bottom: 50px;    
-}
-.filter_button_wrap {
-    width: 100%;
-}
-.filter_button_wrap button {
-    width: 50%;
-}
-.filter_button{   /* 버튼(.filter_button)들에 색상, 테투리 색, float 속성 */
-	background-color: #04AA6D;
-	border: 1px solid green;
-	color: white;
-	padding: 10px 24px;
-	cursor: pointer;
-	float: left;
-} 
-.filter_button_wrap:after {
-/* 버튼(.fitler_buttton)에 float속성을 주었기 때문에 그 뒤의 태그들에 float 속성 영향을 받지 않도록
-버튼을 감싸고 잇는 ".filter_button_wrap"<div>태그 끝 가상요소(".filter_button_wrap:after")가 추가되도록 하여 clear 속성을 추가 */
+.content_top:after {
     content: "";
     clear: both;
     display: table;
-}  	
-.filter_button_wrap button:not(:last-child) {
-/* 버튼 두 개다 가장자리에 색을 주었기 때문에 버튼이 겹치는 가장자리는 찐해지게 됨
-이것을 방지하기 위해 버튼(.filter_button_wrap button)들 중 마지막 버튼을 제외하고 모든 버튼에 오른쪽 가장자리는 색을 갖지 않도록 코드를 추가 */
-    border-right: none;
+}    	
+.ct_left_area{
+	float: left;
+	width: 30%;
+	height: 100%;
 }
-.filter_button:hover {   /* 버튼에 마우스를 올렸을 때 색이 변하도록 버튼에 hover 속성 */
-    background-color: #3e8e41;
+.image_wrap{
+	height: 80%;
+	width: 80%;
+	margin: auto;
+	top: 10%;
+	position: relative;  		
 }
-.filter_active{   /* 선택된 버튼을 사용자가 직관적으로 알 수 있도록 ".filter_active" 식별자를 가질 땐 색상이 변하도록 코드를 추가 (현재는 국내 성택 됨) */
-	background-color: #045d3c;
+.image_wrap img{
+	max-width: 100%;
+	height: auto;
+	display: block;  		
 }
-.filter_content{   /* 필터링 정보가 출력될 ".search_content" <div> 태그에 padding 속성과 가장자리 색상 */
-	padding:20px 50px 20px 50px;
-	border: 1px solid gray;
+.line{
+	width: 100%;
+	border-top:1px solid #c6c6cf;  		
 }
-.filter_content a:not(:first-child){
-/* ".search_content"<div> 태그 내에 있는 <a>태그 들 중 첫 번째 <a> 태그를 제외한 모든 <a> 태그가 왼쪽 공간을 주도록 */
-	margin-left: 10px;
+.ct_right_area{
+	float: left;
+	width: 70%;
+	height: 100%;
 }
-.filter_a{   /* "국내", "국외" 버틑 중에 선택되어 있는 버튼 보이기 (현재는 국내 성택 됨) */
-	display: block;
+.title{
+	height: 28%;
+	font-size: 17px;
+	line-height: 110px;
+	color: #3a60df;
+	padding-left: 3%;
 }
-.filter_b{   /* "국내", "국외" 버틑 중에 선택되어 있는 버튼 보이기 (현재는 국내 성택 됨) */
-	display: none;
+.author{
+	font-size: 16px;
+	line-height: 50px;
+	padding-left: 3%;  		
+}
+.price{
+	line-height: 30px;
+	padding: 2% 0 2% 3%;  		
+}
+.discount_price_number{
+	line-height: 30px;
+	font-size: 22px;
+	color: #f84450;
+	font-weight: bold;  			
+}
+.button{
+	padding: 2% 0 2% 3%;
+}
+.button_quantity{
+	margin-bottom: 2%;
+}
+.button_quantity input{
+	height: 26px;
+	width: 40px;
+	text-align: center;
+	font-weight: bold;  			
+}
+.button_quantity button{
+	border: 1px solid #aaa;
+	color: #3a60df;
+	width: 20px;
+	height: 20px;
+	padding: 3px;
+	background-color: #fff;
+	font-weight: bold;
+	font-size: 15px;
+	line-height: 15px;	  	  	
+}
+.btn_cart{
+	display: inline-block;
+	width: 140px;
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+	background-color: #5e6b9f;
+	border: 1px solid #5e6b9f;
+	color: #fff;
+	margin-right: 2px;  	  		
+}
+.btn_buy{
+	display: inline-block;
+	width: 140px;
+	text-align: center;
+	height: 50px;
+	line-height: 50px;
+	background-color: #7b8ed1;
+	border: 1px solid #7b8ed1;
+	color: #fff;			  	  		
 }
 
-/* footer navai 영역 */
-.footer_nav{
-    width:100%;
-    height:50px;
-}
-.footer_nav_container{
-    width: 100%;
-    height: 100%;
-    background-color:#8EC0E4;
-}
-.footer_nav_container>ul{
-    font-weight : bold;
-    float:left;
-    list-style:none;
-    position:relative;
-    padding-top:10px;
-    line-height: 27px;
-    font-family: dotum;
-    margin-left: 10px;
-}
-.footer_nav_container>ul>li{
-    display:inline;
-    width: 45px;
-    height: 19px;
-    padding: 10px 9px 0 10px;
-}
-.footer_nav_container>ul>span{
-    margin: 0 4px;
+.content_middle{
+	width: 100%;
+	min-height: 600px;  	
 }
 
-/* footer 영역 */
-.footer{
-    width:100%;
-    height:130px;
-    background-color:#D4DFE6;
-    padding-bottom : 50px;
+.book_intro{
+	width: 80%;
+	margin: auto;
+	margin-top: 40px;
 }
-.footer_container{
-    width: 100%;
-    height: 100%;
-    margin: auto;
+.book_content{
+	width: 80%;
+	margin: auto;
+	margin-top: 40px;
+	margin-bottom: 40px;
 }
-.footer_left>img {
-    width: 150%;
-    height: 130px;
-    margin-left: -20px;
-    margin-top: -12px;
+  	
+/* 리뷰쓰기 버튼 */
+.reply_button_wrap{
+	padding : 10px;
 }
-.footer_left{
-    float :left;
-    width: 170px;
+.reply_button_wrap button{
+	background-color: #365fdd;
+	color: white;
+	font-weight: bold;
+	font-size: 15px;
+	padding: 5px 12px;
+	cursor: pointer;  
+}
+.reply_button_wrap button:hover{
+	background-color: #1347e7;
+}
+  
+/* 리뷰 영역 */
+.content_bottom{
+	width: 80%;
+	margin : auto;
+}
+.reply_content_ul{
+	list-style: none;
+}
+.comment_wrap{
+	position: relative;
+   	border-bottom: 1px dotted darkgray;
+   	padding: 14px 0 10px 0;	
+   	font-size: 12px;
+}
+/* 리뷰 머리 부분 */
+.reply_top{
+	padding-bottom: 10px;
+}
+.id_span{
+	padding: 0 15px 0 3px;
+    font-weight: bold;		
+}
+.date_span{
+	padding: 0 15px 0;
+}
+/* 리뷰 컨텐트 부분 */
+.reply_bottom{
+	padding-bottom: 10px;
+}
+
+/* 리뷰 선 */
+.reply_line{
+	width : 80%;
+	margin : auto;
+	border-top:2px solid black;  	
+}
+
+/* 리뷰 제목 */
+.reply_subject h2{
+	padding: 15px 0 5px 5px;
+}
+
+/* pageMaker */
+.repy_pageInfo_div{
+	text-align: center;
+    margin-top: 30px;
+    margin-bottom: 40px;	
+}
+.pageMaker{
+    list-style: none;
+    display: inline-block;	
+}
+.pageMaker_btn{
+	float: left;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
     margin-left: 20px;
-    margin-top : 30px;
-    
+    font-size: 10px;
+    cursor: pointer;
 }
-.footer_right{
-    float :left;
-    width: 680px;
-    margin-left: 70px;
-    margin-top : 30px;
+.active{
+	border : 2px solid black;
+	font-weight:400;	
 }
-
-/* float 속성 해제 */
-.clearfix{
-	clear: both;
+.next, .prev {
+    border: 1px solid #ccc;
+    padding: 0 10px;
+}	
+ 
+/* 리뷰 없는 경우 div */
+.reply_not_div{
+	text-align: center;
+}
+.reply_not_div span{
+	display: block;
+	margin-top: 30px;
+	margin-bottom: 20px; 
+}
+ 
+/* 리뷰 수정 삭제 버튼 */
+.update_reply_btn{
+	font-weight: bold;
+	background-color: #b7b399;
+	display: inline-block;
+	width: 40px;
+	text-align: center;
+	height: 20px;
+	line-height: 20px;
+	margin: 0 5px 0 30px;
+	border-radius: 6px;
+	color: white; 
+	cursor: pointer;
+}
+.delete_reply_btn{
+	font-weight: bold;
+	background-color: #e7578f;
+	display: inline-block;
+	width: 40px;
+	text-align: center;
+	height: 20px;
+	line-height: 20px;
+	border-radius: 6px;
+	color: white; 
+	cursor: pointer;
 }

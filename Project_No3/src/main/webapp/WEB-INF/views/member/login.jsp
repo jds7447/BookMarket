@@ -22,7 +22,8 @@
 			<div class="wrap">
 				<form id="login_form" method="post">   <!-- 로그인 정보 검사를 위해 id, 비번 서버로 넘기기 위한 form 태그 추가 -->
 					<div class="logo_wrap">
-						<span>Book Market</span>
+						<!-- <a href="/main"><span>Book Market</span></a> -->
+						<a href="/main"><img src="/resources/img/Logo2.png"></a>
 					</div>
 					<div class="login_wrap"> 
 						<div class="id_wrap">
@@ -43,6 +44,8 @@
 						
 						<div class="login_button_wrap">
 							<input type="button" class="login_button" value="로그인">
+							<br>
+							<a href="/member/join" class="join_button">회원가입</a>
 						</div>			
 					</div>
     			</form>

@@ -23,10 +23,11 @@
 	text-align: center;	
 	margin: 150px 0;	
 }
-.logo_wrap>span{
+/* .logo_wrap>span{
+	color: black;
 	font-size : 50px;
 	font-weight: 900;
-}
+} */
 
 
 /* 로그인 area */
@@ -77,10 +78,17 @@
     color: white;
     margin : auto;
 }
-
-/* float 속성 해제 */
-.clearfix{
-	clear: both;
+.join_button{
+    display: inline-block;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 400;
+    color: black;
+    margin-top: 20px;
+    font-weight: bold;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: aliceblue;
 }
 
 /* 로그인 실패시 경고글 */
