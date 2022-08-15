@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<link rel="stylesheet" type="text/css" href="/resources/css/includes/admin/header.css">
+
 <!-- header 영역 -->
 		<div class="wrapper">
 	        <div class="wrap">
@@ -15,7 +17,6 @@
 	            <!-- top_subject_area -->
 	            <div class="admin_top_wrap">
 	                <span>관리자 페이지</span>
-	                
 	            </div>
 	            <!-- contents-area -->
 	            <div class="admin_wrap">

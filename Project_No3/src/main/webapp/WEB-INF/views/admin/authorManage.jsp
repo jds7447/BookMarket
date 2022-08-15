@@ -38,13 +38,13 @@
 		                    		</thead>
 		                    		<c:forEach items="${list}" var="list">
 			                    		<tr>
-			                    			<td><c:out value="${list.authorId}"></c:out> </td>
+			                    			<td><c:out value="${list.authorId}"></c:out></td>
 			                    			<td>
 			                    				<a class="move" href='<c:out value="${list.authorId}"/>'>
 			                    					<c:out value="${list.authorName}"></c:out>
 			                    				</a>
 			                    			</td>
-			                    			<td><c:out value="${list.nationName}"></c:out> </td>
+			                    			<td><c:out value="${list.nationName}"></c:out></td>
 			                    			<td><fmt:formatDate value="${list.regDate}" pattern="yyyy-MM-dd"/></td>
 			                    			<td><fmt:formatDate value="${list.updateDate}" pattern="yyyy-MM-dd"/></td>
 			                    		</tr>

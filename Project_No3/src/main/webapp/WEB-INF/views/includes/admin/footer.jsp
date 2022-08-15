@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<link rel="stylesheet" type="text/css" href="/resources/css/includes/admin/footer.css">
+
 					<div class="clearfix"></div>
 	            </div>
 	            
@@ -25,7 +27,7 @@
 		        <div class="footer">
 		            <div class="footer_container">
 		                <div class="footer_left">
-		                    <img src="/resources/img/Logo.png">
+		                    <img src="/resources/img/Logo2.png">
 		                </div>
 		                <div class="footer_right">
 		                    (주) BookMarket    대표이사 : OOO
