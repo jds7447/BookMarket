@@ -1,0 +1,164 @@
+스프링프레임워크에서 메일서버(SMTP Server)를 이용하여 메일을 전송하는 방법
+
+SMTP는 Simple Mail Transfer Protocol로서 전자 메일 전송을 위한 표준 프로토콜입니다
+따라서 SMTP Server란 이메일을 송신하는 서버 (메일서버는 SMTP Server, POP3 Server가 있고 POP3 Server는 이메일을 수신하는 서버)
+
+
+
+메일 전송 기능을 구현하기 위해선 아래의 4가지가 필요
+ 1. pom.xml 설정
+ 2. mailSender Bean 등록(root-context.xml 도는 servlet-context.xml)
+ 3. Controller 메서드 추가
+ 4. 메일 계정 보안 설정
+ 
+ 
+
+메일서버(SMTP Server)를 통해 메일을 전송할 때 다음과 같은 두 가지 방법 
+
+첫 번째, 메일 서버가 릴레이(relay)를 허용하는 경우
+	※릴레이(Relay) : 외부(외부 네트워크)에서 해당 메일서버(smtp 서버)를 경유해서 외부로 메일을 보내는 것을 의미
+	- 이 방식은 계정이 존재하지 않더라도 메일을 발송할 수 있습니다
+	- 릴레이(relay)를 허용하는 경우 잘못된 방식(타인에 의한 스팸메일)으로 악용 될 수 있습니다
+	- 따라서 특정 IP에서만 릴레이가 되도록 하는게 일반적입니다
+
+두 번째, 메일 서버에 계정 인증 후 메일을 전송하는 방법
+
+위 두 가지 방법 선택은 "2.mailSender Bean 등록"에서 이루어집니다
+
+본 프로젝트는 메일 서버에 계정 인증 후 메일을 전송하는 방법으로 진행
+
+
+
+pom.xml 설정
+
+<!-- 이메일 인증을 위한 SMTP 메일 전송 관련 mail 라이브러리 (java에서 메일을 보내기 위해 필요로한 라이브러리) -->
+<!-- 실제 전송되는 메일 객체를 가집니다 -->
+<!-- 주요 클래스 Session, Message, Address, Authenticator, Tranport 등 -->
+<!-- 해당 라이브러리만으로도 메일 전송 기능이 구현 가능하지만 개발자가 모든 세팅을 직접 해주어야 하기 때문에 번거롭습니다 -->
+<!-- 본 프로젝트는 spring-context-support 라이브러리를 사용할 것이기 때문에, mail 라이브러리에선 javax.mail.internet.MimeMessage만 사용 -->
+<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+<dependency>
+    <groupId>javax.mail</groupId>
+    <artifactId>mail</artifactId>
+    <version>1.4.7</version>
+</dependency>
+
+<!-- JavaMailSender 인터페이스(JavaMailSenderImpl)를 사용하기 위해 필요
+	mail 라이브러리를 일일이 세팅을 할 필요 없이 몇 가지의 설정(MailSender Bean설정)만으로도 사용될 수 있도록 도와줍니다 -->
+<!-- JavaMailSender 인터페이스는 MIME 형식의 메일을 보낼 수 있도록 해줍니다 (javax.mail.MimeMessage 사용 가능) -->
+<!-- 스프링 프레임웍에서는 기본적으로 JavaMailSender 인터페이스와 비슷한 역할을 하는 메인 인터페이스 MainSender가 있습니다
+	하지만 MainSender는 SimpleMailMessage만 사용 가능합니다 (javax.mail.MimeMessage 사용 불가능) -->
+<!-- SimpleMailMessage는 단순한 텍스트 메시지만 사용할 수 있고,
+	MimeMessage는 텍스트와 더불어 이미지와 같은 첨부파일을 같이 메시지에 포함시킬 수 있습니다. -->
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${org.springframework-version}</version>
+</dependency>
+
+
+
+mailSender Bean 등록
+
+Bean 등록은 root-context.xml에 설정해주시면 됩니다
+
+1. 메일 서버가 릴레이(relay)를 허용하는 경우
+	- root-context.xml에 아래의 코드를 추가 
+	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+		<property name="host" value="stmp 도메인 주소"/> 
+	</bean>
+
+	- host의 value값은 아래의 링크에서 '2. 사용 가능한 메일서버 찾기(nslookup)'을 참고하셔서 해당 주소를 입력
+
+
+2. 메일 서버에 계정 인증 후 메일을 전송하는 방법
+	- host, port, username, password <property> 태그는 각 메일서버에 맞게 설정
+	- 각 메일서버에서 가장 크게 다른 점은 name이 javaMailProperties인 <property> 태그
+	- 해당 태그는 각 메일서버에서 사용 중인 보안 프로토콜을 인증하기 위해 사용되는 코드가 삽입됨 
+
+	1) gmail
+		- root-context.xml에 아래의 코드를 추가
+		
+		<!-- gmail설정 -->
+		<bean id="mailSender2" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+		     <property name="host" value="smtp.gmail.com" />
+		     <property name="port" value="587" />
+		 <property name="username" value="your_email"/> <!-- 자신의 이메일 아이디 -->
+		 <property name="password" value="your_password!"/> <!-- 자신의 비밀번호 -->
+		 <!-- 보안연결 TLS과 관련된 설정 -->
+		     <property name="javaMailProperties">
+		    <props>
+		       <prop key="mail.smtp.auth">true</prop>
+		       <prop key="mail.smtp.starttls.enable">true</prop>
+		    </props>
+		     </property>
+		</bean>
+ 
+		- host : "smtp.gmail.com" 입력
+		- port : "587" 입력
+		- username : 자신의 이메일 아이디 입력
+		- password : 자신의 이메일 비밀번호 입력
+		- javaMailProperties인 <property> 태그에 삽입된 코드는 TLS 인증 코드
+
+
+* SSL이란 웹사이트와 브라우저 사이에서 전송되는 데이터를 암호화하여 인터넷 연결을 보안을 유지하는 표준 기술입니다. TLS는 더 강력한 버전의 SSL입니다. TLS 도한 SSL이라 불리기도 합니다. 
+
+ 
+2) naver 
+	- root-context.xml에 아래의 코드를 추가
+
+	<!-- navermail설정 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+		<property name="host" value="smtp.naver.com"/> <!-- 메이서버 호스트 -->
+		<property name="port" value="465"/> <!-- 메이서버 포트번호 -->
+		<property name="username" value="your_email"/> <!-- 자신의 이메일 아이디 -->
+		<property name="password" value="your_password"/> <!-- 자신의 비밀번호 -->
+		<!-- 보안연결 SSL과 관련된 설정 -->
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtps.checkserveridentity">true</prop>
+				<prop key="mail.smtps.ssl.trust">*</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+			</props>
+		</property>
+	</bean>
+
+  - host : "smtp.naver.com" 입력
+  - port : "465" 입력
+  - username : 자신의 이메일 아이디 입력
+  - password : 자신의 이메일 비밀번호 입력
+  - javaMailProperties인 <property> 태그에 삽입된 코드는 SSL 인증 코드
+
+ 
+3) daum
+  - root-context.xml에 아래의 코드를 추가
+
+	<!-- daummail설정 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+	 <property name="host" value="smtp.daum.net"/> <!-- 메이서버 호스트 -->
+	 <property name="port" value="465"/> <!-- 메이서버 포트번호 -->
+	 <property name="username" value="your_email"/> <!-- 자신의 이메일 아이디 -->
+	 <property name="password" value="your_password"/> <!-- 자신의 비밀번호 -->
+	   <!-- 보안연결 SSL과 관련된 설정 -->
+	 <property name="javaMailProperties">
+	  <props>
+	  <prop key="mail.smtp.auth">true</prop>
+	  <prop key="mail.smtp.starttls.enable">true</prop>
+	  <prop key="mail.smtps.checkserveridentity">true</prop>
+	  <prop key="mail.smtps.ssl.trust">*</prop>
+	  <prop key="mail.debug">true</prop>
+	  <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+	  </props>
+	 </property>
+	</bean>
+
+	- host : "smtp.daum.net" 입력
+	- port : "465" 입력
+	- username : 자신의 이메일 아이디 입력
+	- password : 자신의 이메일 비밀번호 입력
+	- javaMailProperties인 <property>태그에 삽입된 코드는 네이버와 동일하게 SSL 인증 코드

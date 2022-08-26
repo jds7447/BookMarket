@@ -91,7 +91,7 @@ public class AdminController {
         log.info("'상품 등록' 페이지 접속");
         
 		/* 사용할 Jackson-databind의 메서드는 static 메서드가 아니기 때문에 바로 사용할 수 없고 ObjectMapper클래스를 인스턴스화 하여 사용해야 합니다
-		 * 따라서 ObjectMapper 타입의 'mapper'변수를 선언한 후 ObjectMapper 객체로 초기화 */
+		 * 따라서 ObjectMapper 타입의 변수를 선언한 후 ObjectMapper 객체로 초기화 */
         ObjectMapper objm = new ObjectMapper();
         
 		/* 카테고리 리스트 데이터를 'goodsEnroll.jsp'에 전달해주어야 하기 때문에 해당 url 매핑 메서드에 카테고리 리스트 데이터를
@@ -263,9 +263,7 @@ public class AdminController {
 	 * 반환 타입이 ResponseEntity 객체이고 Http의 Body에 추가될 데이터는 List <AttachImageVO>라는 의미 */
 	public ResponseEntity<List<AttachImageVO>> uploadAjaxActionPOST(MultipartFile[] uploadFile) {
 		log.info("uploadAjaxActionPOST..........");
-//		log.info("파일 이름 : " + uploadFile.getOriginalFilename());
-//		log.info("파일 타입 : " + uploadFile.getContentType());
-//		log.info("파일 크기 : " + uploadFile.getSize());
+
 		/* MultiparFile 배열 타입의 uploadFile의 모든 요소의 데이터 정보를 출력 */
 		for(MultipartFile multipartFile : uploadFile) {   //기본 for문: for(int i = 0; i < uploadFile.length; i++) {
 			log.info("-----------------------------------------------");
@@ -513,14 +511,11 @@ public class AdminController {
 		
 		orderService.orderCancle(dto);   //주문 취소
 		
-		/* 메인 페이지 우측 회원 정보 칸을 주문 후 정보로 최신화
-		 * 만약 관리자가 아닌 회원이 직접 주문을 취소한다고 가정했을 때
-		 * 아래와 같은 회원의 로그인 정보를 세션에 최신화 할 필요가 있음 */
+		/* 메인 페이지 우측 회원 정보 칸을 주문 취소 후 정보로 최신화하기 위함
+		 * 만약 관리자가 아닌 회원이 직접 주문을 취소한다고 가정했을 때 아래와 같이 회원의 로그인 정보를 세션에 최신화 할 필요가 있음 */
 //		MemberVO member = new MemberVO();   //주문한 회원 정보 담을 회원 정보 객체
 //		member.setMemberId(dto.getMemberId());   //주문한 회원 정보 중 id 값을 새로 만든 회원 정보 객체에 저장
-//		
 //		HttpSession session = request.getSession();
-//		
 //		try {
 //			MemberVO memberLogin = memberService.memberLogin(member);   //전달하는 회원 객체의 id를 이용해 최신화 된 회원 정보 가져오기
 //			memberLogin.setMemberPw("");   //보안을 위해 암호화 된 비밀번호 값은 공란으로 설정

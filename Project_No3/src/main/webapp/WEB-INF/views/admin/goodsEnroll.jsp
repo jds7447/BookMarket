@@ -541,10 +541,10 @@
 				//"type이 file인 <input> 요소(element)".files   /* Javascript */
 				let fileInput = $('input[name="uploadFile"]');
 				let fileList = fileInput[0].files;
-				//console.log("fileList : " + fileList);
+				
 				/* FileList의 요소로 있는 File 객체에 접근 */
 				let fileObj = fileList[0];
-				//console.log("fileObj : " + fileObj);
+				
 				/* File 객체에 담긴 데이터가 정말 <input> 태그를 통해 선택한 파일의 데이터가 맞는지를 확인
 				File 인터페이스가 가진 속성(MDN File API 참고)을 사용하여 파일 이름, 파일 사이즈, 파일 타입 */
 				//console.log("fileName : " + fileObj.name);
@@ -576,7 +576,7 @@
 			    	type : 'POST',
 			    	dataType : 'json',
 			    	success : function(result){   //서버로부터 성공적으로 반환 값(상태코드 200)을 전달 받았을 때 작동하는 콜백 함수
-			    		console.log(result);
+			    		/* console.log(result); */
 			    		showUploadImage(result);   //이미지 업로드를 요청 후 성공적으로 업로드 한 이미지에 대한 데이터(path, filename, uuid)들을 전달받았을 때 전달받은 이미지 데이터를 활용하여 이미지가 출력되도록 하는 함수 호출
 			    	},
 			    	error : function(result){   //서버로부터 잘못된 반환 값(상태코드 400)을 전달 받았을 때 작동하는 콜백 함수
@@ -626,7 +626,7 @@
 				
 				//경로 에러로 아래와 같이 수정
 				//let fileCallPath = obj.uploadPath.replace(/\\/g, '/') + "/s_" + obj.uuid + "_" + obj.fileName;
-				/* replace(/\\/g, '/') 의미는 대상 String 문자열 중 모든 '\'을 '/'로 변경
+				/* replace(/\\/g, '/') 의미는 대상 String 문자열 중 모든 '\\'을 '/'로 변경
 				Javascript는 Java의 reaplceAll과 같은 메서드가 없기 때문에 replace 메서드의 인자 값으로 정규표현식을 사용하여 치환 대상 모든 문자를 지정 */
 				
 				//브라우저에 따른 인코딩 문제 예방으로 아래 같이 수정

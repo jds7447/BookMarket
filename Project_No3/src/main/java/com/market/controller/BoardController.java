@@ -17,7 +17,7 @@ import lombok.extern.log4j.Log4j;
 
 @Controller   /* 해당 클래스를 스프링의 빈으로 인식하도록 */
 @RequestMapping("/board/*")   /* '/board/'로 시작하는 모든 요청 처리를 BoardController.java 가 하도록 지정 */
-/* lombok을 이용한 log 사용 시 아래 어노테이션 활성화 (logger 선언 필요 없음) */
+/* @Log4j을 이용한 log 사용 시 아래 어노테이션 활성화 (logger 선언 필요 없음) */
 @Log4j
 public class BoardController {
 	/* log 사용을 위한 logger 선언 */

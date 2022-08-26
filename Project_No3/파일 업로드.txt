@@ -61,7 +61,7 @@ MultipartResolver는 파일 업로드 처리를 위해 스프링 프레임워크
 FileList는 배열 형태의 객체
 FileList의 요소에는 File 객체가 저장
 File 객체는 type이 'file'인 <input> 태그의 "files" 속성
-사용자가 <input> 태그를 통해서 파일 1개를 선택을 하게 된다면 FieList 첫 번째 요소(FileList[0])인 File 객체에 파일 데이터가 저장
+사용자가 <input> 태그를 통해서 파일 1개를 선택을 하게 된다면 FileList 첫 번째 요소(FileList[0])인 File 객체에 파일 데이터가 저장
 사용자가 여러개의 파일을 선택을 한다면 선택한 갯수(n)만큼 FileList  첫번째 요수(FileList [0])부터  순서대로 각 요소(FileList [n]) File 객체에 저장
 사용자가 선택한 파일을 선택한 파일인 File 객체에 접근 하기 위해선 결국 FileList 객체(<input> 태그의 files 속성)에 접근
 해당 FileList 객체의 접근은 <input>태그의 change 이벤트를 통해서 접근이 가능
@@ -218,11 +218,4 @@ Thumbnails.of(saveFile)
 
 thumbnailaotr 라이브러리는 이미지 생성에 세부적 설정을 할 수 있도록 몇몇 메서드들을 제공
 ImageIO를 통한 코드 작성 보다 훨씬 간단히 생성
-
-
-비동기 방식의 서버에서 뷰로 데이터를 전송하기 위해선 Controller의 url 매핑 메서드에 @ResponseBody 어노테이션을 붙여 주거나 메서드의 반환 타입을 ResponseEntity 방식으로
-@Responsebody와 ResponseEntity 모두 서버에서 뷰로 전송하는 Http body에 뷰로 전달하고 싶은 데이터를 포함시켜서 보낸 다는 점을 동일
-
-ResponseEntity의 경우 뷰로 전송될 HTTP의 세부 정보를 조작하여 뷰로 전송할 수 있다는 점
-HTTP는 크게 'status', 'header', 'body' 3개의 범주로 구성되어 있는데 ResponseEntity 클래스에는 'status'와 'header'의 속성들을 조작할 수 있는 메서드들을 제공
 

@@ -1,0 +1,19 @@
+Jackson 이란
+Java Object를 JSON으로 변환하거나 JSON을 Java Object로 변환하는데 사용할 수 있는 Java 라이브러리
+
+Jackson 특징
+1.Stream API : 스트림 형식으로 데이터를 분석하고 생성하기 때문에 성능이 좋습니다
+2.Tree Model : XML의 DOM 처럼 Node 형태로 데이터를 다룰 수 있기 때문에 유연성이 좋습니다
+3.Data Binding : POJO 기반의 자바 객체들을 JSON으로 변환시킬 수 있습니다
+
+/* 사용할 Jackson-databind의 메서드는 static 메서드가 아니기 때문에 바로 사용할 수 없고 ObjectMapper클래스를 인스턴스화 하여 사용해야 합니다
+ * 따라서 ObjectMapper 타입의 변수를 선언한 후 ObjectMapper 객체로 초기화 */
+ObjectMapper objm = new ObjectMapper();
+
+ObjectMapper는 기본 POJO(Plain Old Java Objects) 또는 범용 JSON 트리 모델(JsonNode) 간에 JSON을 읽고 쓰는 기능과 변환을 수행하기 위한 관련 기능을 제공
+다른 스타일의 JSON 콘텐츠와 함께 작동하고 다형성 및 개체 ID와 같은 고급 개체 개념을 지원
+ObjectMapper는 또한 고급 ObjectReader 및 ObjectWriter 클래스를 위한 팩토리 역할
+
+/* writeValueAsString - Java 값을 문자열로 직렬화하는 데 사용할 수 있는 메소드
+	writeValueAsString() 메서드는 Java 객체를 String타입의 JSON형식 데이터로 변환해줌 */
+String cateList = objm.writeValueAsString(list);

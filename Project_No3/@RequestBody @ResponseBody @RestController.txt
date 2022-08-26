@@ -1,0 +1,78 @@
+출처 https://cheershennah.tistory.com/179
+
+
+
+스프링에서 비동기 처리를 하는 경우 @RequestBody , @ResponseBody를 사용한다
+
+
+
+클라이언트와 서버의 비동기 통신
+클라이언트에서 서버로 통신하는 메시지를 요청(request) 메시지라고 하며, 서버에서 클라이언트로 통신하는 메시지를 응답(response) 메시지라고 한다
+웹에서 화면전환(새로고침) 없이 이루어지는 동작들은 대부분 비동기 통신으로 이루어진다
+비동기통신을 하기위해서는 클라이언트에서 서버로 요청 메세지를 보낼 때 본문에 데이터를 담아서 보내야 하고,
+서버에서 클라이언트로 응답을 보낼때에도 본문에 데이터를 담아서 보내야 한다
+이 본문이 바로 body 이다
+즉, 요청본문 requestBody, 응답본문 responseBody 을 담아서 보내야 한다
+
+이때 본문에 담기는 데이터 형식은 여러가지 형태가 있겠지만 가장 대표적으로 사용되는 것이 JSON 이다
+즉, 비동기식 클라-서버 통신을 위해 JSON 형식의 데이터를 주고받는 것이다
+
+스프링 MVC에서도 클라이언트에서 전송한 xml데이터나 json 등등 데이터를 컨트롤러에서 DOM객체나 자바객체로 변환해서 송수신할 수 있다
+@RequestBody 어노테이션과 @ResponseBody 어노테이션이 각각 HTTP요청 바디를 자바객체로 변환하고 자바객체를 다시 HTTP 응답 바디로 변환해준다
+
+
+
+요청 본문(request body)에 담긴 값을 자바객체로 변환
+@RequestBody를 통해서 자바객체로 conversion을 하는데, 이때 HttpMessageConverter를 사용한다
+@ResponseBody 가 붙은 파라미터에는 HTTP 요청의 분문 body 부분이 그대로 전달된다
+RequestMappingHandlerAdpter 에는 HttpMessageConverter 타입의 메세지 변환기가 여러개 등록되어 있다
+
+
+
+@RequestBody 
+이 어노테이션이 붙은 파라미터에는 http요청의 본문(body)이 그대로 전달된다
+일반적인 GET/POST의 요청 파라미터라면 @RequestBody를 사용할 일이 없을 것이다
+반면에 xml이나 json기반의 메시지를 사용하는 요청의 경우에 이 방법이 매우 유용하다
+HTTP 요청의 바디내용을 통째로 자바객체로 변환해서 매핑된 메소드 파라미터로 전달해준다
+
+@RequestMapping(value = "/ajaxTest.do")
+public String ajaxTest(@RequestBody UserVO getUserVO) throws Exception {
+
+  System.out.println(getUserVO.getId());
+  
+  return "test/login.tiles";
+}
+
+
+
+@ResponseBody 
+자바객체를 HTTP요청의 바디내용으로 매핑하여 클라이언트로 전송한다
+@ResponseBody 가 붙은 파라미터가 있으면 HTTP요청의 미디어타입과 파라미터의 타입을 먼저 확인한다
+* dispatcher-servlet.xml 의 <annotation-drvien> 태그 내에 선언하는 <message-converter> 에서 확인
+메세지 변환기 중에서 해당 미디어타입과 파라미터 타입을 처리할 수 있다면, HTTP요청의 본문 부분을 통째로 변환해서 지정된 메소드 파라미터로 전달해준다
+
+@ResponseBody
+@RequestMapping(value = "/ajaxTest.do")
+public UserVO ajaxTest() throws Exception {
+
+  UserVO userVO = new UserVO();
+  userVO.setId("테스트");
+
+  return userVO;
+}
+
+즉, @Responsebody 어노테이션을 사용하면 http요청 body를 자바 객체로 전달받을 수 있다
+
+
+
+@RestController
+@Controller와는 다르게 @RestController는 리턴값에 자동으로 @ResponseBody가 붙게되어
+	별도 어노테이션을 명시해주지 않아도	HTTP 응답데이터(body)에 자바 객체가 매핑되어 전달 된다
+@Controller인 경우에 바디를 자바객체로 받기 위해서는 @ResponseBody 어노테이션을 반드시 명시해주어야한다
+
+
+
+@RequestBody / @ResponseBody 정리
+클라이언트에서 서버로 필요한 데이터를 요청하기 위해 JSON 데이터를 요청 본문에 담아서 서버로 보내면,
+	서버에서는 @RequestBody 어노테이션을 사용하여 HTTP 요청 본문에 담긴 값들을 자바객체로 변환시켜 객체에 저장한다
+서버에서 클라이언트로 응답 데이터를 전송하기 위해 @ResponseBody 어노테이션을 사용하여 자바 객체를 HTTP 응답 본문의 객체로 변환하여 클라이언트로 전송한다

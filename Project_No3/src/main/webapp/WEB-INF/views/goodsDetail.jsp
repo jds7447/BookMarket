@@ -155,7 +155,7 @@
 				yyyy-MM-dd 형태로 변경을 해주기 위해 fmt:formatDate 태그를 사용하면 된다고 생각할 수 있지만 사용 시 아래와 같은 에러
 				fmt:formatDate 태그는 Date타입의 데이터를 가공을 할 수 있는 태그이기 때문
 				BookVO.java 클래스의 출판일(publeYear) 변수 데이터 타입은 String으로 정의
-				String으로 정의 되어야 캘릭더 위젯으로 선택한 날짜 데이터가 BookVO 객체의 변수로 변환되어 담길 수 있기 때문
+				String으로 정의 되어야 캘린더 위젯으로 선택한 날짜 데이터가 BookVO 객체의 변수로 변환되어 담길 수 있기 때문
 				BookVO 객체에 넣을 땐 0000-00-00 형태였지만 DB의 book_goods 테이블의 publeYear 열의 데이터 타입은 Date로 정의되어 있음
 				DB단계와 Java단계의 데이터 타입을 같게 해주어야 하지만, 현재의 두 개의 데이터 타입은 달라도 정보를 주고받거나, 삽입할 때는 크게 문제는 되지 않음
 				출판일의 값 형태를 yyyy-MM-dd 형태로 변경해주어야 하는데, 현재의 값이 String인 점을 착안하여 substirng(), indexOf() 메서드를 활용 */

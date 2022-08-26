@@ -1,0 +1,12 @@
+/* 상품 상세 정보 */
+/* @GetMapping 어노테이션의 Spring에서 사용자가 전송한 식별자 값을 변수로 인식하도록 하기 위해 템플릿 변수({bookId})를 작성
+ * URL로 전달받은 식별자 값을 인수로 전달받기 위해서 메서드의 파라미터에 bookId 변수를 선언해주고 파라미터 변수 앞에 @PathVarialbe 어노테이션을 추가
+ * 그리고 @PathVariable 어노테이션 파라미터로 앞서 @GetMapping에 작성한 템플릿 변수명을 추가
+ * 만약 클라이언트가 "/goodsDetail/15" URL 경로로 요청을 하면 작성한 URL 매핑 메서드(goodsDetailGET())가 매핑되어 호출되고
+ * @PathVarialbe 어노테이션을 통해 URL 경로에 작성된 식별자 값 "15"가 추출되어 파라미터 변수 'bookId'로 대입되어 값을 사용 가능 */
+@GetMapping("/goodsDetail/{bookId}")
+public String goodsDetailGET(@PathVariable("bookId")int bookId, Model model) {
+	log.info("goodsDetailGET()..........");
+	model.addAttribute("goodsInfo", bookService.getGoodsInfo(bookId));   //이미지 데이터가 담긴 상품 정보를 가져와 뷰로 전송
+	return "/goodsDetail";
+}
