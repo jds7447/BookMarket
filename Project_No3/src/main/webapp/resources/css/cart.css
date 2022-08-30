@@ -23,7 +23,7 @@ a{
 /* 홈페이지 메인 제품 목록  */
 .content_area{
 	width: 100%;
-    min-height: 1000px;
+    /* min-height: 1000px; */
 }
 table{
 	border-collapse: collapse;
@@ -230,6 +230,7 @@ text-align: center;
 }
 .image_wrap img{
     max-width: 85%;
+    max-height: 150px;
     height: auto;
     /* display: block; */
 }

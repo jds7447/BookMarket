@@ -160,11 +160,13 @@
 			$(document).ready(function(){
 				// 검색 타입 selected (사용자가 검색 전에 선택했던 검색 타입으로 검색 타입 태그 옵션 설정)
 				const selectedType = '<c:out value="${pageMaker.cri.type}"/>';
-				if(selectedType != ""){
+				if(selectedType != "" && selectedType != "C"){   //검색 타입이 카테고리가 아닌 경우
 					let type = selectedType.split("")[0];
 					$("select[name='type']").val(type).attr("selected", "selected");	
 				}
-				
+				else if(selectedType == "C"){   //검색 타입이 카테고리인 경우
+					$("select[name='type']").val("T").attr("selected", "selected");
+				}
 				
 				/* $(선택자).each(function(i,obj));
 				선택자로 지명된 태그가 여러 개일 경우 $(선택자)를 통해 해당 태그 객체를 호출하게 되면, 해당 선택자를 가지는 모든 태그가 담긴 객체를 반환
@@ -195,7 +197,7 @@
 				});
 				
 				
-				/* 필터링 선택 시 기존 선택(국내, 국내) 설정 */
+				/* 필터링 선택 시 기존 선택(국내, 국외) 설정 */
 				let filterCode = '<c:out value="${pageMaker.cri.cateCode}"/>';   //검색 객체에 담겨 있는 카테고리 코드
 				if(filterCode != "" && filterCode != null){   //카테고리 코드가 비어있지 않다면
 					let nowCode = filterCode.split("")[0];   //검색 객체에 담겨 있는 카테고리 코드 맨 앞자리
@@ -224,7 +226,7 @@
 		            type:"POST",
 		            url:"/member/logout.do",
 		            success:function(data){
-		                alert("로그아웃 성공");
+		                /* alert("로그아웃 성공"); */
 		                document.location.reload();     
 		            } 
 		        }); // ajax 종료

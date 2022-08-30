@@ -90,7 +90,7 @@
 							${goodsInfo.bookIntro}
 						</div>
 						<div class="book_content">
-							${goodsInfo.bookContents }
+							${goodsInfo.bookContents}
 						</div>
 					</div>
 					<div class="line">
@@ -152,7 +152,7 @@
 				
 				/* 출판일 값 가공 */
 				/* Oralce 프로젝트의 경우 출판일 항목란에 출력되는 형태는 0000-00-00 00:00:00
-				yyyy-MM-dd 형태로 변경을 해주기 위해 fmt:formatDate 태그를 사용하면 된다고 생각할 수 있지만 사용 시 아래와 같은 에러
+				yyyy-MM-dd 형태로 변경을 해주기 위해 fmt:formatDate 태그를 사용하면 된다고 생각할 수 있지만 사용 시 에러 발생
 				fmt:formatDate 태그는 Date타입의 데이터를 가공을 할 수 있는 태그이기 때문
 				BookVO.java 클래스의 출판일(publeYear) 변수 데이터 타입은 String으로 정의
 				String으로 정의 되어야 캘린더 위젯으로 선택한 날짜 데이터가 BookVO 객체의 변수로 변환되어 담길 수 있기 때문
@@ -228,16 +228,24 @@
 				} else if(result == '2'){
 					alert("장바구니에 이미 추가되어져 있습니다.");
 				} else if(result == '5'){
-					alert("로그인이 필요합니다.");	
+					alert("로그인이 필요합니다.");
 				}
 			}
 			
 			
 			/* 바로구매 버튼 */
+			const loginCK = "${member}";   //로그인 정보
+			
 			$(".btn_buy").on("click", function(){
-				let bookCount = $(".quantity_input").val();   //주문 수량 태그 요소 값
-				$(".order_form").find("input[name='orders[0].bookCount']").val(bookCount);   //주문 폼 개수 데이터
-				$(".order_form").submit();
+				if(loginCK == null || loginCK == ""){   //비 로그인 상태
+					alert("로그인이 필요합니다.");
+					return false;
+				}
+				else if(loginCK != null) {   //로그인 상태
+					let bookCount = $(".quantity_input").val();   //주문 수량 태그 요소 값
+					$(".order_form").find("input[name='orders[0].bookCount']").val(bookCount);   //주문 폼 개수 데이터
+					$(".order_form").submit();
+				}
 			});
 			
 			
@@ -247,7 +255,7 @@
 		            type:"POST",
 		            url:"/member/logout.do",
 		            success:function(data){
-		                alert("로그아웃 성공");
+		                /* alert("로그아웃 성공"); */
 		                document.location.reload();   //페이지 새로 고침
 		            } 
 		        }); // ajax 종료

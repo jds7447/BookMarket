@@ -45,6 +45,7 @@ public class BookController {
 	@Autowired
 	private ReplyService replyService;   //댓글 데이터 서비스
 	
+	
 	/* 메인 페이지 이동 */
 	@RequestMapping(value = "/main", method = RequestMethod.GET)   // 혹은 @GetMapping("/main")
 	public void mainPageGET(Model model) {
@@ -53,6 +54,7 @@ public class BookController {
 		model.addAttribute("cate2", bookService.getCateCode2());   //국외 제품 카테고리 리스트
 		model.addAttribute("ls", bookService.likeSelect());   //평점 높은 상품 8개 리스트
 	}
+	
 	
 	/* 상품 등록 업로드 이미지 출력
 	 * 상품 등록 시 서버에 업로드 한 이미지 파일에 접근하기 위한 url 매핑 메서드 (현재 업로드 한 이미지를 미리보기 위해)
@@ -98,6 +100,7 @@ public class BookController {
 		return result;
 	}
 	
+	
 	/* 이미지 데이터 반환 - 반환해주는 데이터가 JSON형식이 되도록 지정해주기 위해 @GetMapping 어노테이션에 produces 속성 */
 	@GetMapping(value="/getAttachList", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<AttachImageVO>> getAttachList(int bookId){
@@ -107,14 +110,15 @@ public class BookController {
 		return new ResponseEntity<List<AttachImageVO>>(attachMapper.getAttachList(bookId), HttpStatus.OK);
 	}
 	
+	
 	/* 상품 검색 */
-	@GetMapping("search")
+	@GetMapping("/search")
 	public String searchGoodsGET(Criteria2 cri, Model model) {
 		log.info("cri : " + cri);
 		
 		List<BookVO> list = bookService.getGoodsList(cri);
 		
-		log.info("pre list : " + list);
+//		log.info("pre list : " + list);
 		if(!list.isEmpty()) {   //검색한 상품이 있을 경우
 			model.addAttribute("list", list);
 			log.info("list : " + list);
@@ -134,8 +138,9 @@ public class BookController {
 			}
 		}
 		
-		return "search";
+		return "/search";
 	}
+	
 	
 	/* 상품 상세 정보 */
 	/* @GetMapping 어노테이션의 Spring에서 사용자가 전송한 식별자 값을 변수로 인식하도록 하기 위해 템플릿 변수({bookId})를 작성
@@ -149,6 +154,7 @@ public class BookController {
 		model.addAttribute("goodsInfo", bookService.getGoodsInfo(bookId));   //이미지 데이터가 담긴 상품 정보를 가져와 뷰로 전송
 		return "/goodsDetail";
 	}
+	
 	
 	/* 리뷰 쓰기 */
 	/* 리뷰 등록 페이지라서 리뷰 관련 요청이기는 하지만 ReplyController.java 는 전체가 http 바디(body)에 바로 데이터를

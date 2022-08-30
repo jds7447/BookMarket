@@ -106,7 +106,7 @@ public class MemberController {
         
         /* 인증번호(난수) 생성 (6자리) */
         Random random = new Random();
-        int checkNum = random.nextInt(888889) + 111111;
+        int checkNum = random.nextInt(888889) + 111111;   //random.nextInt(int n) : 0부터 n 미만의 난수 생성
         
         /* 이메일 보내기 */
         String setFrom = "vkdlxj3tp@naver.com";

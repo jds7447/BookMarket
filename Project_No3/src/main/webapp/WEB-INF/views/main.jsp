@@ -197,7 +197,7 @@
 		            type:"POST",
 		            url:"/member/logout.do",
 		            success:function(data){
-		                alert("로그아웃 성공");
+		                /* alert("로그아웃 성공"); */
 		                document.location.reload();     
 		            } 
 		        }); // ajax 종료

@@ -157,7 +157,7 @@
 														<strong>총 적립 예상 마일리지</strong>
 													</td>
 													<td>
-														<span class="totalPoint_span">70000</span> 원
+														<span class="totalPoint_span">70000</span> P
 													</td>
 												</tr>
 											</tbody>
@@ -350,7 +350,7 @@
 						let bookId_input = "<input name='orders[" + orderNumber + "].bookId' type='hidden' value='" + bookId + "'>";
 						form_contents += bookId_input;
 						
-						//상품 개룰를 OrderPageDTO 객체의 List<OrderPageItemDTO> 에 넣기 위한 형태로 name 설정 후 form 태그에 추가할 변수에 적용
+						//상품 개수를 OrderPageDTO 객체의 List<OrderPageItemDTO> 에 넣기 위한 형태로 name 설정 후 form 태그에 추가할 변수에 적용
 						let bookCount_input = "<input name='orders[" + orderNumber + "].bookCount' type='hidden' value='" + bookCount + "'>";
 						form_contents += bookCount_input;
 						
